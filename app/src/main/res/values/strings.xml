@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TrafficLightsFillIn</string>
+    <string name="login_tip">工程师登录</string>
+    <string name="name">姓名</string>
+    <string name="team">班组</string>
+    <string name="phone">手机</string>
+    <string name="password">密码</string>
+    <string name="change_password">修改密码</string>
+    <string name="old_password">请输入原密码</string>
+    <string name="new_password">新密码确认</string>
+</resources>

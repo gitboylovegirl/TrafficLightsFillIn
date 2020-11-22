@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".login.LoginActivity">
+
+    <include android:visibility="gone"
+             layout="@layout/layout_title_type_no_action">
+    </include>
+    <TextView
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/login_tip"
+        android:textColor="#ff2a4997"
+        android:textSize="27sp" />
+
+    <EditText
+        android:id="@+id/user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="45dp"
+        android:layout_marginTop="180dp"
+        android:background="@null"
+        android:hint="@string/name"
+        android:textColor="@color/black"
+        android:textColorHint="#C5C5C5"
+        android:textSize="14sp">
+
+    </EditText>
+
+    <View
+        android:layout_marginTop="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@+id/user_name"
+        android:layout_marginHorizontal="45dp"
+        android:background="#9C9C9C">
+
+    </View>
+
+
+    <EditText
+        android:layout_marginTop="70dp"
+        android:layout_below="@+id/user_name"
+        android:id="@+id/user_team"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="45dp"
+        android:background="@null"
+        android:hint="@string/team"
+        android:textColor="@color/black"
+        android:textColorHint="#C5C5C5"
+        android:textSize="14sp">
+
+    </EditText>
+
+    <View
+        android:layout_marginTop="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@+id/user_team"
+        android:layout_marginHorizontal="45dp"
+        android:background="#9C9C9C">
+
+    </View>
+
+
+    <EditText
+        android:layout_marginTop="70dp"
+        android:layout_below="@+id/user_team"
+        android:id="@+id/user_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="45dp"
+        android:background="@null"
+        android:hint="@string/phone"
+        android:textColor="@color/black"
+        android:textColorHint="#C5C5C5"
+        android:textSize="14sp">
+
+    </EditText>
+
+    <View
+        android:layout_marginTop="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@+id/user_phone"
+        android:layout_marginHorizontal="45dp"
+        android:background="#9C9C9C">
+
+    </View>
+
+
+    <RelativeLayout
+        android:id="@+id/password_view"
+        android:layout_marginTop="70dp"
+        android:layout_below="@+id/user_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/user_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="45dp"
+            android:background="@null"
+            android:hint="@string/password"
+            android:textColor="@color/black"
+            android:textColorHint="#C5C5C5"
+            android:textSize="14sp">
+
+        </EditText>
+
+        <View
+            android:layout_marginTop="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@+id/user_password"
+            android:layout_marginHorizontal="45dp"
+            android:background="#9C9C9C">
+
+        </View>
+
+
+        <TextView
+            android:layout_marginTop="3dp"
+            android:id="@+id/change_password"
+            android:layout_marginRight="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:text="修改密码"
+            android:textColor="@color/main_color"
+            android:textSize="15sp"
+            />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </TextView>
+    </LinearLayout>
+
+    <TextView
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:background="@color/main_color"
+        android:layout_marginHorizontal="45dp"
+        android:paddingVertical="17dp"
+        android:id="@+id/login"
+        android:gravity="center"
+        android:layout_marginBottom="80dp"
+        android:layout_alignParentBottom="true"
+        android:text="登录"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_centerHorizontal="true"
+        android:text="取消"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="44dp"
+        android:textColor="#ff2a4997"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </TextView>
+</RelativeLayout>
