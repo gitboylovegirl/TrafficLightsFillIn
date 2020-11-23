@@ -8,4 +8,20 @@
     <string name="change_password">修改密码</string>
     <string name="old_password">请输入原密码</string>
     <string name="new_password">新密码确认</string>
+    <string name="back">返回</string>
+    <string name="new_record">最新任务</string>
+    <string name="update">上传更新</string>
+    <string name="work_list">工作记录</string>
+    <string name="timing">配时查询</string>
+    <string name="upgrade">升级</string>
+    <string name="tip">提示</string>
+    <string name="record_list">工作记录</string>
+    <string name="new_record_list">最新任务列表</string>
+    <string name="name_not_null">姓名不能为空</string>
+    <string name="team_not_null">班组不能为空</string>
+    <string name="phone_not_null">请输入正确的手机号</string>
+    <string name="password_not_null">密码不能为空</string>
+    <string name="strtus_str">当前状态:</string>
+    <string name="back_home">下班</string>
+    <string name="change_btn">点击切换</string>
 </resources>

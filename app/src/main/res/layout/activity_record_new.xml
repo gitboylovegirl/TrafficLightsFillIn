@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".record.RecordNewActivity">
+
+    <ImageView
+        android:scaleType="fitXY"
+        android:src="@mipmap/icon_top_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </ImageView>
+
+
+    <TextView
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="24dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="40dp"
+        android:text="@string/new_record_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </TextView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
+        android:id="@+id/content"
+        android:layout_height="match_parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/back"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/main_color"
+        android:text="@string/back"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+    </TextView>
+</RelativeLayout>
