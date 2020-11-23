@@ -18,7 +18,8 @@
         android:theme="@style/Theme.TrafficLightsFillIn"
         tools:replace="android:appComponentFactory"
         tools:targetApi="p">
-        <activity android:name=".record.RecordNewActivity"></activity>
+        <activity android:name=".intersection.IntersectionDetailsActivity"></activity>
+        <activity android:name=".record.RecordNewActivity" />
         <activity android:name=".record.RecordListActivity" />
         <activity android:name=".login.ChangePasswordActivity" />
         <activity android:name=".login.LoginActivity">
@@ -28,14 +29,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-
-        <!--高德地图-->
+        <activity android:name=".MainActivity" /> <!-- 高德地图 -->
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" />
+
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="a834451b9ac9e1122f4d9201d378524e" />
+            android:value="8565766bdf041166c41ed3ada3e16ef5" />
     </application>
 
 </manifest>

@@ -14,7 +14,7 @@
     <string name="work_list">工作记录</string>
     <string name="timing">配时查询</string>
     <string name="upgrade">升级</string>
-    <string name="tip">提示</string>
+    <string name="tip">提醒</string>
     <string name="record_list">工作记录</string>
     <string name="new_record_list">最新任务列表</string>
     <string name="name_not_null">姓名不能为空</string>
@@ -24,4 +24,5 @@
     <string name="strtus_str">当前状态:</string>
     <string name="back_home">下班</string>
     <string name="change_btn">点击切换</string>
+    <string name="intersection_inurdoce">路口基本资料</string>
 </resources>

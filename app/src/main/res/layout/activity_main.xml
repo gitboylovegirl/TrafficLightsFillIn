@@ -27,6 +27,7 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/status"
                 android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -38,6 +39,7 @@
             </TextView>
 
             <TextView
+                android:id="@+id/change_status"
                 android:textColor="@android:color/darker_gray"
                 android:layout_marginLeft="5dp"
                 android:text="@string/change_btn"
@@ -77,6 +79,7 @@
                     android:gravity="center">
 
                     <LinearLayout
+                        android:id="@+id/new_record_top"
                         android:layout_width="145dp"
                         android:layout_height="145dp"
                         android:background="@drawable/bg_color_215263"
@@ -107,6 +110,7 @@
                     android:gravity="center">
 
                     <LinearLayout
+                        android:id="@+id/update_record_top"
                         android:layout_width="145dp"
                         android:layout_height="145dp"
                         android:background="@drawable/bg_color_215263"
@@ -145,6 +149,7 @@
                     android:gravity="center">
 
                     <LinearLayout
+                        android:id="@+id/list_record_top"
                         android:layout_width="145dp"
                         android:layout_height="145dp"
                         android:background="@drawable/bg_color_215263"
@@ -175,6 +180,7 @@
                     android:gravity="center">
 
                     <LinearLayout
+                        android:id="@+id/timing_record_top"
                         android:layout_width="145dp"
                         android:layout_height="145dp"
                         android:background="@drawable/bg_color_215263"
@@ -205,7 +211,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp">
-
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -213,10 +218,13 @@
             android:gravity="center">
 
             <TextView
-                android:id="@+id/upgrade"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="13dp"
+                android:background="@drawable/bg_color_red"
+                android:id="@+id/feed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/upgrade"
+                android:text="反馈"
                 android:textColor="@color/white">
 
             </TextView>
@@ -229,6 +237,9 @@
             android:gravity="center">
 
             <TextView
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="13dp"
+                android:background="@drawable/bg_color_yellow"
                 android:id="@+id/tip_set"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -245,10 +256,13 @@
             android:gravity="center">
 
             <TextView
-                android:id="@+id/status"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="13dp"
+                android:background="@drawable/bg_color_green"
+                android:id="@+id/update"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="上班"
+                android:text="@string/upgrade"
                 android:textColor="@color/white">
 
             </TextView>
@@ -263,6 +277,7 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/new_record"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -275,6 +290,7 @@
         </TextView>
 
         <TextView
+            android:id="@+id/update_record"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -287,6 +303,7 @@
         </TextView>
 
         <TextView
+            android:id="@+id/list_record"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -299,6 +316,7 @@
         </TextView>
 
         <TextView
+            android:id="@+id/timing_record"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
