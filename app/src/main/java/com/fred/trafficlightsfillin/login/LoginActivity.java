@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fred.trafficlightsfillin.MainActivity;
 import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseActivity;
+import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 
 import butterknife.BindView;
@@ -105,5 +107,20 @@ public class LoginActivity extends BaseActivity {
             ToastUtil.showMsg(LoginActivity.this,getString(R.string.password_not_null));
             return;
         }
+
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.))
+
+                .build()
+                .getAsync(new ICallback<HomeListResponse>() {
+                    @Override
+                    public void onSuccess(HomeListResponse response) {
+
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+
+                    }
+                });
     }
 }
