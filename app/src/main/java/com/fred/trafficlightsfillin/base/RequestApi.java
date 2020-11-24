@@ -66,5 +66,5 @@ public class RequestApi {
      */
     public static final String LOGIN="/sys/user/login";
 
-    public static f
+    //public static f
 }

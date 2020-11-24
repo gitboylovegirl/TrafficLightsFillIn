@@ -3,6 +3,10 @@ package com.fred.trafficlightsfillin;
 import android.app.Application;
 import android.content.Context;
 
+import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.network.NetEnv;
+import com.fred.trafficlightsfillin.network.configuration.NetSettings;
+
 public class SoftApplication extends Application {
 
     public static SoftApplication instance;
@@ -24,11 +28,11 @@ public class SoftApplication extends Application {
         NetSettings netSettings = new NetSettings();
         netSettings.setBaseUrl(RequestApi.BASE_URL);
         netSettings.setDebugEnable(BuildConfig.DEBUG);
-        netSettings.addResponseInterceptor(new CancellationIntercept());
+        //netSettings.addResponseInterceptor(new CancellationIntercept());
         netSettings.setRequestLog(requestLog -> {
         });
 
-        netSettings.setCommonHeaders(() -> CommonConfig.instance().getCommonHeaders());
+        //netSettings.setCommonHeaders(() -> CommonConfig.instance().getCommonHeaders());
 
         NetEnv.getInstance().init(this, netSettings);
     }
