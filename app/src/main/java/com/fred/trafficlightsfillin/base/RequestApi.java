@@ -10,13 +10,11 @@ public class RequestApi {
      * 正式环境
      */
     //public static String BASE_OFFICIAL_URL = "https://api.imifanlive.com";
-    public static String BASE_OFFICIAL_URL = "https://s-api.imifanlive.com";
+    public static String BASE_OFFICIAL_URL = "http://peishi.slinks.cn:28088";
 
     public static String BASE_OFFICIAL_SHEQU_URL = "http://api.shequ.zhangyu.tv";
 
-    /**
-     * 环境模式 10测试  20 预发布  30 正式 40 自定义
-     */
+
     public static int ENVIORENMENT_MODE = 0;
 
     /**
@@ -63,4 +61,10 @@ public class RequestApi {
      */
     public static final String GET_CHANNEL_INFO = "/mifan-channel/v1/channels/info";
 
+    /**
+     * 登录
+     */
+    public static final String LOGIN="/sys/user/login";
+
+    public static f
 }

@@ -15,6 +15,7 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseActivity;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
+import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 
 import butterknife.BindView;
@@ -71,7 +72,8 @@ public class LoginActivity extends BaseActivity {
     public void onClickEvent(View view) {
         switch (view.getId()){
             case R.id.login:
-                openActivity(MainActivity.class);
+                goToLogin(userName.getText().toString().trim(),userTeam.getText().toString().trim(),userPhone.getText().toString().trim(),userPassword.getText().toString().trim());
+                //openActivity(MainActivity.class);
                 break;
             case R.id.cancel:
                 //退出系统
@@ -108,13 +110,16 @@ public class LoginActivity extends BaseActivity {
             return;
         }
 
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.))
-
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.LOGIN))
+                .addParam("password",password)
+                .addParam("username",name)
+                .addParam("phone",phone)
+                .addParam("tname",team)
                 .build()
-                .getAsync(new ICallback<HomeListResponse>() {
+                .postAsync(new ICallback<LoginResponse>() {
                     @Override
-                    public void onSuccess(HomeListResponse response) {
-
+                    public void onSuccess(LoginResponse response) {
+                        Log.e("fred",response.data.toString());
                     }
 
                     @Override

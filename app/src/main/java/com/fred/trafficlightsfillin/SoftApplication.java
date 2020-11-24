@@ -13,5 +13,23 @@ public class SoftApplication extends Application {
         super.onCreate();
         instance=this;
         mContext=getApplicationContext();
+
+        initProNetwork();
+    }
+
+    /**
+     * 初始化framwwork设置参数
+     */
+    private void initProNetwork() {
+        NetSettings netSettings = new NetSettings();
+        netSettings.setBaseUrl(RequestApi.BASE_URL);
+        netSettings.setDebugEnable(BuildConfig.DEBUG);
+        netSettings.addResponseInterceptor(new CancellationIntercept());
+        netSettings.setRequestLog(requestLog -> {
+        });
+
+        netSettings.setCommonHeaders(() -> CommonConfig.instance().getCommonHeaders());
+
+        NetEnv.getInstance().init(this, netSettings);
     }
 }

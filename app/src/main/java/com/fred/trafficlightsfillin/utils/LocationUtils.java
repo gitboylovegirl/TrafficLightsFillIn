@@ -5,6 +5,8 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Build;
 
+import androidx.core.app.AppOpsManagerCompat;
+
 import java.lang.reflect.Method;
 
 /**
