@@ -41,13 +41,16 @@ public interface BaseApiService {
     @GET()
     Call<ResponseBody> doGet(@Url String url, @Body RequestBody body);
 
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//需要添加头
     @POST()
     Call<ResponseBody> doPost(@Url String url);
 
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//需要添加头
     @FormUrlEncoded
     @POST()
     Call<ResponseBody> doPost(@Url String url, @FieldMap Map<String, String> map);
 
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//需要添加头
     @POST()
     Call<ResponseBody> doPost(@Url String url, @Body RequestBody body);
 
@@ -78,4 +81,7 @@ public interface BaseApiService {
 
     @PUT
     Call<ResponseBody> doPut(@Url String fileUrl, @QueryMap Map<String, String> map);
+
+    @PUT
+    Call<ResponseBody> doPut(@Url String fileUrl, @Body RequestBody body);
 }

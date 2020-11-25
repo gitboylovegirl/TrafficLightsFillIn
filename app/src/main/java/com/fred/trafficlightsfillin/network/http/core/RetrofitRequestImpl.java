@@ -6,12 +6,17 @@ import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.CallBackResolve;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.utils.BackgroundThread;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -40,7 +45,12 @@ public class RetrofitRequestImpl extends AbstractRequest {
         if (requestBuilder.params == null || requestBuilder.params.size() == 0) {
             call = getBaseApiService().doGet(requestBuilder.url);
         } else {
-            call = getBaseApiService().doGet(requestBuilder.url, requestBuilder.params);
+            //call = getBaseApiService().doGet(requestBuilder.url, requestBuilder.params);
+
+            JSONObject json =new JSONObject(requestBuilder.params);
+            RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+            call = getBaseApiService().doGet(requestBuilder.url, body);
+
         }
         execute(call, listener,context);
     }
@@ -51,7 +61,11 @@ public class RetrofitRequestImpl extends AbstractRequest {
         if (requestBuilder.params == null || requestBuilder.params.size() == 0) {
             call = getBaseApiService().doPost(requestBuilder.url);
         } else {
-            call = getBaseApiService().doPost(requestBuilder.url, requestBuilder.params);
+            //call = getBaseApiService().doPost(requestBuilder.url, requestBuilder.params);
+
+            JSONObject json =new JSONObject(requestBuilder.params);
+            RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+            call = getBaseApiService().doPost(requestBuilder.url, body);
         }
         execute(call, listener,context);
     }
@@ -141,7 +155,10 @@ public class RetrofitRequestImpl extends AbstractRequest {
         if (requestBuilder.params == null || requestBuilder.params.size() == 0) {
             call = getBaseApiService().doPut(requestBuilder.url);
         } else {
-            call = getBaseApiService().doPut(requestBuilder.url, requestBuilder.params);
+            JSONObject json =new JSONObject(requestBuilder.params);
+            RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+            call = getBaseApiService().doPut(requestBuilder.url, body);
+            //call = getBaseApiService().doPut(requestBuilder.url, requestBuilder.params);
         }
         execute(call, listener,context);
     }

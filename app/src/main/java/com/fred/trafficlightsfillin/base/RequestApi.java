@@ -62,9 +62,17 @@ public class RequestApi {
     public static final String GET_CHANNEL_INFO = "/mifan-channel/v1/channels/info";
 
     /**
-     * 登录
+     * 登录 post
      */
-    public static final String LOGIN="/sys/user/login";
+    public static final String LOGIN="/service/engineer/login";
 
-    //public static f
+    /**
+     * 修改密码  put
+     */
+    public static final String CHANGE_PASSWORD="/service/engineer/pwd";
+
+    /**
+     * 刷新token get
+     */
+    public static final String REFRESH_TOKEN="/service/engineer/token";
 }

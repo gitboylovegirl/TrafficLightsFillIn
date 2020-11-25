@@ -119,7 +119,7 @@ public class LoginActivity extends BaseActivity {
                 .postAsync(new ICallback<LoginResponse>() {
                     @Override
                     public void onSuccess(LoginResponse response) {
-                        Log.e("fred",response.data.toString());
+                        Log.e("fred",response.toString());
                     }
 
                     @Override
