@@ -23,5 +23,12 @@ public class RecordListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_list);
         ButterKnife.bind(this);
+
+        initView();
+    }
+    private void initView(){
+        back.setOnClickListener(v -> {
+            finish();
+        });
     }
 }

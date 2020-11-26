@@ -3,10 +3,12 @@ package com.fred.trafficlightsfillin;
 import android.Manifest;
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,8 +21,17 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.login.ChangePasswordActivity;
+import com.fred.trafficlightsfillin.login.LocationResponse;
 import com.fred.trafficlightsfillin.login.LoginActivity;
+import com.fred.trafficlightsfillin.login.LoginResponse;
+import com.fred.trafficlightsfillin.network.http.ProRequest;
+import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.record.RecordListActivity;
+import com.fred.trafficlightsfillin.record.RecordNewActivity;
 import com.fred.trafficlightsfillin.utils.LocationUtils;
+import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 
@@ -34,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 10;
     @BindView(R.id.status)
     TextView status;
@@ -73,13 +84,15 @@ public class MainActivity extends AppCompatActivity {
 
         //Log.e("ferd  sha:  ",sHA1(this));
         initLocation();
+
+        initView();
+        getNewVersion();
     }
 
     /**
      * 定位权限
      */
     private void initLocation() {
-
         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED){//未开启定位权限
             //开启定位权限,200是标识码
@@ -119,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                     double lng = aMapLocation.getLongitude();
                     if (lat > 0 && lng > 0) {
                         Log.e("fred", "lat: " + lat + "  lng  " + lng);
+                        locationInfo(String.valueOf(lat),String.valueOf(lat));
                     }
                 } else {//失败
                     Log.i("fred", "Distance: 定位失败 :" + aMapLocation.getErrorCode() + ", errInfo:" + aMapLocation.getErrorInfo());
@@ -136,30 +150,107 @@ public class MainActivity extends AppCompatActivity {
         }, 0, 10, TimeUnit.SECONDS);
     }
 
-    private static String sHA1(Context context){
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(
-                    context.getPackageName(), PackageManager.GET_SIGNATURES);
-            byte[] cert = info.signatures[0].toByteArray();
-            MessageDigest md = MessageDigest.getInstance("SHA1");
-            byte[] publicKey = md.digest(cert);
-            StringBuffer hexString = new StringBuffer();
-            for (int i = 0; i < publicKey.length; i++) {
-                String appendString = Integer.toHexString(0xFF & publicKey[i])
-                        .toUpperCase(Locale.US);
-                if (appendString.length() == 1)
-                    hexString.append("0");
-                hexString.append(appendString);
-                hexString.append(":");
-            }
-            String result= hexString.toString();
-            return result.substring(0, result.length()-1);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
+    /**
+     * 上传位置信息
+     * @param lat
+     * @param lon
+     */
+    private void locationInfo(String lat,String lon){
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.LOCATIO))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addParam("flag",SharedPreferenceUtils.getInstance().getFlag())
+                .addParam("lat",lat)
+                .addParam("lon",lon)
+                .build()
+                .postAsync(new ICallback<LocationResponse>() {
+                    @Override
+                    public void onSuccess(LocationResponse response) {
+                        Log.e("fred",response.toString());
+                        if(response.code==0){
+
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+
+                    }
+                });
     }
 
+    /**
+     * 获取最新版本号
+     */
+    private void getNewVersion(){
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.NEW_VERSION))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
+                .build()
+                .getAsync(new ICallback<LocationResponse>() {
+                    @Override
+                    public void onSuccess(LocationResponse response) {
+                        Log.e("fred",response.toString());
+                        if(response.code==0){
+
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+
+                    }
+                });
+    }
+    private void initView(){
+        feed.setOnClickListener(this::onClick);
+        tipSet.setOnClickListener(this::onClick);
+        update.setOnClickListener(this::onClick);
+
+        newRecord.setOnClickListener(this);
+        newRecordTop.setOnClickListener(this::onClick);
+
+        updateRecord.setOnClickListener(this::onClick);
+        updateRecordTop.setOnClickListener(this::onClick);
+
+        listRecord.setOnClickListener(this::onClick);
+        listRecordTop.setOnClickListener(this::onClick);
+
+        timingRecord.setOnClickListener(this::onClick);
+        timingRecordTop.setOnClickListener(this::onClick);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent=new Intent();
+        switch (v.getId()){
+            case R.id.feed://反馈
+
+                break;
+            case R.id.tip_set://提醒
+
+                break;
+            case R.id.update://更新
+
+                break;
+            case R.id.new_record://新任务
+            case R.id.new_record_top:
+                intent.setClass(MainActivity.this, RecordNewActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.update_record://上传更新
+            case R.id.update_record_top:
+
+                break;
+            case R.id.list_record://工作记录
+            case R.id.list_record_top:
+                intent.setClass(MainActivity.this, RecordListActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.timing_record://配时查询
+            case R.id.timing_record_top:
+
+                break;
+        }
+    }
 }

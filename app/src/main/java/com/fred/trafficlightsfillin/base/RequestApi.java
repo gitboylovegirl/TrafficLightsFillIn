@@ -75,4 +75,13 @@ public class RequestApi {
      * 刷新token get
      */
     public static final String REFRESH_TOKEN="/service/engineer/token";
+
+    /**
+     * 上报地理信息 post
+     */
+    public static final String LOCATIO  ="/service/location";
+    /**
+     * 获取最新版本号 get
+     */
+    public static final String NEW_VERSION="/service/app/ver/newest";
 }
