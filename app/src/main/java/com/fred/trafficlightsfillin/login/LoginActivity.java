@@ -1,5 +1,7 @@
 package com.fred.trafficlightsfillin.login;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -9,6 +11,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.fred.trafficlightsfillin.MainActivity;
 import com.fred.trafficlightsfillin.R;
@@ -16,6 +20,8 @@ import com.fred.trafficlightsfillin.base.BaseActivity;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.utils.AccountManager;
+import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 
 import butterknife.BindView;
@@ -60,12 +66,19 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void dealLogicBeforeInitView() {
-
+        if(SharedPreferenceUtils.getInstance().getToken()!=null&&SharedPreferenceUtils.getInstance().getToken()!=""){
+            openActivity(MainActivity.class);
+            finish();
+        }
     }
 
     @Override
     public void dealLogicAfterInitView() {
-
+        if(ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED){//未开启定位权限
+            //开启定位权限,200是标识码
+            ActivityCompat.requestPermissions(LoginActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},200);
+        }
     }
 
     @Override
@@ -112,7 +125,7 @@ public class LoginActivity extends BaseActivity {
 
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.LOGIN))
                 .addParam("password",password)
-                .addParam("username",name)
+                .addParam("name",name)
                 .addParam("phone",phone)
                 .addParam("tname",team)
                 .build()
@@ -120,6 +133,15 @@ public class LoginActivity extends BaseActivity {
                     @Override
                     public void onSuccess(LoginResponse response) {
                         Log.e("fred",response.toString());
+                        if(response.code==0){
+                            SharedPreferenceUtils.getInstance().setToken(response.data.accessToken);
+                            SharedPreferenceUtils.getInstance().setrefreshToken(response.data.refreshToken);
+                            AccountManager.getInstance().setLoginResponse(response);
+                            openActivity(MainActivity.class);
+                            finish();
+                        }else {
+                            ToastUtil.showMsg(LoginActivity.this,response.msg);
+                        }
                     }
 
                     @Override

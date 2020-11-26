@@ -441,6 +441,16 @@ public class SharedPreferenceUtils {
     }
 
     /**
+     * refreshToken
+     * @return
+     */
+    public String getrefreshToken(){return sharedPreferences.getString("refreshToken", "");}
+
+    public void setrefreshToken(String str) {
+        sharedPreferences.edit().putString("refreshToken", str).apply();
+    }
+
+    /**
      * 获取uid
      */
     public String getUserUid() {
