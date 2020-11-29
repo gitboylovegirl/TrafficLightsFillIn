@@ -19,3 +19,25 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
+# for DexGuard only
+-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+-dontwarn com.squareup.picasso.*
+    		-keep public class * extends android.app.Fragment
+    		-keep public class * extends android.app.Activity
+    		-keep public class * extends android.app.Application
+    		-keep public class * extends android.app.Service
+    		-keep public class * extends android.content.BroadcastReceiver
+    		-keep public class * extends android.content.ContentProvider
+    		-keep public class * extends android.app.backup.BackupAgentHelper
+    		-keep public class * extends android.preference.Preference
+    		-keep public class com.android.vending.licensing.ILicensingService
+
+    		#忽略警告
+    		-ignorewarning

@@ -4,14 +4,17 @@ import android.Manifest;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.AppOpsManagerCompat;
@@ -21,6 +24,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.fred.trafficlightsfillin.base.MyGlideEngine;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.login.ChangePasswordActivity;
 import com.fred.trafficlightsfillin.login.LocationResponse;
@@ -34,9 +38,12 @@ import com.fred.trafficlightsfillin.utils.LocationUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
+import com.zhihu.matisse.Matisse;
+import com.zhihu.matisse.MimeType;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,6 +54,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 10;
+    private static final int REQUEST_CODE_CHOOSE = 99;
     @BindView(R.id.status)
     TextView status;
     @BindView(R.id.change_status)
@@ -166,9 +174,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .postAsync(new ICallback<LocationResponse>() {
                     @Override
                     public void onSuccess(LocationResponse response) {
-                        Log.e("fred",response.toString());
-                        if(response.code==0){
-
+                        if(response.code==401001){
+                            //freshToken();
+                            getNewVersion();
                         }
                     }
 
@@ -190,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .getAsync(new ICallback<LocationResponse>() {
                     @Override
                     public void onSuccess(LocationResponse response) {
-                        Log.e("fred",response.toString());
                         if(response.code==0){
 
                         }
@@ -202,6 +209,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
     }
+
+    /**
+     * 刷新token
+     */
+    private void freshToken(){
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
+                .build()
+                .getAsync(new ICallback<LocationResponse>() {
+                    @Override
+                    public void onSuccess(LocationResponse response) {
+                        Log.e("fred  刷新：",response.toString());
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+
+                    }
+                });
+    }
+
     private void initView(){
         feed.setOnClickListener(this::onClick);
         tipSet.setOnClickListener(this::onClick);
@@ -252,5 +281,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
         }
+    }
+
+    private void test(){
+        Matisse.from(MainActivity.this)
+                .choose(MimeType.ofImage())
+                .countable(true)
+                .maxSelectable(9)
+                .gridExpectedSize(120)
+                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                .thumbnailScale(0.85f)
+                .imageEngine(new MyGlideEngine())
+                .forResult(REQUEST_CODE_CHOOSE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+            List<Uri> mSelected = Matisse.obtainResult(data);
+            //String s = getPAth(mSelected.get(0));
+            //Log.i("Path", s);
+        }
+
     }
 }

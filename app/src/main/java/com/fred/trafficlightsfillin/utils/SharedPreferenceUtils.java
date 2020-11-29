@@ -454,7 +454,7 @@ public class SharedPreferenceUtils {
      * 工作状态
      * @return
      */
-    public String getFlag(){return sharedPreferences.getString("flag", "");}
+    public String getFlag(){return sharedPreferences.getString("flag", "1");}
 
     public void setFlag(String str) {
         sharedPreferences.edit().putString("flag", str).apply();
@@ -463,7 +463,7 @@ public class SharedPreferenceUtils {
      * 获取uid
      */
     public String getUserUid() {
-        return sharedPreferences.getString("uid", "1");
+        return sharedPreferences.getString("uid", "");
     }
 
     public void setUserUid(String str) {
