@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@mipmap/item_bc">
+
+    <TextView
+        android:id="@+id/road_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="30dp"
+        android:text="北京大道"
+        android:textColor="@color/black"
+        android:textSize="17sp">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/task_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/road_name"
+        android:layout_marginLeft="25dp"
+        android:text="来源：支大队">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/task_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="30dp"
+        android:text="已完成">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginRight="30dp"
+        android:text="来源：支大队">
+
+    </TextView>
+</RelativeLayout>

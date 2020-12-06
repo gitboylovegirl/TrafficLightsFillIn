@@ -26,12 +26,14 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.fred.trafficlightsfillin.base.MyGlideEngine;
 import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.feed.FeedActivity;
 import com.fred.trafficlightsfillin.login.ChangePasswordActivity;
 import com.fred.trafficlightsfillin.login.LocationResponse;
 import com.fred.trafficlightsfillin.login.LoginActivity;
 import com.fred.trafficlightsfillin.login.LoginResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.query.QueryMainActivity;
 import com.fred.trafficlightsfillin.record.RecordListActivity;
 import com.fred.trafficlightsfillin.record.RecordNewActivity;
 import com.fred.trafficlightsfillin.utils.LocationUtils;
@@ -57,8 +59,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_CODE_CHOOSE = 99;
     @BindView(R.id.status)
     TextView status;
-    @BindView(R.id.change_status)
-    TextView changeStatus;
     @BindView(R.id.new_record_top)
     LinearLayout newRecordTop;
     @BindView(R.id.update_record_top)
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             runOnUiThread(() -> {
                 mLocationClient.startLocation();
             });
-        }, 0, 10, TimeUnit.SECONDS);
+        }, 0, 100, TimeUnit.SECONDS);
     }
 
     /**
@@ -176,7 +176,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onSuccess(LocationResponse response) {
                         if(response.code==401001){
                             //freshToken();
-                            getNewVersion();
+                            //getNewVersion();
+                            SharedPreferenceUtils.getInstance().setToken("");
                         }
                     }
 
@@ -247,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         timingRecord.setOnClickListener(this::onClick);
         timingRecordTop.setOnClickListener(this::onClick);
+
     }
 
     @Override
@@ -254,7 +256,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent=new Intent();
         switch (v.getId()){
             case R.id.feed://反馈
-
+                intent.setClass(MainActivity.this, FeedActivity.class);
+                startActivity(intent);
                 break;
             case R.id.tip_set://提醒
 
@@ -278,7 +281,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.timing_record://配时查询
             case R.id.timing_record_top:
-
+                intent.setClass(MainActivity.this, QueryMainActivity.class);
+                startActivity(intent);
                 break;
         }
     }

@@ -38,19 +38,15 @@
 
             </TextView>
 
-            <TextView
-                android:id="@+id/change_status"
-                android:textColor="@android:color/darker_gray"
+<!--            android:track="@drawableable/switch_track"-->
+            <Switch
                 android:layout_marginLeft="5dp"
-                android:text="@string/change_btn"
+                android:id="@+id/change_status"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-            </TextView>
+                android:layout_height="wrap_content"
+                 />
         </LinearLayout>
-
     </RelativeLayout>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

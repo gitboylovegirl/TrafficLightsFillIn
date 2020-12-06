@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA"
+    tools:context=".query.QueryMainActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@mipmap/icon_top_view">
+
+    </ImageView>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="60dp"
+        android:text="配时和任务查询"
+        android:textColor="@color/white"
+        android:textSize="24dp"
+        android:textStyle="bold">
+
+    </TextView>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="17dp"
+                android:layout_marginTop="110dp"
+                android:background="@drawable/bg_color_white"
+                android:paddingHorizontal="30dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="选择查询类型"
+                    android:textSize="12sp">
+
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="45dp"
+                    android:text="查询类型"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="88dp">
+
+                    <TextView
+                        android:layout_width="130dp"
+                        android:layout_height="29dp"
+                        android:background="@drawable/bg_color_f4f4f4_5dp"
+                        android:gravity="center"
+                        android:text="路口名称"
+                        android:textSize="12sp"></TextView>
+
+                    <TextView
+                        android:layout_width="130dp"
+                        android:layout_height="29dp"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/bg_color_f4f4f4_5dp"
+                        android:gravity="center"
+                        android:text="路口类型"
+                        android:textSize="12sp"></TextView>
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="132dp"
+                    android:text="查询日期"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="172dp">
+
+                    <TextView
+                        android:id="@+id/start_time"
+                        android:textColor="#4F4F4F"
+                        android:layout_width="130dp"
+                        android:layout_height="29dp"
+                        android:background="@drawable/bg_color_f4f4f4_5dp"
+                        android:gravity="center"
+                        android:text="2020年10月21日 "
+                        android:textSize="10sp"></TextView>
+
+                    <TextView
+                        android:id="@+id/end_ime"
+                        android:textColor="#4F4F4F"
+                        android:layout_width="130dp"
+                        android:layout_height="29dp"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/bg_color_f4f4f4_5dp"
+                        android:gravity="center"
+                        android:text="2020年10月22日 "
+                        android:textSize="10sp"></TextView>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="220dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="查询班组"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold">
+
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/team"
+                            android:layout_marginTop="20dp"
+                            android:textColor="#4F4F4F"
+                            android:layout_width="130dp"
+                            android:layout_height="29dp"
+                            android:layout_alignParentRight="true"
+                            android:background="@drawable/bg_color_f4f4f4_5dp"
+                            android:gravity="center"
+                            android:text="A1 "
+                            android:textSize="10sp">
+
+                        </TextView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="查询问题来源"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold">
+
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/from"
+                            android:layout_marginTop="20dp"
+                            android:textColor="#4F4F4F"
+                            android:layout_width="130dp"
+                            android:layout_height="29dp"
+                            android:layout_alignParentRight="true"
+                            android:background="@drawable/bg_color_f4f4f4_5dp"
+                            android:gravity="center"
+                            android:text="任务"
+                            android:textSize="10sp">
+                        </TextView>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginBottom="52dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="320dp"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/query_one"
+                        android:background="#AB3A1B"
+                        android:paddingHorizontal="26.5dp"
+                        android:paddingVertical="11dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="查任务"
+                        android:textColor="#ffffffff"
+                        android:textSize="15sp"
+                        />
+
+                    <TextView
+                        android:id="@+id/query_two"
+                        android:layout_marginLeft="41dp"
+                        android:background="#AB3A1B"
+                        android:paddingHorizontal="18.5dp"
+                        android:paddingVertical="11dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="查配时表"
+                        android:textColor="#ffffffff"
+                        android:textSize="15sp"
+                        />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <TextView
+                android:textStyle="bold"
+                android:textSize="24dp"
+                android:textColor="@color/main_color"
+                android:text="查询结果"
+                android:layout_marginLeft="35dp"
+                android:layout_marginVertical="28dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </TextView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

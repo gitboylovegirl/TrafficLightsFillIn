@@ -6,9 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".SoftApplication"
@@ -18,10 +17,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TrafficLightsFillIn"
-        tools:replace="android:allowBackup"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".intersection.IntersectionDetailsActivity"></activity>
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:allowBackup">
+        <activity android:name=".feed.FeedActivity"></activity>
+        <activity android:name=".query.QueryMainActivity" />
+        <activity android:name=".intersection.IntersectionDetailsActivity" />
         <activity android:name=".record.RecordNewActivity" />
         <activity android:name=".record.RecordListActivity" />
         <activity android:name=".login.ChangePasswordActivity" />

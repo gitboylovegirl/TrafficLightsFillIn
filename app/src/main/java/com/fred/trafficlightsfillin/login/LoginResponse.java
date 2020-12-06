@@ -19,7 +19,7 @@ import java.io.Serializable;
  */
 public class LoginResponse extends BaseResponse {
     public LoginBean data;
-    class LoginBean implements Serializable {
+    public class LoginBean implements Serializable {
         public String accessToken;
         public String age;
         public String carNumber;

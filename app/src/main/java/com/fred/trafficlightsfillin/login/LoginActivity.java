@@ -142,6 +142,17 @@ public class LoginActivity extends BaseActivity {
                         if(response.code==0){
                             SharedPreferenceUtils.getInstance().setToken(response.data.accessToken);
                             SharedPreferenceUtils.getInstance().setrefreshToken(response.data.refreshToken);
+                            SharedPreferenceUtils.getInstance().setAge(response.data.age);
+                            SharedPreferenceUtils.getInstance().setCarNumber(response.data.carNumber);
+                            SharedPreferenceUtils.getInstance().setId(response.data.id);
+                            SharedPreferenceUtils.getInstance().setName(response.data.name);
+                            SharedPreferenceUtils.getInstance().setPhone(response.data.phone);
+                            SharedPreferenceUtils.getInstance().setRemark(response.data.remark);
+                            SharedPreferenceUtils.getInstance().setSex(response.data.sex);
+                            SharedPreferenceUtils.getInstance().setTeamId(response.data.teamId);
+                            SharedPreferenceUtils.getInstance().setTeamName(response.data.teamName);
+
+                            LoginResponse.LoginBean data = response.data;
                             AccountManager.getInstance().setLoginResponse(response);
                             openActivity(MainActivity.class);
                             finish();

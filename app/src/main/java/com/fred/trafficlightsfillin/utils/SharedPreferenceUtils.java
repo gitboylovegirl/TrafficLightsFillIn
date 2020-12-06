@@ -1,14 +1,26 @@
 package com.fred.trafficlightsfillin.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
 
 import com.fred.trafficlightsfillin.SoftApplication;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -450,6 +462,59 @@ public class SharedPreferenceUtils {
         sharedPreferences.edit().putString("refreshToken", str).apply();
     }
 
+    public String getAge(){return sharedPreferences.getString("age", "");}
+
+    public void setAge(String str) {
+        sharedPreferences.edit().putString("age", str).apply();
+    }
+
+    public String getCarNumber(){return sharedPreferences.getString("carNumber", "");}
+
+    public void setCarNumber(String str) {
+        sharedPreferences.edit().putString("carNumber", str).apply();
+    }
+
+    public String getId(){return sharedPreferences.getString("id", "");}
+
+    public void setId(String str) {
+        sharedPreferences.edit().putString("id", str).apply();
+    }
+
+    public String getName(){return sharedPreferences.getString("name", "");}
+
+    public void setName(String str) {
+        sharedPreferences.edit().putString("name", str).apply();
+    }
+
+    public String getRemark(){return sharedPreferences.getString("remark", "");}
+
+    public void setRemark(String str) {
+        sharedPreferences.edit().putString("remark", str).apply();
+    }
+
+    public String getSex(){return sharedPreferences.getString("sex", "");}
+
+    public void setSex(String str) {
+        sharedPreferences.edit().putString("sex", str).apply();
+    }
+
+    public String getTeamId(){return sharedPreferences.getString("teamId", "");}
+
+    public void setTeamId(String str) {
+        sharedPreferences.edit().putString("teamId", str).apply();
+    }
+
+    public String getTeamName(){return sharedPreferences.getString("teamName", "");}
+
+    public void setTeamName(String str) {
+        sharedPreferences.edit().putString("teamName", str).apply();
+    }
+
+    public String getPhone(){return sharedPreferences.getString("phone", "");}
+
+    public void setPhone(String str) {
+        sharedPreferences.edit().putString("phone", str).apply();
+    }
     /**
      * 工作状态
      * @return
@@ -459,87 +524,142 @@ public class SharedPreferenceUtils {
     public void setFlag(String str) {
         sharedPreferences.edit().putString("flag", str).apply();
     }
+
+
+    public static <T> List<Field> getPublicFields(Class<?> clazz){
+        if (clazz.equals(Object.class)) {
+            return null;
+        }
+        //用来存储clazz中用public修饰的属性的list
+        List<Field> list = new ArrayList<Field>();
+        //获得clazz中所有用public修饰的属性
+        Field[] fields = clazz.getFields();
+        //将fields加入到list中
+        for(int i=0 ; i<fields.length ; i++){
+            list.add(fields[i]);
+        }
+        return list;
+    }
+
+    public static void putObjectToShare(String shareName , Object obj){
+        //获得SharedPreferences实例
+        SharedPreferences sharedPreferences = SoftApplication.mContext.getSharedPreferences(FILE_NAME, Activity.MODE_PRIVATE);
+        //获得Editor
+        SharedPreferences.Editor edit = sharedPreferences.edit();
+        //存储数据之前先将之前的旧数据清掉
+        edit.clear();
+        //调用commit提交数据(这里为了清掉数据)
+        edit.commit();
+
+        List<Field> publicFields = getPublicFields(obj.getClass());
+        for(Field f : publicFields){
+            String name = f.getName();
+            try {
+                //获得当前属性的类型和值
+                //类型的话如果是基本类型，会自动装箱
+                Object type = f.get(obj);
+                //判断各种类型，调用各种类型的put方法将数据存储进去
+                if (type instanceof String) {
+                    edit.putString(name, (String) type);
+                }else if (type instanceof Integer) {
+                    edit.putInt(name, (Integer) type);
+                }else if (type instanceof Float) {
+                    edit.putFloat(name, (Float) type);
+                }else if (type instanceof Long) {
+                    edit.putLong(name, (Long) type);
+                }else if (type instanceof Boolean) {
+                    edit.putBoolean(name, (Boolean) type);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //调用commit，提交数据
+            edit.commit();
+        }
+    }
+
+    public <T> T getObjectFromShare(String shareName , Class<T> clazz){
+        //获得SharedPreferences实例
+        SharedPreferences sharedPreferences = SoftApplication.mContext.getSharedPreferences(shareName, Activity.MODE_PRIVATE);
+        //T是一个泛型，根据clazz不同而不同
+        T t = null;
+        try {
+            //获得sharedPreferences中所有的数据，数据为键值对保存在map中
+            Map<String,?> map = sharedPreferences.getAll();
+            //调用getPublicFields方法得到clazz中所有的公有属性
+            List<Field> publicFields = getPublicFields(clazz);
+            //如果两者都不为空的话
+            if (map.size()>0 && publicFields.size()>0) {
+                //将T实例化出来
+                t = clazz.newInstance();
+                //遍历map中所有的键值对
+                for(Map.Entry<String,?> entry : map.entrySet()){
+                    //map中的键
+                    String key = entry.getKey();
+                    //map中的值
+                    Object value = entry.getValue();
+                    //遍历clazz中的所有公有属性
+                    for(Field field : publicFields){
+                        //获得属性名
+                        String name = field.getName();
+                        //如果属性名与键相同
+                        if (name.equalsIgnoreCase(key)) {
+                            //相当于给对象T中的属性field赋值，值为value
+                            field.set(t, value);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //整个遍历结束后，我们的对象中的属性也都有值了
+        return t;
+    }
+
+
     /**
-     * 获取uid
+     * 存放实体类以及任意类型
+     * @param
+     * @param key
+     * @param obj
      */
-    public String getUserUid() {
-        return sharedPreferences.getString("uid", "");
+    public static void putBean(String key, Object obj) {
+        if (obj instanceof Serializable) {// obj必须实现Serializable接口，否则会出问题
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                oos.writeObject(obj);
+                String string64 = new String(Base64.encode(baos.toByteArray(),0));
+                SharedPreferences sharedPreferences = SoftApplication.mContext.getSharedPreferences(key, Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(key, string64).commit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            Log.e("fred","error:"+"the obj must implement Serializble");
+            throw new IllegalArgumentException("the obj must implement Serializble");
+        }
+
     }
 
-    public void setUserUid(String str) {
-        sharedPreferences.edit().putString("uid", str).apply();
-    }
-
-    /**
-     * 获取昵称
-     */
-    public String getCnname() {
-        return sharedPreferences.getString("uname", "");
-    }
-
-    public void setCnname(String str) {
-        sharedPreferences.edit().putString("uname", str).apply();
-    }
-
-    /**
-     * 头像地址
-     */
-    public void setHeadUrl(String url) {
-        sharedPreferences.edit().putString("head", url).apply();
-    }
-
-    public String getHeadUrl() {
-        return sharedPreferences.getString("head", "");
-    }
-
-
-    /**
-     * 存隐私协议状态
-     *
-     * @param state
-     */
-    public void setPrivacyProtocolState(String state) {
-        sharedPreferences.edit().putString("PrivacyProtocol", state).apply();
-    }
-
-    public String getPrivacyProtocolState() {
-        return sharedPreferences.getString("PrivacyProtocol", "");
-    }
-
-
-    /**
-     * 获取今日
-     *
-     * @param today
-     */
-    public void setTodayFormat(String today) {
-        sharedPreferences.edit().putString("TodayFormat", today).apply();
-    }
-
-    public String getTodayFormat() {
-        return sharedPreferences.getString("TodayFormat", "");
-    }
-
-
-    /**
-     *  一天一次时间记录
-     * @param today
-     */
-    public void setTeenagerTodayOnce(String today) {
-        sharedPreferences.edit().putString("TeenagerTodayOnce", today).apply();
-    }
-
-    public String getTeenagerTodayOnce() {
-        return sharedPreferences.getString("TeenagerTodayOnce", "");
-    }
-
-
-    public void setIsFirstLogin(String flag){
-        sharedPreferences.edit().putString("isfirstLogin", flag).apply();
-    }
-
-    public String getIsFirstLogin(){
-        return sharedPreferences.getString("isfirstLogin", "");
-    }
-
+    public static Object getBean(String key) {
+        Object obj = null;
+        try {
+            SharedPreferences sharedPreferences = SoftApplication.mContext.getSharedPreferences(FILE_NAME, Activity.MODE_PRIVATE);
+            String base64 = sharedPreferences.getString(key, "");
+            if (base64.equals("")) {
+                return null;
+            }
+            byte[] base64Bytes = Base64.decode(base64.getBytes(), 1);
+            ByteArrayInputStream bais = new ByteArrayInputStream(base64Bytes);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            obj = ois.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return obj;}
 }

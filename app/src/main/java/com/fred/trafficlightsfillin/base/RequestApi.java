@@ -55,13 +55,6 @@ public class RequestApi {
         return BASE_URL + restApi;
     }
     /**
-     * 设置环境模式
-     *
-     * @param mode
-     */
-    public static final String GET_CHANNEL_INFO = "/mifan-channel/v1/channels/info";
-
-    /**
      * 登录 post
      */
     public static final String LOGIN="/service/engineer/login";
@@ -84,4 +77,8 @@ public class RequestApi {
      * 获取最新版本号 get
      */
     public static final String NEW_VERSION="/service/app/ver/newest";
+    /**
+     *获取任务列表 post
+     */
+    public static final String TASK_PAGE="/service/task/page";
 }
