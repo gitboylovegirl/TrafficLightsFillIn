@@ -99,7 +99,6 @@ public class ChangePasswordActivity extends BaseActivity {
                     .putAsync(new ICallback<LoginResponse>() {
                         @Override
                         public void onSuccess(LoginResponse response) {
-                            Log.e("fred",response.toString());
                             if(response.code==0){
                                 finish();
                             }

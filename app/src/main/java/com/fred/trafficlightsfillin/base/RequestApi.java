@@ -81,4 +81,16 @@ public class RequestApi {
      *获取任务列表 post
      */
     public static final String TASK_PAGE="/service/task/page";
+    /**
+     * 查询红绿灯路口
+     */
+    public static final String ROAD_PLACE="/service/trafficligh/roadplace";
+    /**
+     * 班组  post
+     */
+    public static final String TEAM_LIST="/service/team/list";
+    /**
+     * 任务来源  post
+     */
+    public static final String TASK_SOURCE="/service/tasksource/list";
 }
