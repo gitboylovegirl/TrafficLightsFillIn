@@ -1,5 +1,6 @@
 package com.fred.trafficlightsfillin.record;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -81,7 +82,9 @@ public class RecordNewActivity extends AppCompatActivity {
         });
         initData();
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
-
+            Intent intent =new Intent(RecordNewActivity.this,RecordNewDetailsActivity.class);
+            intent.putExtra("id",list.get(index).getId());
+            startActivity(intent);
         });
     }
 
@@ -89,7 +92,6 @@ public class RecordNewActivity extends AppCompatActivity {
      * 请求数据
      */
     private void initData() {
-        Log.e("fred","  开始请求新数据：");
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
@@ -106,11 +108,11 @@ public class RecordNewActivity extends AppCompatActivity {
                         Log.e("fred  新数据：", response.toString());
                         if (page == 1) {
                             list.clear();
-                            list.addAll(response.data.list);
+                            list=response.data.list;
                             recordAdapter.bindData(true, list);
                         }else {
                             list.addAll(response.data.list);
-                            recordAdapter.bindData(false, list);
+                            recordAdapter.bindData(true, list);
                         }
                         smartRefresh.finishLoadMore();
                         smartRefresh.finishRefresh();

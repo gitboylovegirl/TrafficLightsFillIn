@@ -71,6 +71,7 @@
                     android:layout_marginTop="88dp">
 
                     <TextView
+                        android:id="@+id/road_place"
                         android:layout_width="130dp"
                         android:layout_height="29dp"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
@@ -79,6 +80,7 @@
                         android:textSize="12sp"></TextView>
 
                     <TextView
+                        android:id="@+id/road_type"
                         android:layout_width="130dp"
                         android:layout_height="29dp"
                         android:layout_alignParentRight="true"

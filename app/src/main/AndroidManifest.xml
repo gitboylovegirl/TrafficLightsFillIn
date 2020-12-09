@@ -20,7 +20,10 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-        <activity android:name=".feed.FeedActivity"></activity>
+        <activity android:name=".intersection.TimingEditorActivity"></activity>
+        <activity android:name=".record.UpdateListActivity" />
+        <activity android:name=".record.RecordNewDetailsActivity" />
+        <activity android:name=".feed.FeedActivity" />
         <activity android:name=".query.QueryMainActivity" />
         <activity android:name=".intersection.IntersectionDetailsActivity" />
         <activity android:name=".record.RecordNewActivity" />

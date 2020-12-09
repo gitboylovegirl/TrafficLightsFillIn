@@ -56,6 +56,17 @@ public class RetrofitRequestImpl extends AbstractRequest {
     }
 
     @Override
+    public void getAsyncTwo(ICallback listener) {
+        Call<ResponseBody> call;
+        if (requestBuilder.params == null || requestBuilder.params.size() == 0) {
+            call = getBaseApiService().doGet(requestBuilder.url);
+        } else {
+            call = getBaseApiService().doGet(requestBuilder.url, requestBuilder.params);
+        }
+        execute(call, listener,context);
+    }
+
+    @Override
     public void postAsync(ICallback listener) {
         Call<ResponseBody> call;
         if (requestBuilder.params == null || requestBuilder.params.size() == 0) {

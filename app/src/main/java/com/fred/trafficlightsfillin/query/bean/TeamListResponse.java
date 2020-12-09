@@ -16,18 +16,20 @@ public class TeamListResponse extends BaseResponse {
          * updateUser :
          */
 
-        public int createTime;
+        public String createTime;
         public String createUser;
-        public int id;
+        public String id;
         public String name;
-        public int updateTime;
+        public String updateTime;
         public String updateUser;
+        public String source;
+        public String desc;
 
-        public int getCreateTime() {
+        public String getCreateTime() {
             return createTime;
         }
 
-        public void setCreateTime(int createTime) {
+        public void setCreateTime(String createTime) {
             this.createTime = createTime;
         }
 
@@ -39,11 +41,11 @@ public class TeamListResponse extends BaseResponse {
             this.createUser = createUser;
         }
 
-        public int getId() {
+        public String getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(String id) {
             this.id = id;
         }
 
@@ -55,11 +57,11 @@ public class TeamListResponse extends BaseResponse {
             this.name = name;
         }
 
-        public int getUpdateTime() {
+        public String getUpdateTime() {
             return updateTime;
         }
 
-        public void setUpdateTime(int updateTime) {
+        public void setUpdateTime(String updateTime) {
             this.updateTime = updateTime;
         }
 

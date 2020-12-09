@@ -82,7 +82,11 @@ public class RequestApi {
      */
     public static final String TASK_PAGE="/service/task/page";
     /**
-     * 查询红绿灯路口
+     * 任务详情
+     */
+    public static final String TASK_DETAILS="/service/task";
+    /**
+     * 查询红绿灯路口 get
      */
     public static final String ROAD_PLACE="/service/trafficligh/roadplace";
     /**
@@ -93,4 +97,12 @@ public class RequestApi {
      * 任务来源  post
      */
     public static final String TASK_SOURCE="/service/tasksource/list";
+    /**
+     * 路口类型  get
+     */
+    public static final String ROAD_TYPE="/service/trafficligh/roadPlaceType";
+    /**
+     * 修改任务状态
+     */
+    public static final String TASK_STATE="/service/task/state";
 }

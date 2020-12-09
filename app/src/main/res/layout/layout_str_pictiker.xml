@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_color_white"
+    android:orientation="vertical"
+    android:gravity="center"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.itheima.wheelpicker.WheelPicker
         android:id="@+id/picker"
@@ -11,7 +14,7 @@
         app:wheel_curved="true"
         app:wheel_cyclic="true"
         app:wheel_selected_item_position="5"
-        app:wheel_item_text_color="#0000ff"
-        app:wheel_selected_item_text_color="#ff0000"/>
+        app:wheel_item_text_color="#C1CDCD"
+        app:wheel_selected_item_text_color="#000000"/>
 
 </LinearLayout>

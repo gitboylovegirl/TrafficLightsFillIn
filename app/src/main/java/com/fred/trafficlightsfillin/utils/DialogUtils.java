@@ -2,8 +2,11 @@ package com.fred.trafficlightsfillin.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -30,31 +33,41 @@ public class DialogUtils {
         /**
          * 选中的item
          */
-        void onChoiceItem(String str);
+        void onChoiceItem(String str,int pos);
     }
 
     /***
      * @param context
      */
     public static void showChoiceDialog(Activity context, List<String> data,OnButtonClickListener listener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-        View view = View.inflate(context, R.layout.layout_str_pictiker, null);
-        WheelPicker picker = view.findViewById(R.id.picker);
+        AlertDialog dialog = new AlertDialog.Builder(context).create();
+        dialog.setCancelable(true);
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        window.setContentView(R.layout.layout_str_pictiker);
+        WheelPicker picker = window.findViewById(R.id.picker);
 
         picker.setData(data);
         picker.setOnItemSelectedListener((wheelPicker, o, i) -> {
             if(listener!=null){
-                listener.onChoiceItem(data.get(i));
+                listener.onChoiceItem(data.get(i),i);
             }
         });
 
-        alertDialog.getWindow().setContentView(view);
-        WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
+        //给弹窗设置宽高
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         WindowManager manager = context.getWindowManager();
         Display display = manager.getDefaultDisplay();
-        lp.width = display.getWidth() - 250;
-        alertDialog.getWindow().setAttributes(lp);
+        lp.width = 850;
+        dialog.getWindow().setAttributes(lp);
+
+//        dialog.setOnDismissListener(dialog1 -> {
+//            Log.e("fred","选择的数据2："+data.get(picker.getCurrentItemPosition()));
+//            if(listener!=null){
+//                listener.onChoiceItem(data.get(picker.getCurrentItemPosition()),picker.getCurrentItemPosition());
+//            }
+//        });
     }
 }

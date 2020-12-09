@@ -36,6 +36,7 @@ import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.query.QueryMainActivity;
 import com.fred.trafficlightsfillin.record.RecordListActivity;
 import com.fred.trafficlightsfillin.record.RecordNewActivity;
+import com.fred.trafficlightsfillin.record.UpdateListActivity;
 import com.fred.trafficlightsfillin.utils.LocationUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
@@ -272,7 +273,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.update_record://上传更新
             case R.id.update_record_top:
-
+                intent.setClass(MainActivity.this, UpdateListActivity.class);
+                startActivity(intent);
                 break;
             case R.id.list_record://工作记录
             case R.id.list_record_top:

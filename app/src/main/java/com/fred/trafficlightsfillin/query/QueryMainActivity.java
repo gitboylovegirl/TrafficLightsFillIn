@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -18,18 +17,16 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.RequestApi;
-import com.fred.trafficlightsfillin.login.ChangePasswordActivity;
-import com.fred.trafficlightsfillin.login.LoginResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.query.bean.RoadResponse;
+import com.fred.trafficlightsfillin.query.bean.RoadTypeResponse;
 import com.fred.trafficlightsfillin.query.bean.TeamListResponse;
-import com.fred.trafficlightsfillin.record.RecordNewActivity;
 import com.fred.trafficlightsfillin.record.bean.NewRecordChannel;
 import com.fred.trafficlightsfillin.record.bean.NewRecordResponse;
+import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
-import com.fred.trafficlightsfillin.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,8 +53,18 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     RecyclerView content;
 
     List<NewRecordChannel> list = new ArrayList<>();
+    List<RoadResponse.RoadChannel> roadChannels = new ArrayList<>();
+    List<TeamListResponse.TeamListChannel> teamListChannels=new ArrayList<>();
+    List<TeamListResponse.TeamListChannel> taskListChannels=new ArrayList<>();
+
+    List<String> roadTypeData = new ArrayList<>();
     int page = 1;
     NewRecordAdapter recordAdapter;
+    @BindView(R.id.road_place)
+    TextView roadPlace;
+    @BindView(R.id.road_type)
+    TextView roadType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +75,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         getRoadData();
         getTeamList();
         getTaskList();
+        getRoadTypeList();
     }
 
     private void initView() {
@@ -75,6 +83,10 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         queryTwo.setOnClickListener(this);
         startTime.setOnClickListener(this::onClick);
         endIme.setOnClickListener(this::onClick);
+        from.setOnClickListener(this::onClick);
+        roadPlace.setOnClickListener(this);
+        roadType.setOnClickListener(this);
+        team.setOnClickListener(this::onClick);
 
         recordAdapter = new NewRecordAdapter();
         content.setLayoutManager(new LinearLayoutManager(QueryMainActivity.this));
@@ -87,34 +99,124 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
             case R.id.query_one:
 
+                getRoadTypeList();
                 break;
             case R.id.query_two:
 
                 break;
             case R.id.start_time:
-                showDatePickerDialog(QueryMainActivity.this,1);
+                showDatePickerDialog(QueryMainActivity.this, 1);
                 break;
             case R.id.end_ime:
-                showDatePickerDialog(QueryMainActivity.this,2);
+                showDatePickerDialog(QueryMainActivity.this, 2);
+                break;
+            case R.id.road_type:
+                DialogUtils.showChoiceDialog(QueryMainActivity.this, roadTypeData, new DialogUtils.OnButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onNegativeButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onChoiceItem(String str, int pos) {
+                        roadType.setText(str);
+                    }
+                });
+                break;
+            case R.id.road_place:
+                getRoadData();
+//                List<String> roadPlaces = new ArrayList<>();
+//                for (int i = 0; i < roadChannels.size(); i++) {
+//                    roadPlaces.add(roadChannels.get(i).getArea());
+//                }
+//                DialogUtils.showChoiceDialog(QueryMainActivity.this, roadPlaces, new DialogUtils.OnButtonClickListener() {
+//                    @Override
+//                    public void onPositiveButtonClick() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNegativeButtonClick() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onChoiceItem(String str, int pos) {
+//                        roadPlace.setText(str);
+//                    }
+//                });
+                break;
+            case R.id.team:
+                getTeamList();
+                List<String> teamList=new ArrayList<>();
+                for (int i = 0; i < teamListChannels.size(); i++) {
+                    teamList.add(teamListChannels.get(i).name);
+                }
+                Log.e("fred  数据1：",teamList.size()+"");
+                DialogUtils.showChoiceDialog(QueryMainActivity.this,teamList , new DialogUtils.OnButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onNegativeButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onChoiceItem(String str, int pos) {
+                        team.setText(str);
+                    }
+                });
+                break;
+            case R.id.from:
+                List<String> taskList=new ArrayList<>();
+                for (int i = 0; i < taskListChannels.size(); i++) {
+                    taskList.add(taskListChannels.get(i).source);
+                }
+                DialogUtils.showChoiceDialog(QueryMainActivity.this,taskList , new DialogUtils.OnButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onNegativeButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onChoiceItem(String str, int pos) {
+                        from.setText(str);
+                    }
+                });
+                getTaskList();
                 break;
         }
     }
 
     /**
      * 日期选择
+     *
      * @param activity
      */
-    public void showDatePickerDialog(Activity activity,int type) {
+    public void showDatePickerDialog(Activity activity, int type) {
         // 直接创建一个DatePickerDialog对话框实例，并将它显示出来
         // 绑定监听器(How the parent is notified that the date is set.)
-        Calendar calendar=Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         new DatePickerDialog(activity, (view, year, monthOfYear, dayOfMonth) -> {
             // 此处得到选择的时间，可以进行你想要的操作
-            Log.e("fred","您选择了：" + year + "年" + (monthOfYear + 1) + "月" + dayOfMonth + "日");
-            String time=year + "年" + (monthOfYear + 1) + "月" + dayOfMonth + "日";
-            if(type==1){
+            Log.e("fred", "您选择了：" + year + "年" + (monthOfYear + 1) + "月" + dayOfMonth + "日");
+            String time = year + "年" + (monthOfYear + 1) + "月" + dayOfMonth + "日";
+            if (type == 1) {
                 startTime.setText(time);
-            }else {
+            } else {
                 endIme.setText(time);
             }
         }
@@ -127,15 +229,18 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     /**
      * 获取路口数据
      */
-    private void getRoadData(){
+    private void getRoadData() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ROAD_PLACE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<RoadResponse>() {
                     @Override
                     public void onSuccess(RoadResponse response) {
-
+                        if (response.data != null) {
+                            roadChannels.clear();
+                            roadChannels.addAll(response.data);
+                        }
                     }
 
                     @Override
@@ -148,17 +253,20 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     /**
      * 获取班组列表
      */
-    private void getTeamList(){
+    private void getTeamList() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TEAM_LIST))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("pageNum","1")
-                .addParam("pageSize","50")
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addParam("pageNum", "1")
+                .addParam("pageSize", "50")
                 .build()
                 .postAsync(new ICallback<TeamListResponse>() {
                     @Override
                     public void onSuccess(TeamListResponse response) {
-
+                        if (response.data != null) {
+                            teamListChannels.clear();
+                            teamListChannels.addAll(response.data);
+                        }
                     }
 
                     @Override
@@ -171,17 +279,45 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     /**
      * 任务来源
      */
-    private void getTaskList(){
+    private void getTaskList() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_SOURCE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("pageNum","1")
-                .addParam("pageSize","50")
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addParam("pageNum", "1")
+                .addParam("pageSize", "50")
                 .build()
                 .postAsync(new ICallback<TeamListResponse>() {
                     @Override
                     public void onSuccess(TeamListResponse response) {
+                        if (response.data != null) {
+                            taskListChannels.clear();
+                            taskListChannels.addAll(response.data);
+                        }
+                    }
 
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+
+                    }
+                });
+    }
+
+    /**
+     * 路口类型
+     */
+    private void getRoadTypeList() {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ROAD_TYPE))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .build()
+                .getAsync(new ICallback<RoadTypeResponse>() {
+                    @Override
+                    public void onSuccess(RoadTypeResponse response) {
+                        if (response.data != null) {
+                            roadTypeData.clear();
+                            roadTypeData.addAll(response.data);
+                            from.setText(roadTypeData.get(0));
+                        }
                     }
 
                     @Override
@@ -195,26 +331,24 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
      * 请求数据
      */
     private void initData() {
-        Log.e("fred","  开始请求新数据：");
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", String.valueOf(page))
                 .addParam("pageSize", "20")
-                .addParam("teamName",team.getText().toString().trim())
-                .addParam("source",from.getText().toString().trim())
-                .addParam("startTime","")
-                .addParam("endTime","")
+                .addParam("teamName", team.getText().toString().trim())
+                .addParam("source", from.getText().toString().trim())
+                .addParam("startTime", "")
+                .addParam("endTime", "")
                 .build()
                 .postAsync(new ICallback<NewRecordResponse>() {
                     @Override
                     public void onSuccess(NewRecordResponse response) {
-                        Log.e("fred  新数据：", response.toString());
                         if (page == 1) {
                             list.clear();
                             list.addAll(response.data.list);
                             recordAdapter.bindData(true, list);
-                        }else {
+                        } else {
                             list.addAll(response.data.list);
                             recordAdapter.bindData(false, list);
                         }

@@ -11,6 +11,8 @@ public abstract class AbstractRequest {
 
     public abstract void getAsync(ICallback listener);
 
+    public abstract void getAsyncTwo(ICallback listener);
+
     public abstract void postAsync(ICallback listener);
 
     public abstract void postBodyAsync(ICallback listener);
