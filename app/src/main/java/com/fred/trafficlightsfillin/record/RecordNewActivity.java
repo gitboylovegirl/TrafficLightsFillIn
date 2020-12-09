@@ -43,9 +43,9 @@ public class RecordNewActivity extends AppCompatActivity {
     @BindView(R.id.back)
     TextView back;
 
-    NewRecordAdapter recordAdapter;
     @BindView(R.id.smartRefresh)
     SmartRefreshLayout smartRefresh;
+    NewRecordAdapter recordAdapter;
     List<NewRecordChannel> list = new ArrayList<>();
     int page = 1;
 

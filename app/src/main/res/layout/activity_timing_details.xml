@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA"
+    tools:context=".intersection.TimingEditorActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@mipmap/icon_top_view">
+
+    </ImageView>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="50dp"
+        android:text="@string/intersection_inurdoce"
+        android:textColor="@color/white"
+        android:textSize="24dp"
+        android:textStyle="bold">
+
+    </TextView>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="100dp"
+        android:paddingBottom="50dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="19dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_color_white"
+                android:paddingHorizontal="19dp"
+                android:paddingBottom="18dp">
+
+                <TextView
+                    android:id="@+id/number"
+                    android:layout_width="126dp"
+                    android:layout_height="12dp"
+                    android:layout_marginTop="19dp"
+                    android:text="编号：85436549684"
+                    android:textColor="#ffc6c6c6"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="49dp"
+                    android:text="路口名称 "
+                    android:textColor="#ff0e0e0e"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/road_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="70dp"
+                    android:text="清华大街"
+                    android:textColor="@color/main_text_color"
+                    android:textSize="20sp">
+
+                </TextView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="59dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="所属区域"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/area"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:text="西城区"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/bg_color_white"
+                android:paddingHorizontal="30dp"
+                android:paddingVertical="25dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="地理位置："
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/road_position"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="四环-五环"
+                        android:textColor="#ff3f50e9"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="路口类型："
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/road_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="平面十字"
+                        android:textColor="#ff3f50e9"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="信号机类型："
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/model_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="mcu_6"
+                        android:textColor="#ff3f50e9"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="25dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="信号机编号："
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/model_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="平面十字"
+                        android:textColor="#ff3f50e9"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_color_blue_stroke"
+                    android:gravity="center"
+                    android:paddingVertical="3dp"
+                    android:text="@string/work_day">
+
+                </TextView>
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_color_blue_gray_stroke"
+                    android:gravity="center"
+                    android:paddingVertical="3dp"
+                    android:text="@string/weekend">
+
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_color_white"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="63dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_marginVertical="13dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="放行\n次序"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+
+                    <TextView
+                        android:layout_marginVertical="31dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="黄灯"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="全红"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/programme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </androidx.recyclerview.widget.RecyclerView>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_color_white"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="63dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_marginVertical="13dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="放行\n次序"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+
+                    <TextView
+                        android:layout_marginVertical="31dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="黄灯"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="全红"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/timetable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </androidx.recyclerview.widget.RecyclerView>
+            </LinearLayout>
+
+            <TextView
+                android:layout_marginTop="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="91dp"
+                android:layout_height="29dp"
+                android:text="时间表"
+                android:textColor="#ff0e0e0e"
+                android:textSize="29sp"
+                />
+
+            <LinearLayout
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="28dp"
+                    android:layout_height="14dp"
+                    android:text="时间"
+                    android:textColor="#ff0e0e0e"
+                    android:textSize="14sp"
+                    />
+
+                <TextView
+                    android:layout_marginLeft="129dp"
+                    android:layout_width="28dp"
+                    android:layout_height="14dp"
+                    android:text="方案"
+                    android:textColor="#ff0e0e0e"
+                    android:textSize="14sp"
+                    />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/time_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_color_white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="33dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="路口现场图展示："
+                    android:textColor="#ff0e0e0e"
+                    android:textSize="15sp"
+                    />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/picture_list"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="24dp"
+                    android:layout_marginLeft="33dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <TextView
+                    android:layout_marginLeft="33dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:text="配时优化调整内容："
+                    android:textColor="#ff0e0e0e"
+                    android:textSize="15sp"
+                    />
+
+                <TextView
+                    android:id="@+id/better"
+                    android:gravity="center"
+                    android:text=""
+                    android:layout_marginLeft="33dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="25dp"
+                    android:paddingVertical="30dp"
+                    android:paddingHorizontal="15dp"
+                    android:background="#2A4997"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent">
+
+                </TextView>
+
+                <RelativeLayout
+                    android:layout_marginBottom="22dp"
+                    android:paddingLeft="33dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="结果"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+
+                    <LinearLayout
+                        android:layout_marginTop="30dp"
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/task_end"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        </ImageView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="已完成"
+                            android:textColor="#ff2a4997"
+                            android:textSize="11sp"
+                            />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="25dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="时间"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp"
+                        />
+
+                    <TextView
+                        android:id="@+id/end_time"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="9dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="30dp"
+                        android:layout_width="92dp"
+                        android:layout_height="26dp"
+                        android:text="2020年12月12日/n18:45:21"
+                        android:textColor="#ff2a4997"
+                        android:textSize="11sp"
+                        />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/submit"
+                android:background="#2A4997"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingVertical="11dp"
+                android:paddingHorizontal="19dp"
+                android:text="已检查好，上传完成"
+                android:textColor="#ffffffff"
+                android:textSize="15sp"
+                />
+
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+</RelativeLayout>
