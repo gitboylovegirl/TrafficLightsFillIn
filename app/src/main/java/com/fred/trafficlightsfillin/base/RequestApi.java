@@ -105,4 +105,8 @@ public class RequestApi {
      * 修改任务状态
      */
     public static final String TASK_STATE="/service/task/state";
+    /**
+     * 查询配时详情
+     */
+    public static final String TRAFFICLIGH_PEISHI="/service/trafficligh/peishi";
 }

@@ -2,6 +2,7 @@ package com.fred.trafficlightsfillin.query;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.intersection.TimingDetailsActivity;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.query.bean.RoadResponse;
@@ -67,6 +69,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     @BindView(R.id.empty_view)
     TextView emptyView;
 
+    int queryType=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,17 +100,31 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         long timeMillis = System.currentTimeMillis();
         startTime.setText(TimeUtils.time7(String.valueOf(timeMillis)));
         endIme.setText(TimeUtils.time7(String.valueOf(timeMillis)));
+
+        recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            if (queryType==1){
+                Intent intent=new Intent(QueryMainActivity.this,TaskDetailsActivity.class);
+                intent.putExtra("id",list.get(index).id);
+                startActivity(intent);
+            }else {
+                Intent intent=new Intent(QueryMainActivity.this, TimingDetailsActivity.class);
+                intent.putExtra("id",list.get(index).id);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.query_one:
+                queryType=1;
                 page=1;
                 initData();
                 break;
             case R.id.query_two:
-                page=2;
+                queryType=2;
+                page=1;
                 initTimingData();
                 break;
             case R.id.start_time:
