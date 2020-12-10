@@ -59,6 +59,20 @@ public class TimeUtils {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日    HH:mm");
         return sdf.format(d);
     }
+
+
+    public static String time8(String inputTime){
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy年MM月dd日");
+        Date date = null;
+        try {
+            date = format.parse(inputTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //日期转时间戳（毫秒）
+        long time=date.getTime();
+        return String.valueOf(time);
+    }
     /**
      * 获取日期是周几
      * @param strDate

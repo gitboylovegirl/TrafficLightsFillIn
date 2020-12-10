@@ -60,7 +60,7 @@ public class DialogUtils {
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         WindowManager manager = context.getWindowManager();
         Display display = manager.getDefaultDisplay();
-        lp.width = 850;
+        lp.width = display.getWidth()-100;
         dialog.getWindow().setAttributes(lp);
 
 //        dialog.setOnDismissListener(dialog1 -> {

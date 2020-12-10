@@ -26,14 +26,21 @@
         android:layout_height="wrap_content">
 
     </TextView>
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginBottom="50dp"
-        android:layout_marginTop="100dp"
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/smartRefresh"
         android:layout_width="match_parent"
-        android:id="@+id/content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="50dp">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
 
     <TextView
         android:id="@+id/back"

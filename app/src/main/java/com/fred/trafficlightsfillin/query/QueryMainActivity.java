@@ -54,8 +54,8 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
 
     List<NewRecordChannel> list = new ArrayList<>();
     List<RoadResponse.RoadChannel> roadChannels = new ArrayList<>();
-    List<TeamListResponse.TeamListChannel> teamListChannels=new ArrayList<>();
-    List<TeamListResponse.TeamListChannel> taskListChannels=new ArrayList<>();
+    List<TeamListResponse.TeamListChannel> teamListChannels = new ArrayList<>();
+    List<TeamListResponse.TeamListChannel> taskListChannels = new ArrayList<>();
 
     List<String> roadTypeData = new ArrayList<>();
     int page = 1;
@@ -64,6 +64,8 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     TextView roadPlace;
     @BindView(R.id.road_type)
     TextView roadType;
+    @BindView(R.id.empty_view)
+    TextView emptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,17 +94,21 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         content.setLayoutManager(new LinearLayoutManager(QueryMainActivity.this));
         content.setAdapter(recordAdapter);
 
+        long timeMillis = System.currentTimeMillis();
+        startTime.setText(TimeUtils.time7(String.valueOf(timeMillis)));
+        endIme.setText(TimeUtils.time7(String.valueOf(timeMillis)));
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.query_one:
-
-                getRoadTypeList();
+                page=1;
+                initData();
                 break;
             case R.id.query_two:
-
+                page=2;
+                initTimingData();
                 break;
             case R.id.start_time:
                 showDatePickerDialog(QueryMainActivity.this, 1);
@@ -130,35 +136,35 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.road_place:
                 getRoadData();
-//                List<String> roadPlaces = new ArrayList<>();
-//                for (int i = 0; i < roadChannels.size(); i++) {
-//                    roadPlaces.add(roadChannels.get(i).getArea());
-//                }
-//                DialogUtils.showChoiceDialog(QueryMainActivity.this, roadPlaces, new DialogUtils.OnButtonClickListener() {
-//                    @Override
-//                    public void onPositiveButtonClick() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNegativeButtonClick() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onChoiceItem(String str, int pos) {
-//                        roadPlace.setText(str);
-//                    }
-//                });
+                List<String> roadPlaces = new ArrayList<>();
+                for (int i = 0; i < roadChannels.size(); i++) {
+                    roadPlaces.add(roadChannels.get(i).getRoadPlace());
+                }
+                DialogUtils.showChoiceDialog(QueryMainActivity.this, roadPlaces, new DialogUtils.OnButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onNegativeButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onChoiceItem(String str, int pos) {
+                        roadPlace.setText(str);
+                    }
+                });
                 break;
             case R.id.team:
                 getTeamList();
-                List<String> teamList=new ArrayList<>();
+                List<String> teamList = new ArrayList<>();
                 for (int i = 0; i < teamListChannels.size(); i++) {
                     teamList.add(teamListChannels.get(i).name);
                 }
-                Log.e("fred  数据1：",teamList.size()+"");
-                DialogUtils.showChoiceDialog(QueryMainActivity.this,teamList , new DialogUtils.OnButtonClickListener() {
+                Log.e("fred  数据1：", teamList.size() + "");
+                DialogUtils.showChoiceDialog(QueryMainActivity.this, teamList, new DialogUtils.OnButtonClickListener() {
                     @Override
                     public void onPositiveButtonClick() {
 
@@ -176,11 +182,11 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                 });
                 break;
             case R.id.from:
-                List<String> taskList=new ArrayList<>();
+                List<String> taskList = new ArrayList<>();
                 for (int i = 0; i < taskListChannels.size(); i++) {
                     taskList.add(taskListChannels.get(i).source);
                 }
-                DialogUtils.showChoiceDialog(QueryMainActivity.this,taskList , new DialogUtils.OnButtonClickListener() {
+                DialogUtils.showChoiceDialog(QueryMainActivity.this, taskList, new DialogUtils.OnButtonClickListener() {
                     @Override
                     public void onPositiveButtonClick() {
 
@@ -230,7 +236,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
      * 获取路口数据
      */
     private void getRoadData() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ROAD_PLACE))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ROAD_PLACE) + "/all")
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
@@ -240,6 +246,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                         if (response.data != null) {
                             roadChannels.clear();
                             roadChannels.addAll(response.data);
+                            roadPlace.setText(roadChannels.get(0).getRoadPlace());
                         }
                     }
 
@@ -266,6 +273,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                         if (response.data != null) {
                             teamListChannels.clear();
                             teamListChannels.addAll(response.data);
+                            team.setText(teamListChannels.get(0).name);
                         }
                     }
 
@@ -292,6 +300,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                         if (response.data != null) {
                             taskListChannels.clear();
                             taskListChannels.addAll(response.data);
+                            from.setText(taskListChannels.get(0).source);
                         }
                     }
 
@@ -328,18 +337,18 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     }
 
     /**
-     * 请求数据
+     * 查任务
      */
     private void initData() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", String.valueOf(page))
-                .addParam("pageSize", "20")
+                .addParam("pageSize", "50")
                 .addParam("teamName", team.getText().toString().trim())
                 .addParam("source", from.getText().toString().trim())
-                .addParam("startTime", "")
-                .addParam("endTime", "")
+                .addParam("startTime", TimeUtils.time8(startTime.getText().toString().trim()))
+                .addParam("endTime", TimeUtils.time8(endIme.getText().toString().trim()))
                 .build()
                 .postAsync(new ICallback<NewRecordResponse>() {
                     @Override
@@ -351,6 +360,56 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                         } else {
                             list.addAll(response.data.list);
                             recordAdapter.bindData(false, list);
+                        }
+
+                        if(list.isEmpty()){
+                            emptyView.setVisibility(View.VISIBLE);
+                            content.setVisibility(View.GONE);
+                        }else {
+                            emptyView.setVisibility(View.GONE);
+                            content.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                    }
+                });
+    }
+
+    /**
+     * 查配时表
+     */
+    private void initTimingData() {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addParam("pageNum", String.valueOf(page))
+                .addParam("pageSize", "50")
+                .addParam("teamName", team.getText().toString().trim())
+                .addParam("source", from.getText().toString().trim())
+                .addParam("startTime", TimeUtils.time8(startTime.getText().toString().trim()))
+                .addParam("endTime", TimeUtils.time8(endIme.getText().toString().trim()))
+                .addParam("state","4")
+                .build()
+                .postAsync(new ICallback<NewRecordResponse>() {
+                    @Override
+                    public void onSuccess(NewRecordResponse response) {
+                        if (page == 1) {
+                            list.clear();
+                            list.addAll(response.data.list);
+                            recordAdapter.bindData(true, list);
+                        } else {
+                            list.addAll(response.data.list);
+                            recordAdapter.bindData(false, list);
+                        }
+
+                        if(list.isEmpty()){
+                            emptyView.setVisibility(View.VISIBLE);
+                            content.setVisibility(View.GONE);
+                        }else {
+                            emptyView.setVisibility(View.GONE);
+                            content.setVisibility(View.VISIBLE);
                         }
                     }
 
@@ -381,4 +440,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
             task_status.setTextColor(Color.parseColor("#FF8631"));
         }
     }
+
+
+
 }

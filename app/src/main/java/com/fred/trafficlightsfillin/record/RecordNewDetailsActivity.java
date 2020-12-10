@@ -14,6 +14,7 @@ import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
+import com.fred.trafficlightsfillin.utils.ToastUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,8 +71,13 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                             roadName.setText(taskDetails.roadPlace);
                             modelOne.setText(taskDetails.modelNo);
                             modelTwo.setText(taskDetails.modelType);
-
                             team.setText(taskDetails.teamName);
+
+                            name.setText(taskDetails.engineerName);
+                            phone.setText(taskDetails.carNumber);
+                            task.setText(taskDetails.source);
+                            sec.setText(taskDetails.desc);
+                            roadPlace.setText(taskDetails.area);
                         }
                     }
 
@@ -94,9 +100,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                 .putAsync(new ICallback<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse response) {
-                        if(response.code==0){
-
-                        }
+                        ToastUtil.showMsg(RecordNewDetailsActivity.this,response.msg);
                     }
 
                     @Override
