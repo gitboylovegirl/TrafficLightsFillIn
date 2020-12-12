@@ -15,6 +15,8 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.intersection.TimingDetailsActivity;
+import com.fred.trafficlightsfillin.intersection.TimingEditorActivity;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.record.bean.NewRecordChannel;
@@ -77,8 +79,25 @@ public class RecordListActivity extends AppCompatActivity {
         });
         initData();
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
-            Intent intent = new Intent(RecordListActivity.this, RecordNewDetailsActivity.class);
-            intent.putExtra("id", list.get(index).getId());
+//            if("0".equals(list.get(index).state)){
+//
+//            }else if("1".equals(list.get(index).state)){
+//                Intent intent = new Intent(RecordListActivity.this, RecordNewDetailsActivity.class);
+//                intent.putExtra("id", list.get(index).getId());
+//                startActivity(intent);
+//            }else if("2".equals(list.get(index).state)){
+//                //task_status.setText("未完成");
+//            }else if("3".equals(list.get(index).state)){
+//                //task_status.setText("已完成");
+//                Intent intent=new Intent(RecordListActivity.this,TimingEditorActivity.class);
+//                intent.putExtra("id",list.get(index).trafficLightId);
+//                startActivity(intent);
+//            }else if("4".equals(list.get(index).state)){
+//                //task_status.setText("完成已上传");
+//            }
+            Intent intent = new Intent(RecordListActivity.this, TimingDetailsActivity.class);
+            intent.putExtra("id",list.get(index).getId());
+            intent.putExtra("trafficLightId", list.get(index).getTrafficLightId());
             startActivity(intent);
         });
     }
@@ -138,6 +157,18 @@ public class RecordListActivity extends AppCompatActivity {
             task_from.setText("来源：" + newRecordChannel.source);
             road_name.setText(newRecordChannel.roadPlace);
             //task_status.setText("未接单");
+            //任务状态 0 后台取消 1 未接单、2 未完成、3 已完成、4 完成已上传
+            if("0".equals(newRecordChannel.state)){
+                task_status.setText("后台取消");
+            }else if("1".equals(newRecordChannel.state)){
+                task_status.setText("未接单");
+            }else if("2".equals(newRecordChannel.state)){
+                task_status.setText("未完成");
+            }else if("3".equals(newRecordChannel.state)){
+                task_status.setText("已完成");
+            }else if("4".equals(newRecordChannel.state)){
+                task_status.setText("完成已上传");
+            }
             task_status.setTextColor(Color.parseColor("#FF8631"));
         }
     }

@@ -214,6 +214,7 @@
             android:gravity="center">
 
             <TextView
+                android:visibility="gone"
                 android:paddingVertical="5dp"
                 android:paddingHorizontal="13dp"
                 android:background="@drawable/bg_color_red"

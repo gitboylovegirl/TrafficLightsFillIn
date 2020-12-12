@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.update://更新
-
+                ToastUtil.showMsg(MainActivity.this,"当前已是最新版本");
                 break;
             case R.id.new_record://新任务
             case R.id.new_record_top:

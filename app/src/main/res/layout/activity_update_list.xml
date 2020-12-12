@@ -32,12 +32,26 @@
         android:id="@+id/smartRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <androidx.recyclerview.widget.RecyclerView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:id="@+id/content"
             android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:id="@+id/content"
+                android:layout_height="match_parent">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            </androidx.recyclerview.widget.RecyclerView>
+            <TextView
+                android:id="@+id/empty_view"
+                android:layout_centerInParent="true"
+                android:textColor="@color/black"
+                android:text="暂无内容"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </TextView>
+        </RelativeLayout>
+
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
 

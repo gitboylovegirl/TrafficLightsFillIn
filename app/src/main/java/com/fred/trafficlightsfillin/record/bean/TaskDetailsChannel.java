@@ -52,6 +52,8 @@ public class TaskDetailsChannel extends BaseResponse implements Serializable {
         public String trafficLightLastUpdateTime;
         public String trafficLightNo;
         public String trafficLightState;
+        public String cause;
+        public String updateTime;
 
         @Override
         public String toString() {

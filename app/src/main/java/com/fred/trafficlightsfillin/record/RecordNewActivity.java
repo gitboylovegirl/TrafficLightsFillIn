@@ -106,6 +106,12 @@ public class RecordNewActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(NewRecordResponse response) {
                         Log.e("fred  新数据：", response.toString());
+                        if(response.code==401001){
+                            //freshToken();
+                            //getNewVersion();
+                            SharedPreferenceUtils.getInstance().setToken("");
+                            return;
+                        }
                         if (page == 1) {
                             list.clear();
                             list=response.data.list;

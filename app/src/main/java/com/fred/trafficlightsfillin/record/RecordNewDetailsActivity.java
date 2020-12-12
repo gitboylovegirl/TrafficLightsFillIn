@@ -101,6 +101,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(BaseResponse response) {
                         ToastUtil.showMsg(RecordNewDetailsActivity.this,response.msg);
+                        finish();
                     }
 
                     @Override

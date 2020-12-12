@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -43,6 +44,9 @@ public class UpdateListActivity extends AppCompatActivity {
     NewRecordAdapter recordAdapter;
     List<NewRecordChannel> list = new ArrayList<>();
     int page = 1;
+    @BindView(R.id.empty_view)
+    TextView emptyView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,8 +80,8 @@ public class UpdateListActivity extends AppCompatActivity {
         });
         initData();
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
-            Intent intent =new Intent(UpdateListActivity.this, TimingDetailsActivity.class);
-            intent.putExtra("id",list.get(index).getId());
+            Intent intent = new Intent(UpdateListActivity.this, TimingDetailsActivity.class);
+            intent.putExtra("id", list.get(index).getId());
             startActivity(intent);
         });
     }
@@ -94,7 +98,7 @@ public class UpdateListActivity extends AppCompatActivity {
                 .addParam("pageSize", "20")
                 .addParam("teamId", SharedPreferenceUtils.getInstance().getTeamId())
                 .addParam("teamName", SharedPreferenceUtils.getInstance().getTeamName())
-                .addParam("state","3")
+                .addParam("state", "3")
                 .build()
                 .postAsync(new ICallback<NewRecordResponse>() {
                     @Override
@@ -102,11 +106,16 @@ public class UpdateListActivity extends AppCompatActivity {
                         Log.e("fred  新数据：", response.toString());
                         if (page == 1) {
                             list.clear();
-                            list=response.data.list;
+                            list = response.data.list;
                             recordAdapter.bindData(true, list);
-                        }else {
+                        } else {
                             list.addAll(response.data.list);
                             recordAdapter.bindData(true, list);
+                        }
+                        if(list==null||list.size()==0){
+                            emptyView.setVisibility(View.VISIBLE);
+                        }else {
+                            emptyView.setVisibility(View.GONE);
                         }
                         smartRefresh.finishLoadMore();
                         smartRefresh.finishRefresh();

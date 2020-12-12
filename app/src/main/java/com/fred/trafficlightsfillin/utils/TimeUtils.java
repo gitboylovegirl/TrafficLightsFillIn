@@ -73,6 +73,20 @@ public class TimeUtils {
         long time=date.getTime();
         return String.valueOf(time);
     }
+
+    public static String time9(String time) {
+        Date d = new Date();
+        d.setTime(Long.parseLong(time));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        return sdf.format(d);
+    }
+
+    public static String time10(String time) {
+        Date d = new Date();
+        d.setTime(Long.parseLong(time));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        return sdf.format(d);
+    }
     /**
      * 获取日期是周几
      * @param strDate

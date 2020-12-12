@@ -78,5 +78,4 @@ dependencies {
 
     //滑动选择
     implementation 'com.github.open-android:WheelPicker:v1.0.0'
-
 }

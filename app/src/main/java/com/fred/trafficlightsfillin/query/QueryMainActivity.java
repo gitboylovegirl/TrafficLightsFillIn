@@ -98,8 +98,8 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         content.setAdapter(recordAdapter);
 
         long timeMillis = System.currentTimeMillis();
-        startTime.setText(TimeUtils.time7(String.valueOf(timeMillis)));
-        endIme.setText(TimeUtils.time7(String.valueOf(timeMillis)));
+        startTime.setText(TimeUtils.time9(String.valueOf(timeMillis)));
+        endIme.setText(TimeUtils.time9(String.valueOf(timeMillis)));
 
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
             if (queryType==1){

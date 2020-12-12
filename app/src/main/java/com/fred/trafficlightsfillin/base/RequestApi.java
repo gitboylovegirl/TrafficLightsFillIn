@@ -109,4 +109,20 @@ public class RequestApi {
      * 查询配时详情
      */
     public static final String TRAFFICLIGH_PEISHI="/service/trafficligh/peishi";
+    /**
+     * 获取次序表接口 post
+     */
+    public static final String STAGE_LIST="/service/stage/list";
+    /**
+     * 获取红路灯详情 get
+     */
+    public static final String TRAFFICLIGH_DETAILS ="/service/trafficligh";
+    /**
+     * 查询图片 get
+     */
+    public static final String TRAFFICLIGH_IMAGES="/service/trafficligh/images";
+    /**
+     * 下载红路灯图片 get
+     */
+    public static final String DOWN_IMG="/service/trafficligh/down/img";
 }
