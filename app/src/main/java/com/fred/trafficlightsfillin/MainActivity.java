@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -55,6 +56,8 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 10;
     private static final int REQUEST_CODE_CHOOSE = 99;
@@ -96,8 +99,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         initView();
         getNewVersion();
+        requestPermissions();
     }
-
+    /**
+     * 申请权限
+     */
+    public void requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (MainActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                //showToast("请同意读写权限，否则无法展示礼物");
+                //如果没有写sd卡权限
+                MainActivity.this.requestPermissions(
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        100);
+            }
+            return;
+        }
+    }
     /**
      * 定位权限
      */
@@ -289,17 +308,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void test(){
-        Matisse.from(MainActivity.this)
-                .choose(MimeType.ofImage())
-                .countable(true)
-                .maxSelectable(9)
-                .gridExpectedSize(120)
-                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
-                .thumbnailScale(0.85f)
-                .imageEngine(new MyGlideEngine())
-                .forResult(REQUEST_CODE_CHOOSE);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

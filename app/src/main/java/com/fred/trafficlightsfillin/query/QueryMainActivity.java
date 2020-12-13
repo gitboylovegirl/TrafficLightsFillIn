@@ -180,7 +180,6 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                 for (int i = 0; i < teamListChannels.size(); i++) {
                     teamList.add(teamListChannels.get(i).name);
                 }
-                Log.e("fred  数据1：", teamList.size() + "");
                 DialogUtils.showChoiceDialog(QueryMainActivity.this, teamList, new DialogUtils.OnButtonClickListener() {
                     @Override
                     public void onPositiveButtonClick() {

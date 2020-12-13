@@ -1,6 +1,10 @@
 package com.fred.trafficlightsfillin.intersection;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,12 +17,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaderFactory;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
+import com.fred.trafficlightsfillin.base.MyGlideUrl;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
+import com.fred.trafficlightsfillin.intersection.bean.PeriodCaseListBean;
+import com.fred.trafficlightsfillin.intersection.bean.PlanCaseListBean;
 import com.fred.trafficlightsfillin.intersection.bean.StageResponse;
+import com.fred.trafficlightsfillin.intersection.bean.TimeCaseListBean;
 import com.fred.trafficlightsfillin.intersection.bean.TimingDetailsResponse;
 import com.fred.trafficlightsfillin.intersection.bean.TrafficlighResonse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
@@ -78,19 +89,22 @@ public class TimingDetailsActivity extends AppCompatActivity {
     @BindView(R.id.weekend)
     TextView weekend;
 
-    private List<TimingDetailsResponse.DataBean.PeriodCaseListBean> weekdaysPeriodCaseList = new ArrayList<>();//工作日时间表
-    private List<TimingDetailsResponse.DataBean.PeriodCaseListBean> weekendPeriodCaseList = new ArrayList<>();//周末时间表
+    private List<PeriodCaseListBean> weekdaysPeriodCaseList = new ArrayList<>();//工作日时间表
+    private List<PeriodCaseListBean> weekendPeriodCaseList = new ArrayList<>();//周末时间表
 
-    private List<TimingDetailsResponse.DataBean.PlanCaseListBean> weekdaysPlanCaseList = new ArrayList<>();//工作日配时表1
-    private List<TimingDetailsResponse.DataBean.PlanCaseListBean> weekendPlanCaseList = new ArrayList<>();//周末配时表1
+    private List<PlanCaseListBean> weekdaysPlanCaseList = new ArrayList<>();//工作日配时表1
+    private List<PlanCaseListBean> weekendPlanCaseList = new ArrayList<>();//周末配时表1
 
-    private List<TimingDetailsResponse.DataBean.TimeCaseListBean> weekdaysTimeCaseList = new ArrayList<>();//工作日配时表1
-    private List<TimingDetailsResponse.DataBean.TimeCaseListBean> weekendTimeCaseList = new ArrayList<>();//周末配时表1
+    private List<TimeCaseListBean> weekdaysTimeCaseList = new ArrayList<>();//工作日配时表1
+    private List<TimeCaseListBean> weekendTimeCaseList = new ArrayList<>();//周末配时表1
 
     PictureAdapter pictureAdapter;
     TimeTableAdapter timeTableAdapter;
+    PlanCaseAdapter planCaseAdapter;
+    TimeCaseAdapter timeCaseAdapter;
     String trafficLightId;
     String id;
+    List<StageResponse.StageChanel> stageChanels;//配时表数据
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,17 +132,32 @@ public class TimingDetailsActivity extends AppCompatActivity {
         timeTableAdapter = new TimeTableAdapter();
         timeList.setAdapter(timeTableAdapter);
 
+        planCaseAdapter=new PlanCaseAdapter();
+        programme.setLayoutManager(new LinearLayoutManager(this));
+        programme.setAdapter(planCaseAdapter);
+
+        timeCaseAdapter=new TimeCaseAdapter();
+        timetable.setLayoutManager(new LinearLayoutManager(this));
+        timetable.setAdapter(timeCaseAdapter);
+
+        timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
+        planCaseAdapter.bindData(true,weekdaysPlanCaseList);
+        timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
         //工作日
         weekday.setOnClickListener(view -> {
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_stroke));
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
-            timeTableAdapter.bindData(true,weekdaysPeriodCaseList);
+            timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
+            planCaseAdapter.bindData(true,weekdaysPlanCaseList);
+            timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
         });
         //周日
         weekend.setOnClickListener(view -> {
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_stroke));
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
-            timeTableAdapter.bindData(true,weekendPeriodCaseList);
+            timeTableAdapter.bindData(true, weekendPeriodCaseList);
+            planCaseAdapter.bindData(true,weekendPlanCaseList);
+            timeCaseAdapter.bindData(true,weekendTimeCaseList);
         });
     }
 
@@ -146,7 +175,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(StageResponse response) {
                         if (response.code == 0) {
-                            ToastUtil.showMsg(TimingDetailsActivity.this, response.msg + response.data.size());
+                            stageChanels = response.data;
 //                            String base64 = ""
 //                            byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
 //                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
@@ -168,14 +197,15 @@ public class TimingDetailsActivity extends AppCompatActivity {
      * 获取基础信息
      */
     private void initTrafficlighInfo() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_DETAILS) + "/" + id)
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_DETAILS) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
-                .postAsync(new ICallback<TrafficlighResonse>() {
+                .getAsync(new ICallback<TrafficlighResonse>() {
                     @Override
-                    public void onSuccess(TrafficlighResonse response) {
-                        if (response.code == 0) {
+                    public void onSuccess(TrafficlighResonse trafficlighResonse) {
+                        if (trafficlighResonse.code == 0) {
+                            TrafficlighResonse.TrafficlightChannel response = trafficlighResonse.data;
                             number.setText("编号：" + response.no);
                             roadName.setText(response.roadPlace);
                             area.setText(response.area);
@@ -196,11 +226,11 @@ public class TimingDetailsActivity extends AppCompatActivity {
      * 获取现场图片
      */
     private void initPictrue() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_IMAGES) + "/" + id)
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_IMAGES) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
-                .postAsync(new ICallback<ImageResponse>() {
+                .getAsync(new ICallback<ImageResponse>() {
                     @Override
                     public void onSuccess(ImageResponse response) {
                         if (response.code == 0) {
@@ -240,7 +270,11 @@ public class TimingDetailsActivity extends AppCompatActivity {
                                 state.setText("完成已上传");
                             }
 
-                            better.setText(taskDetails.cause);
+                            if(TextUtils.isEmpty(taskDetails.cause)){
+                                better.setText("无");
+                            }else {
+                                better.setText(taskDetails.cause);
+                            }
                             endTime.setText(TimeUtils.time10(taskDetails.updateTime));
                         }
                     }
@@ -264,8 +298,24 @@ public class TimingDetailsActivity extends AppCompatActivity {
             //ImageView delete=holder.obtainView(R.id.iv_delete);
             ImageView picture = holder.obtainView(R.id.iv_picture);
 
-            String pictureUrl = RequestApi.DOWN_IMG + "/" + imageBean.path;
-            Glide.with(TimingDetailsActivity.this).load(pictureUrl).into(picture);
+            String pictureUrl =RequestApi.BASE_OFFICIAL_URL+RequestApi.DOWN_IMG + "/" + imageBean.path;
+            Log.e("pictureUrl",pictureUrl);
+
+//            //Authorization 请求头信息
+//            LazyHeaders headers=  new LazyHeaders.Builder()
+//                    //.addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+//                    .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+//                    .build();
+//            //url 要加载的图片的地址，imageView 显示图片的ImageView
+//            Glide.with(TimingDetailsActivity.this).load(new GlideUrl(pictureUrl, headers)).into(picture);
+
+            GlideUrl glideUrl = new GlideUrl(pictureUrl, new LazyHeaders.Builder()
+                    .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                    .build());
+
+            Glide.with(TimingDetailsActivity.this)
+                    .load(glideUrl)
+                    .into(picture);
         }
     }
 
@@ -273,20 +323,20 @@ public class TimingDetailsActivity extends AppCompatActivity {
      * 获取详细配时信息
      */
     private void initTrafficlighPeishi() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/" + getIntent().getStringExtra("id")))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/" + 61))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
-                .postAsync(new ICallback<TimingDetailsResponse>() {
+                .getAsync(new ICallback<TimingDetailsResponse>() {
                     @Override
                     public void onSuccess(TimingDetailsResponse response) {
                         if (response.getCode() != 0 || response.getData() == null) {
                             return;
                         }
                         TimingDetailsResponse.DataBean data = response.getData();
-                        List<TimingDetailsResponse.DataBean.PeriodCaseListBean> periodCaseList = data.getPeriodCaseList();
-                        List<TimingDetailsResponse.DataBean.PlanCaseListBean> planCaseList = data.getPlanCaseList();
-                        List<TimingDetailsResponse.DataBean.TimeCaseListBean> timeCaseList = data.getTimeCaseList();
+                        List<PeriodCaseListBean> periodCaseList = data.getPeriodCaseList();
+                        List<PlanCaseListBean> planCaseList = data.getPlanCaseList();
+                        List<TimeCaseListBean> timeCaseList = data.getTimeCaseList();
 
                         for (int i = 0; i < periodCaseList.size(); i++) {
                             if ("0".equals(periodCaseList.get(i).getWorkday())) {//周末
@@ -297,7 +347,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
                         }
 
                         if (weekendPeriodCaseList == null || weekendPeriodCaseList.size() == 0) {
-                            weekTitle.setVisibility(View.VISIBLE);
+                            weekTitle.setVisibility(View.GONE);
                         } else {
                             weekTitle.setVisibility(View.VISIBLE);
                         }
@@ -319,6 +369,8 @@ public class TimingDetailsActivity extends AppCompatActivity {
                         }
 
                         timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
+                        planCaseAdapter.bindData(true,weekdaysPlanCaseList);
+                        timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
                     }
 
                     @Override
@@ -328,7 +380,10 @@ public class TimingDetailsActivity extends AppCompatActivity {
     }
 
 
-    class TimeTableAdapter extends BaseRecyclerAdapter<TimingDetailsResponse.DataBean.PeriodCaseListBean> {
+    /**
+     * 时间表adapter
+     */
+    class TimeTableAdapter extends BaseRecyclerAdapter<PeriodCaseListBean> {
 
         @Override
         public int bindView(int viewType) {
@@ -336,12 +391,223 @@ public class TimingDetailsActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindHolder(BaseViewHolder holder, @Nullable TimingDetailsResponse.DataBean.PeriodCaseListBean periodCaseListBean, int index) {
+        public void onBindHolder(BaseViewHolder holder, @Nullable PeriodCaseListBean periodCaseListBean, int index) {
             TextView startTime = holder.obtainView(R.id.start_time);
             TextView no = holder.obtainView(R.id.number);
 
             startTime.setText(periodCaseListBean.getStart());
             no.setText(periodCaseListBean.getTimeCaseNo());
+        }
+    }
+
+    /**
+     * 配时方案1 adapter
+     */
+    class PlanCaseAdapter extends BaseRecyclerAdapter<PlanCaseListBean> {
+
+        @Override
+        public int bindView(int viewType) {
+            return R.layout.layout_timing_table_item;
+        }
+
+        @Override
+        public void onBindHolder(BaseViewHolder holder, @Nullable PlanCaseListBean planCaseListBean, int index) {
+            LinearLayout typeOne = holder.obtainView(R.id.type_one);
+            LinearLayout typeTwo = holder.obtainView(R.id.type_two);
+            LinearLayout typeThree = holder.obtainView(R.id.type_three);
+
+            ImageView ivOne = holder.obtainView(R.id.iv_one);
+            ImageView ivTwo = holder.obtainView(R.id.iv_two);
+            ImageView ivthree = holder.obtainView(R.id.iv_three);
+            ImageView ivFour = holder.obtainView(R.id.iv_four);
+            ImageView ivFive = holder.obtainView(R.id.iv_five);
+            ImageView ivSix = holder.obtainView(R.id.iv_six);
+            ImageView ivSeven = holder.obtainView(R.id.iv_seven);
+            ImageView ivEight = holder.obtainView(R.id.iv_eight);
+            ImageView ivNine = holder.obtainView(R.id.iv_nine);
+            ImageView ivTen = holder.obtainView(R.id.iv_ten);
+
+            TextView titleId = holder.obtainView(R.id.title_id);
+            TextView programme_one = holder.obtainView(R.id.programme_one);
+            TextView programme_two = holder.obtainView(R.id.programme_two);
+            TextView programme_three = holder.obtainView(R.id.programme_three);
+            TextView programme_four = holder.obtainView(R.id.programme_four);
+            TextView programme_five = holder.obtainView(R.id.programme_five);
+            TextView programme_six = holder.obtainView(R.id.programme_six);
+            TextView programme_seven = holder.obtainView(R.id.programme_seven);
+            TextView programme_eight = holder.obtainView(R.id.programme_eight);
+            TextView programme_nine = holder.obtainView(R.id.programme_nine);
+            TextView programme_ten = holder.obtainView(R.id.programme_ten);
+
+           if ("1".equals(planCaseListBean.getType())) {
+                typeOne.setVisibility(View.GONE);
+                typeTwo.setVisibility(View.VISIBLE);
+                typeThree.setVisibility(View.GONE);
+                for (int i = 0; i < stageChanels.size(); i++) {
+                    Log.e("fred",stageChanels.get(i).image);
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT1())) {
+                        //String str2=str.replace(" ", "")
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivOne.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT2())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivTwo.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT3())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivthree.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT4())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivFour.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT5())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivFive.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT6())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivSix.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT7())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivSeven.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT8())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivEight.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT9())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivNine.setImageBitmap(decodedByte);
+                    }
+                    if (stageChanels.get(i).no.equals(planCaseListBean.getT10())) {
+                        String[] split = stageChanels.get(i).image.split(",");
+                        String base64=split[1];
+                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                        ivTen.setImageBitmap(decodedByte);
+                    }
+                }
+            } else {
+                typeOne.setVisibility(View.GONE);
+                typeTwo.setVisibility(View.GONE);
+                typeThree.setVisibility(View.VISIBLE);
+
+                programme_one.setText(planCaseListBean.getT1());
+                programme_two.setText(planCaseListBean.getT2());
+                programme_three.setText(planCaseListBean.getT3());
+                programme_four.setText(planCaseListBean.getT4());
+                programme_five.setText(planCaseListBean.getT5());
+                programme_six.setText(planCaseListBean.getT6());
+                programme_seven.setText(planCaseListBean.getT7());
+                programme_eight.setText(planCaseListBean.getT8());
+                programme_nine.setText(planCaseListBean.getT9());
+                programme_ten.setText(planCaseListBean.getT10());
+                //类型（1 阶段 2绿闪 3黄灯 4全红 5红黄 6 最大绿 7 最小绿
+                if(planCaseListBean.getType().equals("2")){
+                    titleId.setText("绿闪");
+                }else if(planCaseListBean.getType().equals("3")){
+                    titleId.setText("黄灯");
+                }else if(planCaseListBean.getType().equals("4")){
+                    titleId.setText("全红");
+                }else if(planCaseListBean.getType().equals("5")){
+                    titleId.setText("红黄");
+                }else if(planCaseListBean.getType().equals("6")){
+                    titleId.setText("最大绿");
+                }else if(planCaseListBean.getType().equals("7")){
+                    titleId.setText("最小绿");
+                }
+            }
+        }
+    }
+
+    class TimeCaseAdapter extends BaseRecyclerAdapter<TimeCaseListBean> {
+
+        @Override
+        public int bindView(int viewType) {
+            return R.layout.layout_timing_table_item;
+        }
+
+        @Override
+        public void onBindHolder(BaseViewHolder holder, @Nullable TimeCaseListBean timeCaseListBean, int index) {
+            LinearLayout typeOne = holder.obtainView(R.id.type_one);
+            LinearLayout typeTwo = holder.obtainView(R.id.type_two);
+            LinearLayout typeThree = holder.obtainView(R.id.type_three);
+
+            ImageView ivOne = holder.obtainView(R.id.iv_one);
+            ImageView ivTwo = holder.obtainView(R.id.iv_two);
+            ImageView ivthree = holder.obtainView(R.id.iv_three);
+            ImageView ivFour = holder.obtainView(R.id.iv_four);
+            ImageView ivFive = holder.obtainView(R.id.iv_five);
+            ImageView ivSix = holder.obtainView(R.id.iv_six);
+            ImageView ivSeven = holder.obtainView(R.id.iv_seven);
+            ImageView ivEight = holder.obtainView(R.id.iv_eight);
+            ImageView ivNine = holder.obtainView(R.id.iv_nine);
+            ImageView ivTen = holder.obtainView(R.id.iv_ten);
+
+            TextView titleId = holder.obtainView(R.id.title_id);
+            TextView programme_one = holder.obtainView(R.id.programme_one);
+            TextView programme_two = holder.obtainView(R.id.programme_two);
+            TextView programme_three = holder.obtainView(R.id.programme_three);
+            TextView programme_four = holder.obtainView(R.id.programme_four);
+            TextView programme_five = holder.obtainView(R.id.programme_five);
+            TextView programme_six = holder.obtainView(R.id.programme_six);
+            TextView programme_seven = holder.obtainView(R.id.programme_seven);
+            TextView programme_eight = holder.obtainView(R.id.programme_eight);
+            TextView programme_nine = holder.obtainView(R.id.programme_nine);
+            TextView programme_ten = holder.obtainView(R.id.programme_ten);
+
+//            if (index == 0) {
+//                typeOne.setVisibility(View.VISIBLE);
+//                typeTwo.setVisibility(View.GONE);
+//                typeThree.setVisibility(View.GONE);
+//            } else {
+                typeOne.setVisibility(View.GONE);
+                typeTwo.setVisibility(View.GONE);
+                typeThree.setVisibility(View.VISIBLE);
+
+                programme_one.setText(timeCaseListBean.getT1());
+                programme_two.setText(timeCaseListBean.getT2());
+                programme_three.setText(timeCaseListBean.getT3());
+                programme_four.setText(timeCaseListBean.getT4());
+                programme_five.setText(timeCaseListBean.getT5());
+                programme_six.setText(timeCaseListBean.getT6());
+                programme_seven.setText(timeCaseListBean.getT7());
+                programme_eight.setText(timeCaseListBean.getT8());
+                programme_nine.setText(timeCaseListBean.getT9());
+                programme_ten.setText(timeCaseListBean.getT10());
+
+                titleId.setText(timeCaseListBean.getNo());
+            //}
         }
     }
 }

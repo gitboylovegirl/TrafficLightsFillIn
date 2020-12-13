@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_color_white"
+    android:orientation="vertical"
+    android:gravity="center"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_marginTop="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="请选择"
+        android:textColor="#ff0e0e0e"
+        android:textSize="15sp"
+        />
+   <androidx.recyclerview.widget.RecyclerView
+       android:layout_marginHorizontal="10dp"
+       android:id="@+id/content"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+   </androidx.recyclerview.widget.RecyclerView>
+</LinearLayout>

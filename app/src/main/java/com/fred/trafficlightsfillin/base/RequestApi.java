@@ -10,7 +10,7 @@ public class RequestApi {
      * 正式环境
      */
     //public static String BASE_OFFICIAL_URL = "https://api.imifanlive.com";
-    public static String BASE_OFFICIAL_URL = "http://peishi.slinks.cn:28088";
+    public static String BASE_OFFICIAL_URL = "https://peishi.slinks.cn:28088";
 
     public static String BASE_OFFICIAL_SHEQU_URL = "http://api.shequ.zhangyu.tv";
 
@@ -88,7 +88,7 @@ public class RequestApi {
     /**
      * 查询红绿灯路口 get
      */
-    public static final String ROAD_PLACE="/service/trafficligh/roadplace";
+    public static final String ROAD_PLACE="/service/trafficlight/roadplace";
     /**
      * 班组  post
      */
@@ -100,7 +100,7 @@ public class RequestApi {
     /**
      * 路口类型  get
      */
-    public static final String ROAD_TYPE="/service/trafficligh/roadPlaceType";
+    public static final String ROAD_TYPE="/service/trafficlight/roadPlaceType";
     /**
      * 修改任务状态
      */
@@ -108,7 +108,7 @@ public class RequestApi {
     /**
      * 查询配时详情
      */
-    public static final String TRAFFICLIGH_PEISHI="/service/trafficligh/peishi";
+    public static final String TRAFFICLIGH_PEISHI="/service/trafficlight/peishi";
     /**
      * 获取次序表接口 post
      */
@@ -116,13 +116,22 @@ public class RequestApi {
     /**
      * 获取红路灯详情 get
      */
-    public static final String TRAFFICLIGH_DETAILS ="/service/trafficligh";
+    public static final String TRAFFICLIGH_DETAILS ="/service/trafficlight";
     /**
      * 查询图片 get
      */
-    public static final String TRAFFICLIGH_IMAGES="/service/trafficligh/images";
+    public static final String TRAFFICLIGH_IMAGES="/service/trafficlight/images";
     /**
      * 下载红路灯图片 get
      */
-    public static final String DOWN_IMG="/service/trafficligh/down/img";
+    public static final String DOWN_IMG="/service/trafficlight/down/img";
+
+    /**
+     * 上传现场图片  post
+     */
+    public static final String UP_IMG="/service/trafficlight/up/img";
+    /**
+     * 上传配时结  post
+     */
+    public static final String TASK_RESULT="/service/task/result";
 }

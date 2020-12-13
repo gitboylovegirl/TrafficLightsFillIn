@@ -1,5 +1,7 @@
 package com.fred.trafficlightsfillin.intersection.bean;
 
+import android.net.Uri;
+
 import com.fred.trafficlightsfillin.base.BaseResponse;
 
 import java.io.Serializable;
@@ -35,6 +37,15 @@ public class ImageResponse extends BaseResponse implements Serializable {
         public String trafficLightId;
         public String updateTime;
         public String updateUser;
+        public Uri uri;
+
+        public Uri getUri() {
+            return uri;
+        }
+
+        public void setUri(Uri uri) {
+            this.uri = uri;
+        }
 
         public String getCreateTime() {
             return createTime;

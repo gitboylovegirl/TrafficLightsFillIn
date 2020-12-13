@@ -1,5 +1,7 @@
 package com.fred.trafficlightsfillin.utils;
 
+import android.text.TextUtils;
+
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,6 +76,19 @@ public class TimeUtils {
         return String.valueOf(time);
     }
 
+    public static String time11(String inputTime){
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        Date date = null;
+        try {
+            date = format.parse(inputTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //日期转时间戳（毫秒）
+        long time=date.getTime();
+        return String.valueOf(time);
+    }
+
     public static String time9(String time) {
         Date d = new Date();
         d.setTime(Long.parseLong(time));
@@ -82,6 +97,9 @@ public class TimeUtils {
     }
 
     public static String time10(String time) {
+        if(TextUtils.isEmpty(time)){
+            return "";
+        }
         Date d = new Date();
         d.setTime(Long.parseLong(time));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
