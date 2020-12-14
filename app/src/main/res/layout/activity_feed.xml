@@ -69,7 +69,7 @@
                         <TextView
                             android:id="@+id/road_name"
                             android:layout_width="130dp"
-                            android:layout_height="29dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:background="@drawable/bg_color_f4f4f4_5dp"
                             android:gravity="center"
@@ -98,6 +98,7 @@
                         </TextView>
 
                         <TextView
+                            android:id="@+id/area"
                             android:layout_width="130dp"
                             android:layout_height="29dp"
                             android:layout_marginTop="5dp"
@@ -130,7 +131,7 @@
                         android:layout_alignParentRight="true"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
-                        android:text="78djkdod7dss"
+                        android:text=""
                         android:textColor="@color/main_color"
                         android:textSize="16sp">
 
@@ -159,7 +160,7 @@
                         android:layout_alignParentRight="true"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
-                        android:text="西门子"
+                        android:text=""
                         android:textColor="@color/main_color"
                         android:textSize="16sp">
 
@@ -168,7 +169,162 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="17dp"
+                android:background="@drawable/bg_color_white"
+                android:orientation="vertical"
+                android:paddingHorizontal="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="反馈内容"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </TextView>
+
+                    <TextView
+                        android:text="（至少输入20个字）"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </TextView>
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/tv_feed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="#2A4997"
+                    android:gravity="center"
+                    android:paddingHorizontal="15dp"
+                    android:paddingVertical="30dp"
+                    android:text="">
+
+                </EditText>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="路口现场图展示："
+                    android:textColor="#ff0e0e0e"
+                    android:textSize="15sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/picture_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    >
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+
+                <LinearLayout
+                    android:layout_marginTop="30dp"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/feed_set"
+                        android:text="反馈车组：A1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/feed_person"
+                        android:layout_marginLeft="40dp"
+                        android:text="反馈人：大患"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </TextView>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/phone"
+                    android:text="电话：1212121212"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+
+
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="时间"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/time"
+                        android:layout_marginLeft="25dp"
+                        android:text="2020年12月12日  18:45:21"
+                        android:textColor="#ff2a4997"
+                        android:textSize="11sp"
+                        android:background="#F4F4F4"
+                        android:gravity="center"
+                        android:layout_width="210dp"
+                        android:layout_height="45dp">
+
+                    </TextView>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_marginTop="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="备注："
+                    android:textColor="#ff0e0e0e"
+                    android:textSize="15sp"
+                    />
+                <EditText
+                    android:layout_marginBottom="25dp"
+                    android:background="#F4F4F4"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="98dp">
+
+                </EditText>
+            </LinearLayout>
+
+            <TextView
+                android:layout_marginBottom="20dp"
+                android:id="@+id/submit"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#AB3A1B"
+                android:text="提交反馈"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="11dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </TextView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

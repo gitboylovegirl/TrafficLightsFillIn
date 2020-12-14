@@ -2,13 +2,23 @@ package com.fred.trafficlightsfillin.query;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.fred.trafficlightsfillin.R;
+import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
+import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.intersection.TimingDetailsActivity;
+import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
@@ -48,6 +58,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
     TextView team;
     @BindView(R.id.task_state)
     TextView taskState;
+    PictureAdapter pictureAdapter;
 
     String id;
     @Override
@@ -55,8 +66,20 @@ public class TaskDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_details);
         ButterKnife.bind(this);
+
+        initView();
+        initData();
+        initPictrue();
     }
 
+    private void initView(){
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);// 设置 recyclerview 布局方式为横向布局
+        picture.setLayoutManager(layoutManager);
+        pictureAdapter = new PictureAdapter();
+        picture.setAdapter(pictureAdapter);
+
+    }
     private void initData() {
         id=getIntent().getStringExtra("id");
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS)+"/"+id)
@@ -91,5 +114,54 @@ public class TaskDetailsActivity extends AppCompatActivity {
                     public void onFail(int errorCode, String errorMsg) {
                     }
                 });
+    }
+
+    /**
+     * 获取现场图片
+     */
+    private void initPictrue() {
+        String  trafficLightId = getIntent().getStringExtra("trafficLightId");
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_IMAGES) + "/" + trafficLightId)
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .build()
+                .getAsync(new ICallback<ImageResponse>() {
+                    @Override
+                    public void onSuccess(ImageResponse response) {
+                        if (response.code == 0) {
+                            pictureAdapter.bindData(true, response.data);
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                    }
+                });
+    }
+
+    class PictureAdapter extends BaseRecyclerAdapter<ImageResponse.ImageBean> {
+
+        @Override
+        public int bindView(int viewType) {
+            return R.layout.layout_picture_item;
+        }
+
+        @Override
+        public void onBindHolder(BaseViewHolder holder, @Nullable ImageResponse.ImageBean imageBean, int index) {
+            //ImageView add = holder.obtainView(R.id.iv_add);
+            //ImageView delete=holder.obtainView(R.id.iv_delete);
+            ImageView picture = holder.obtainView(R.id.iv_picture);
+
+            String pictureUrl =RequestApi.BASE_OFFICIAL_URL+RequestApi.DOWN_IMG + "/" + imageBean.path;
+            Log.e("pictureUrl",pictureUrl);
+
+            GlideUrl glideUrl = new GlideUrl(pictureUrl, new LazyHeaders.Builder()
+                    .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                    .build());
+
+            Glide.with(TaskDetailsActivity.this)
+                    .load(glideUrl)
+                    .into(picture);
+        }
     }
 }

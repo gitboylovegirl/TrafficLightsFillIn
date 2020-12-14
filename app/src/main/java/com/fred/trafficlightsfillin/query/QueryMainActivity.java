@@ -105,10 +105,12 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
             if (queryType==1){
                 Intent intent=new Intent(QueryMainActivity.this,TaskDetailsActivity.class);
                 intent.putExtra("id",list.get(index).id);
+                intent.putExtra("trafficLightId",list.get(index).trafficLightId);
                 startActivity(intent);
             }else {
                 Intent intent=new Intent(QueryMainActivity.this, TimingDetailsActivity.class);
                 intent.putExtra("id",list.get(index).id);
+                intent.putExtra("trafficLightId",list.get(index).trafficLightId);
                 startActivity(intent);
             }
         });

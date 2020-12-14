@@ -236,18 +236,48 @@
                 android:background="@drawable/bg_color_white"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_marginTop="28dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_marginRight="55dp"
+                        android:src="@mipmap/left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </ImageView>
+                    <TextView
+                        android:id="@+id/task_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="调整前"
+                        android:textColor="@color/black"
+                        android:textSize="28sp"
+                        android:textStyle="bold">
+
+                    </TextView>
+                    <ImageView
+                        android:layout_marginLeft="55dp"
+                        android:src="@mipmap/right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </ImageView>
+                </LinearLayout>
                 <TextView
-                    android:id="@+id/task_status"
+                    android:layout_marginBottom="28dp"
+                    android:layout_gravity="center_horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginVertical="28dp"
-                    android:text="调整前"
-                    android:textColor="@color/black"
-                    android:textSize="28sp"
-                    android:textStyle="bold">
+                    android:text="(可左右滑动)"
+                    android:textColor="#ff7f7f7f"
+                    android:textSize="12sp"
+                    />
 
-                </TextView>
 
                 <LinearLayout
                     android:layout_width="match_parent"

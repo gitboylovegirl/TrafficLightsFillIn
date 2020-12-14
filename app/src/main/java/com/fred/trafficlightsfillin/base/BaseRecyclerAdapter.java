@@ -587,7 +587,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<  Base
          * @param itemView
          * @param index    相对于List容器的位置
          */
-        void onItemClick(  BaseRecyclerAdapter adapter,   BaseViewHolder holder, View itemView, int index);
+        void onItemClick(BaseRecyclerAdapter adapter, BaseViewHolder holder, View itemView, int index);
     }
 
     public interface OnItemLongClickListener {
@@ -599,7 +599,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<  Base
          * @param index    相对于List容器的位置
          * @return
          */
-        boolean onItemLongClick(  BaseRecyclerAdapter adapter,   BaseViewHolder holder, View itemView, int index);
+        boolean onItemLongClick(BaseRecyclerAdapter adapter, BaseViewHolder holder, View itemView, int index);
     }
 
     public interface OnItemChildClickListener {
@@ -610,7 +610,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<  Base
          * @param childView
          * @param index     相对于List容器的位置
          */
-        void onItemChildClick(  BaseRecyclerAdapter adapter,   BaseViewHolder holder, View childView, int index);
+        void onItemChildClick(BaseRecyclerAdapter adapter, BaseViewHolder holder, View childView, int index);
     }
 
     public interface OnItemChildLongClickListener {
@@ -621,6 +621,6 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<  Base
          * @param index     相对于List容器的位置
          * @return
          */
-        boolean onItemChildLongClick(  BaseRecyclerAdapter adapter,   BaseViewHolder holder, View childView, int index);
+        boolean onItemChildLongClick(BaseRecyclerAdapter adapter, BaseViewHolder holder, View childView, int index);
     }
 }

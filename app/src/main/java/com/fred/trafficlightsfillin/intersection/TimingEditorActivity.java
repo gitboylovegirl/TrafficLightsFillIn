@@ -1,5 +1,6 @@
 package com.fred.trafficlightsfillin.intersection;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -30,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
+import com.fred.trafficlightsfillin.MainActivity;
 import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseResponse;
@@ -58,12 +61,19 @@ import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
+
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
  * 配时编辑
@@ -159,6 +169,17 @@ public class TimingEditorActivity extends AppCompatActivity {
      * 加载基础布局
      */
     private void initView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (TimingEditorActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                //showToast("请同意读写权限，否则无法展示礼物");
+                //如果没有写sd卡权限
+                TimingEditorActivity.this.requestPermissions(
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        100);
+            }
+            return;
+        }
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);// 设置 recyclerview 布局方式为横向布局
         pictureList.setLayoutManager(layoutManager);
@@ -277,12 +298,14 @@ public class TimingEditorActivity extends AppCompatActivity {
      */
     private void submitTaskResult(String json) {
         Log.e("json",json.toString());
+
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_RESULT))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("taskResultVo",json)
+                .setBody(body)
                 .build()
-                .postAsync(new ICallback<TaskResultResponse>() {
+                .postBodyAsync(new ICallback<TaskResultResponse>() {
                     @Override
                     public void onSuccess(TaskResultResponse response) {
                         if (response.code == 0) {
@@ -439,7 +462,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             //  .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
 
-            String pictureUrl = RequestApi.DOWN_IMG + "/" + imageBean.path + "/?authorization=" + SharedPreferenceUtils.getInstance().getToken();
+            String pictureUrl = RequestApi.BASE_OFFICIAL_URL+RequestApi.DOWN_IMG + "/" + imageBean.path;
             if(imageBean.getUri()!=null&&!TextUtils.isEmpty(imageBean.getUri().toString())){
                 String filePath = GetImagePath.getPath(TimingEditorActivity.this, imageBean.getUri());
                 Bitmap bm = GetImagePath.displayImage(TimingEditorActivity.this,filePath);
@@ -449,6 +472,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 }
                 picture.setImageBitmap(bm);
             }else {
+                Log.e("fred地址" ,pictureUrl);
                 GlideUrl glideUrl = new GlideUrl(pictureUrl, new LazyHeaders.Builder()
                         .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                         .build());
@@ -507,7 +531,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             }
             pictureAdapter.bindData(true,imageBeans);
             pictureAdapter.notifyDataSetChanged();
-           // uploadPicture(fileData);
+            uploadPicture(fileData);
         }
 
     }

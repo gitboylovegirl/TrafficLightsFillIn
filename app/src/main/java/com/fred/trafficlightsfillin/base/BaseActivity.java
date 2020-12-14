@@ -76,11 +76,11 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
      */
     protected void setContainerView(int layoutResID) {
         setContentView(layoutResID);
-        mTitle = findViewById(R.id.titleContent);
-        mBack = findViewById(R.id.titleBack);
-        right=findViewById(R.id.titleRight);
-        mBack.setOnClickListener(this);
-        right.setOnClickListener(this);
+//        mTitle = findViewById(R.id.titleContent);
+//        mBack = findViewById(R.id.titleBack);
+//        right=findViewById(R.id.titleRight);
+       // mBack.setOnClickListener(this);
+       // right.setOnClickListener(this);
     }
 
     public void setTitleText(String titleText){

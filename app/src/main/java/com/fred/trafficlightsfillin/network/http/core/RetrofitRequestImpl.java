@@ -104,6 +104,9 @@ public class RetrofitRequestImpl extends AbstractRequest {
         } else {
             call = getBaseApiService().doPost(requestBuilder.url);
         }
+
+        call = getBaseApiService().doPost(requestBuilder.url, requestBuilder.body);
+
         execute(call, listener,context);
     }
 

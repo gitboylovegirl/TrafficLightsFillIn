@@ -79,26 +79,28 @@ public class RecordListActivity extends AppCompatActivity {
         });
         initData();
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
-//            if("0".equals(list.get(index).state)){
-//
-//            }else if("1".equals(list.get(index).state)){
-//                Intent intent = new Intent(RecordListActivity.this, RecordNewDetailsActivity.class);
-//                intent.putExtra("id", list.get(index).getId());
-//                startActivity(intent);
-//            }else if("2".equals(list.get(index).state)){
-//                //task_status.setText("未完成");
-//            }else if("3".equals(list.get(index).state)){
-//                //task_status.setText("已完成");
-//                Intent intent=new Intent(RecordListActivity.this,TimingEditorActivity.class);
-//                intent.putExtra("id",list.get(index).trafficLightId);
-//                startActivity(intent);
-//            }else if("4".equals(list.get(index).state)){
-//                //task_status.setText("完成已上传");
-//            }
-            Intent intent = new Intent(RecordListActivity.this, TimingEditorActivity.class);
-            intent.putExtra("id",list.get(index).getId());
-            intent.putExtra("trafficLightId", list.get(index).getTrafficLightId());
-            startActivity(intent);
+            if("0".equals(list.get(index).state)){
+
+            }else if("1".equals(list.get(index).state)){
+                //task_status.setText("未接单");
+                Intent intent = new Intent(RecordListActivity.this, RecordNewDetailsActivity.class);
+                intent.putExtra("id", list.get(index).getId());
+                startActivity(intent);
+            }else if("2".equals(list.get(index).state)){
+                //task_status.setText("未完成");
+            }else if("3".equals(list.get(index).state)){
+                //task_status.setText("已完成");
+                Intent intent=new Intent(RecordListActivity.this,TimingEditorActivity.class);
+                intent.putExtra("id",list.get(index).id);
+                intent.putExtra("trafficLightId",list.get(index).trafficLightId);
+                startActivity(intent);
+            }else if("4".equals(list.get(index).state)){
+                //task_status.setText("完成已上传");
+                Intent intent = new Intent(RecordListActivity.this, TimingDetailsActivity.class);
+                intent.putExtra("id", list.get(index).getId());
+                intent.putExtra("trafficLightId",list.get(index).trafficLightId);
+                startActivity(intent);
+            }
         });
     }
 
