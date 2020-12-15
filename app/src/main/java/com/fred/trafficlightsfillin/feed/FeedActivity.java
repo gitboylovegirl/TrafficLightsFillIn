@@ -107,8 +107,7 @@ public class FeedActivity extends AppCompatActivity {
         time.setText(TimeUtils.time10(String.valueOf(System.currentTimeMillis())));
 
         submit.setOnClickListener(v -> {
-            ToastUtil.showMsg(FeedActivity.this, "反馈成功");
-            finish();
+            feedSubmit();
         });
         roadName.setOnClickListener(v -> {
             List<String> roadPlaces = new ArrayList<>();
@@ -136,6 +135,31 @@ public class FeedActivity extends AppCompatActivity {
                 }
             });
         });
+    }
+
+    /**
+     * 上报
+     */
+    private void feedSubmit() {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addParam("desc",tvFeed.getText().toString().trim())
+                .addParam("trafficLightId", String.valueOf(roadChannels.get(currentPosition).getId()))
+                .build()
+                .postAsync(new ICallback<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse response) {
+                        if (response.code==0){
+                            ToastUtil.showMsg(FeedActivity.this, "反馈成功");
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                    }
+                });
     }
 
     /**
@@ -193,7 +217,6 @@ public class FeedActivity extends AppCompatActivity {
                 }
                 picture.setImageBitmap(bm);
             } else {
-                Log.e("fred地址", pictureUrl);
                 GlideUrl glideUrl = new GlideUrl(pictureUrl, new LazyHeaders.Builder()
                         .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                         .build());
