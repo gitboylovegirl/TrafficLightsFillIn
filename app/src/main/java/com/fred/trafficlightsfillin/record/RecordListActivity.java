@@ -117,6 +117,7 @@ public class RecordListActivity extends AppCompatActivity {
                 .addParam("teamId", SharedPreferenceUtils.getInstance().getTeamId())
                 .addParam("teamName", SharedPreferenceUtils.getInstance().getTeamName())
                 .addParam("engineerId", SharedPreferenceUtils.getInstance().getId())
+                .addParam("state","4")
                 .build()
                 .postAsync(new ICallback<NewRecordResponse>() {
                     @Override

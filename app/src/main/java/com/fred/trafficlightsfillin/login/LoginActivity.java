@@ -85,6 +85,16 @@ public class LoginActivity extends BaseActivity {
             //开启定位权限,200是标识码
             ActivityCompat.requestPermissions(LoginActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},200);
         }
+
+        if(!TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getName())){
+            userName.setText(SharedPreferenceUtils.getInstance().getName());
+        }
+        if(!TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getPhone())){
+            userName.setText(SharedPreferenceUtils.getInstance().getPhone());
+        }
+        if(!TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getTeamId())){
+            userName.setText(SharedPreferenceUtils.getInstance().getTeamId());
+        }
     }
 
     @Override

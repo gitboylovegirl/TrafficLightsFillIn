@@ -236,7 +236,6 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         Calendar calendar = Calendar.getInstance();
         new DatePickerDialog(activity, (view, year, monthOfYear, dayOfMonth) -> {
             // 此处得到选择的时间，可以进行你想要的操作
-            Log.e("fred", "您选择了：" + year + "年" + (monthOfYear + 1) + "月" + dayOfMonth + "日");
             String time = year + "年" + (monthOfYear + 1) + "月" + dayOfMonth + "日";
             if (type == 1) {
                 startTime.setText(time);

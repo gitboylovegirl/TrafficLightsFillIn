@@ -79,6 +79,8 @@
 
 
             <EditText
+                android:inputType="number"
+                android:maxLength="11"
                 android:layout_marginTop="70dp"
                 android:layout_below="@+id/user_team"
                 android:id="@+id/user_phone"

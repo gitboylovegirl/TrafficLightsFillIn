@@ -80,14 +80,14 @@ public class RecordNewActivity extends AppCompatActivity {
         //下拉刷新
         smartRefresh.setOnRefreshListener(refreshLayout -> {
             page = 1;
-            initData();
+            initNewData();
         });
         //上拉加载更多
         smartRefresh.setOnLoadMoreListener(refreshLayout -> {
             page++;
-            initData();
+            initNewData();
         });
-        initData();
+        initNewData();
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
             Intent intent =new Intent(RecordNewActivity.this,RecordNewDetailsActivity.class);
             intent.putExtra("id",list.get(index).getId());
@@ -98,7 +98,7 @@ public class RecordNewActivity extends AppCompatActivity {
     /**
      * 请求数据
      */
-    private void initData() {
+    private void initNewData() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
@@ -114,19 +114,49 @@ public class RecordNewActivity extends AppCompatActivity {
                     public void onSuccess(NewRecordResponse response) {
                         Log.e("fred  新数据：", response.toString());
                         if(response.code==401001){
-                            //freshToken();
-                            //getNewVersion();
                             SharedPreferenceUtils.getInstance().setToken("");
                             return;
                         }
                         if (page == 1) {
                             list.clear();
                             list=response.data.list;
-                            recordAdapter.bindData(true, list);
+                            initData();
                         }else {
                             list.addAll(response.data.list);
-                            recordAdapter.bindData(true, list);
                         }
+                        smartRefresh.finishLoadMore();
+                        smartRefresh.finishRefresh();
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                    }
+                });
+    }
+
+    /**
+     * 请求数据
+     */
+    private void initData() {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addParam("engineerId", SharedPreferenceUtils.getInstance().getId())
+                .addParam("pageNum", String.valueOf(page))
+                .addParam("pageSize", "20")
+                .addParam("teamId", SharedPreferenceUtils.getInstance().getTeamId())
+                .addParam("teamName", SharedPreferenceUtils.getInstance().getTeamName())
+                .addParam("state","2")
+                .build()
+                .postAsync(new ICallback<NewRecordResponse>() {
+                    @Override
+                    public void onSuccess(NewRecordResponse response) {
+                        if(response.code==401001){
+                            SharedPreferenceUtils.getInstance().setToken("");
+                            return;
+                        }
+                        list.addAll(response.data.list);
+                        recordAdapter.bindData(true, list);
                         smartRefresh.finishLoadMore();
                         smartRefresh.finishRefresh();
                     }

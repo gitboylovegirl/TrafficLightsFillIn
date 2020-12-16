@@ -159,10 +159,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     double lat = aMapLocation.getLatitude();
                     double lng = aMapLocation.getLongitude();
                     if (lat > 0 && lng > 0) {
-                        Log.e("fred", "lat: " + lat + "  lng  " + lng);
                         locationInfo(String.valueOf(lat),String.valueOf(lat));
                     }
                 } else {//失败
+                    freshToken();
                     Log.i("fred", "Distance: 定位失败 :" + aMapLocation.getErrorCode() + ", errInfo:" + aMapLocation.getErrorInfo());
                 }
             }
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onSuccess(LocationResponse response) {
                         if(response.code==401001){
-                            //freshToken();
+                            freshToken();
                             //getNewVersion();
                             SharedPreferenceUtils.getInstance().setToken("");
                         }
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 刷新token
      */
     private void freshToken(){
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN)+"/"+SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onSuccess(LocationResponse response) {
                         Log.e("fred  刷新：",response.toString());
+
                     }
 
                     @Override
