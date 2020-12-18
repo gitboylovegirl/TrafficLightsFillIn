@@ -67,6 +67,9 @@ public class DialogUtils {
             }
         });
 
+        picker.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
         //给弹窗设置宽高
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
         WindowManager manager = context.getWindowManager();
@@ -81,7 +84,33 @@ public class DialogUtils {
 //            }
 //        });
     }
+    public static void showChoiceTitltDialog(Activity context, List<String> data,OnButtonClickListener listener) {
+        AlertDialog dialog = new AlertDialog.Builder(context).create();
+        dialog.setCancelable(true);
+        dialog.show();
 
+        Window window = dialog.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        window.setContentView(R.layout.layout_str_pictike_titler);
+        WheelPicker picker = window.findViewById(R.id.picker);
+
+        picker.setData(data);
+        picker.setOnItemSelectedListener((wheelPicker, o, i) -> {
+            if(listener!=null){
+                listener.onChoiceItem(data.get(i),i);
+            }
+        });
+
+        picker.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        //给弹窗设置宽高
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        WindowManager manager = context.getWindowManager();
+        Display display = manager.getDefaultDisplay();
+        lp.width = display.getWidth()-100;
+        dialog.getWindow().setAttributes(lp);
+    }
     /**
      * 次序选择弹窗
      * @param context

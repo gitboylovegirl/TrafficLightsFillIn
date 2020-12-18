@@ -38,6 +38,8 @@ import com.fred.trafficlightsfillin.query.QueryMainActivity;
 import com.fred.trafficlightsfillin.record.RecordListActivity;
 import com.fred.trafficlightsfillin.record.RecordNewActivity;
 import com.fred.trafficlightsfillin.record.UpdateListActivity;
+import com.fred.trafficlightsfillin.utils.CalendarReminderUtils;
+import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.LocationUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
@@ -47,6 +49,7 @@ import com.zhihu.matisse.MimeType;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
@@ -86,6 +89,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @BindView(R.id.timing_record)
     TextView timingRecord;
 
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_CALENDAR,
+            Manifest.permission.WRITE_CALENDAR};
+
+    private static final int REQUEST_PERMISSION_CODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,6 +206,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             freshToken();
                             //getNewVersion();
                             SharedPreferenceUtils.getInstance().setToken("");
+                        }else if (response.code==0){
+                            if(response.data!=null&&response.data.size()>0){
+                                if(SharedPreferenceUtils.getInstance().getSeTime()>0){
+                                    long lastTime = SharedPreferenceUtils.getInstance().getCurrentTime();
+                                    long currentTimeMillis = System.currentTimeMillis();
+                                    long seTime = SharedPreferenceUtils.getInstance().getSeTime();
+                                    if(currentTimeMillis>lastTime){
+                                        long time=currentTimeMillis+(seTime*60*60*1000);
+                                        CalendarReminderUtils.addCalendarEvent(MainActivity.this, "配时中心提醒", "您有未完成的任务，请及时登陆完成", time, 1);
+                                    }
+
+                                }
+                            }
                         }
                     }
 
@@ -269,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         timingRecord.setOnClickListener(this::onClick);
         timingRecordTop.setOnClickListener(this::onClick);
-
     }
 
     @Override
@@ -281,7 +301,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.tip_set://提醒
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                    if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
+                        return;
+                    }
+                }
 
+                List<String> timeSet = new ArrayList<>();
+                for (int i = 1; i <25 ; i++) {
+                    timeSet.add(i+"小时候后");
+                }
+                DialogUtils.showChoiceTitltDialog(MainActivity.this, timeSet, new DialogUtils.OnButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onNegativeButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onChoiceItem(String str, int pos) {
+                        SharedPreferenceUtils.getInstance().setSetTime(pos+1);
+                    }
+                });
                 break;
             case R.id.update://更新
                 ToastUtil.showMsg(MainActivity.this,"当前已是最新版本");

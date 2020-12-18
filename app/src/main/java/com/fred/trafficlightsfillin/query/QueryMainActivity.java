@@ -114,6 +114,8 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                 startActivity(intent);
             }
         });
+
+
     }
 
     @Override
@@ -173,6 +175,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onChoiceItem(String str, int pos) {
                         roadPlace.setText(str);
+                        //roadType.setText(roadChannels.get(pos)
                     }
                 });
                 break;

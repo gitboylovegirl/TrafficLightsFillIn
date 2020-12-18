@@ -91,6 +91,7 @@ public class RecordNewActivity extends AppCompatActivity {
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
             Intent intent =new Intent(RecordNewActivity.this,RecordNewDetailsActivity.class);
             intent.putExtra("id",list.get(index).getId());
+            intent.putExtra("state",list.get(index).state);
             startActivity(intent);
         });
     }
@@ -112,7 +113,6 @@ public class RecordNewActivity extends AppCompatActivity {
                 .postAsync(new ICallback<NewRecordResponse>() {
                     @Override
                     public void onSuccess(NewRecordResponse response) {
-                        Log.e("fred  新数据：", response.toString());
                         if(response.code==401001){
                             SharedPreferenceUtils.getInstance().setToken("");
                             return;
@@ -184,7 +184,17 @@ public class RecordNewActivity extends AppCompatActivity {
             time.setText(TimeUtils.time7(String.valueOf(newRecordChannel.createTime)));
             task_from.setText("来源：" + newRecordChannel.source);
             road_name.setText(newRecordChannel.roadPlace);
-            task_status.setText("未接单");
+            if("0".equals(newRecordChannel.state)){
+                task_status.setText("后台取消");
+            }else if("1".equals(newRecordChannel.state)){
+                task_status.setText("未接单");
+            }else if("2".equals(newRecordChannel.state)){
+                task_status.setText("未完成");
+            }else if("3".equals(newRecordChannel.state)){
+                task_status.setText("已完成");
+            }else if("4".equals(newRecordChannel.state)){
+                task_status.setText("完成已上传");
+            }
             task_status.setTextColor(Color.parseColor("#FF8631"));
         }
     }

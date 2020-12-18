@@ -3,6 +3,7 @@ package com.fred.trafficlightsfillin.record;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +43,13 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     @BindView(R.id.receiving)
     TextView receiving;
     String id;
+    @BindView(R.id.go_to)
+    TextView goTo;
+    @BindView(R.id.finish)
+    TextView finish;
+    @BindView(R.id.bottom_view)
+    LinearLayout bottomView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +61,27 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
         receiving.setOnClickListener(v -> {
             submit();
         });
+
+        String state = getIntent().getStringExtra("state");
+       if ("1".equals(state)) {
+            //"未接单
+            bottomView.setVisibility(View.GONE);
+            receiving.setVisibility(View.VISIBLE);
+        } else if ("2".equals(state)) {
+            //未完成
+            bottomView.setVisibility(View.VISIBLE);
+            receiving.setVisibility(View.GONE);
+        }
+        //点击完成
+        finish.setOnClickListener(v -> {
+             changeState();
+        });
     }
 
 
     private void initData() {
-        id=getIntent().getStringExtra("id");
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS)+"/"+id)
+        id = getIntent().getStringExtra("id");
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS) + "/" + id)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
@@ -66,7 +89,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(TaskDetailsChannel response) {
                         Log.e("fred  新数据：", response.toString());
-                        if(response.data!=null){
+                        if (response.data != null) {
                             TaskDetailsChannel.TaskDetails taskDetails = response.data;
                             roadName.setText(taskDetails.roadPlace);
                             modelOne.setText(taskDetails.modelNo);
@@ -90,18 +113,47 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     /**
      * 接单
      */
-    private void submit(){
+    private void submit() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_STATE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("taskId",id)
-                .addParam("state","2")
+                .addParam("taskId", id)
+                .addParam("state", "2")
                 .build()
                 .putAsync(new ICallback<BaseResponse>() {
                     @Override
                     public void onSuccess(BaseResponse response) {
-                        ToastUtil.showMsg(RecordNewDetailsActivity.this,response.msg);
-                        finish();
+                        if(response.code==0){
+                            bottomView.setVisibility(View.GONE);
+                            receiving.setVisibility(View.VISIBLE);
+                        }
+                        ToastUtil.showMsg(RecordNewDetailsActivity.this, response.msg);
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                    }
+                });
+    }
+
+    /**
+     * 完成
+     */
+    private void changeState() {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_STATE))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addParam("taskId", id)
+                .addParam("state", "3")
+                .build()
+                .putAsync(new ICallback<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse response) {
+                        if(response.code==0){
+                            bottomView.setVisibility(View.GONE);
+                            receiving.setVisibility(View.VISIBLE);
+                        }
+                        ToastUtil.showMsg(RecordNewDetailsActivity.this, response.msg);
                     }
 
                     @Override

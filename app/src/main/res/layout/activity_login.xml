@@ -119,6 +119,7 @@
                     android:layout_marginHorizontal="45dp"
                     android:background="@null"
                     android:hint="@string/password"
+                    android:inputType="textPassword"
                     android:textColor="@color/black"
                     android:textColorHint="#C5C5C5"
                     android:textSize="14sp">

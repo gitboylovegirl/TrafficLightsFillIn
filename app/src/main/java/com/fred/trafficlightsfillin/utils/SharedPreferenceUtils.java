@@ -515,6 +515,24 @@ public class SharedPreferenceUtils {
     public void setPhone(String str) {
         sharedPreferences.edit().putString("phone", str).apply();
     }
+
+    public long getCurrentTime(){return sharedPreferences.getLong("time", 0);}
+
+    public void setCurrentTime(long time) {
+        sharedPreferences.edit().putLong("time", time).apply();
+    }
+
+    public long getSeTime(){return sharedPreferences.getLong("setTime", 0);}
+
+    public void setSetTime(long time) {
+        sharedPreferences.edit().putLong("setTime", time).apply();
+    }
+
+    public boolean getIsTime(){return sharedPreferences.getBoolean("isTime", false);}
+
+    public void setIsTime(boolean time) {
+        sharedPreferences.edit().putBoolean("isTime", time).apply();
+    }
     /**
      * 工作状态
      * @return
