@@ -18,6 +18,7 @@ public class RoadResponse extends BaseResponse {
          * peishiNo :
          * peishiRoadPlace :
          * roadPlace :
+         * roadPlaceType
          */
 
         private String area;
@@ -30,6 +31,15 @@ public class RoadResponse extends BaseResponse {
         private String peishiNo;
         private String peishiRoadPlace;
         private String roadPlace;
+        private String roadPlaceType;
+
+        public String getRoadPlaceType() {
+            return roadPlaceType;
+        }
+
+        public void setRoadPlaceType(String roadPlaceType) {
+            this.roadPlaceType = roadPlaceType;
+        }
 
         public String getArea() {
             return area;

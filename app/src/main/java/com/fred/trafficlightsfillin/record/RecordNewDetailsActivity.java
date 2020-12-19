@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseResponse;
 import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.intersection.bean.TrafficlighResonse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
@@ -62,6 +63,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     @BindView(R.id.bottom_view)
     LinearLayout bottomView;
 
+    TaskDetailsChannel.TaskDetails taskDetails;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,11 +92,11 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
         });
 
        goTo.setOnClickListener(v -> {
-           showWindow();
+           initTrafficlighInfo();
        });
     }
 
-    private void showWindow(){
+    private void showWindow(TrafficlighResonse.TrafficlightChannel response){
         View mapSheetView = LayoutInflater.from(this).inflate(R.layout.map_navagation_sheet, null);
 
         TextView navigation_btn=mapSheetView.findViewById(R.id.navigation_btn);
@@ -124,7 +126,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                 if (isAvilible(RecordNewDetailsActivity.this, "com.baidu.BaiduMap")) {//传入指定应用包名
                     try {
                         Intent intent = Intent.getIntent("intent://map/direction?" +
-                                "destination=latlng:" + "mInfo.getLat()" + "," + "mInfo.getLng()" + "|name:我的目的地" +    //终点
+                                "destination=latlng:" + response.lat + "," + response.lon + "|name:"+roadName.getText().toString().trim()+    //终点
                                 "&mode=driving&" +     //导航路线方式
                                 "&src=appname#Intent;scheme=bdapp;package=com.baidu.BaiduMap;end");
                         startActivity(intent); //启动调用
@@ -155,7 +157,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
 
                     //将功能Scheme以URI的方式传入data
-                    Uri uri = Uri.parse("androidamap://navi?sourceApplication=appname&poiname="+roadName.getText().toString().trim()+"&lat=" + 39.92848272+ "&lon=" + 116.39560823 + "&dev=1&style=2");
+                    Uri uri = Uri.parse("androidamap://navi?sourceApplication=appname&poiname="+roadName.getText().toString().trim()+"&lat=" + response.lat+ "&lon=" + response.lon + "&dev=1&style=2");
                     intent.setData(uri);
 
                     //启动该页面即可
@@ -180,7 +182,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
 
                 //将功能Scheme以URI的方式传入data
-                Uri uri = Uri.parse("qqmap://map/routeplan?type=drive&to=我的目的地&tocoord=" + "mInfo.getLat()" + "," + "mInfo.getLng()");
+                Uri uri = Uri.parse("qqmap://map/routeplan?type=drive&to="+roadName.getText().toString().trim()+"&tocoord=" + response.lat + "," + response.lon);
                 intent.setData(uri);
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     //启动该页面即可
@@ -214,7 +216,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                     public void onSuccess(TaskDetailsChannel response) {
                         Log.e("fred  新数据：", response.toString());
                         if (response.data != null) {
-                            TaskDetailsChannel.TaskDetails taskDetails = response.data;
+                            taskDetails = response.data;
                             roadName.setText(taskDetails.roadPlace);
                             modelOne.setText(taskDetails.modelNo);
                             modelTwo.setText(taskDetails.modelType);
@@ -279,6 +281,29 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                         }
                         ToastUtil.showMsg(RecordNewDetailsActivity.this, response.msg);
                         finish();
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                    }
+                });
+    }
+
+    /**
+     * 获取路口基础信息
+     */
+    private void initTrafficlighInfo() {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_DETAILS) + "/" + taskDetails.getTrafficLightId())
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .build()
+                .getAsync(new ICallback<TrafficlighResonse>() {
+                    @Override
+                    public void onSuccess(TrafficlighResonse trafficlighResonse) {
+                        if (trafficlighResonse.code == 0) {
+                            TrafficlighResonse.TrafficlightChannel response = trafficlighResonse.data;
+                            showWindow(response);
+                        }
                     }
 
                     @Override

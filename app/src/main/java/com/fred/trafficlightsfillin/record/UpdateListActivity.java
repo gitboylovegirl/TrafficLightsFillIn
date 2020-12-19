@@ -17,6 +17,7 @@ import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.TimingDetailsActivity;
+import com.fred.trafficlightsfillin.intersection.TimingEditorActivity;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.record.bean.NewRecordChannel;
@@ -80,8 +81,9 @@ public class UpdateListActivity extends AppCompatActivity {
         });
         initData();
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
-            Intent intent = new Intent(UpdateListActivity.this, TimingDetailsActivity.class);
+            Intent intent = new Intent(UpdateListActivity.this, TimingEditorActivity.class);
             intent.putExtra("id", list.get(index).getId());
+            intent.putExtra("trafficLightId",list.get(index).getTrafficLightId());
             startActivity(intent);
         });
     }
@@ -103,7 +105,6 @@ public class UpdateListActivity extends AppCompatActivity {
                 .postAsync(new ICallback<NewRecordResponse>() {
                     @Override
                     public void onSuccess(NewRecordResponse response) {
-                        Log.e("fred  新数据：", response.toString());
                         if (page == 1) {
                             list.clear();
                             list = response.data.list;

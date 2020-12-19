@@ -96,7 +96,7 @@ public class RecordListActivity extends AppCompatActivity {
                 startActivity(intent);
             }else if("4".equals(list.get(index).state)){
                 //task_status.setText("完成已上传");
-                Intent intent = new Intent(RecordListActivity.this, TimingDetailsActivity.class);
+                Intent intent = new Intent(RecordListActivity.this, TimingEditorActivity.class);
                 intent.putExtra("id", list.get(index).getId());
                 intent.putExtra("trafficLightId",list.get(index).trafficLightId);
                 startActivity(intent);
@@ -165,14 +165,18 @@ public class RecordListActivity extends AppCompatActivity {
                 task_status.setText("后台取消");
             }else if("1".equals(newRecordChannel.state)){
                 task_status.setText("未接单");
+                task_status.setTextColor(Color.parseColor("#BAD8BE"));
             }else if("2".equals(newRecordChannel.state)){
                 task_status.setText("未完成");
+                task_status.setTextColor(Color.parseColor("#7BA9F9"));
             }else if("3".equals(newRecordChannel.state)){
                 task_status.setText("已完成");
+                task_status.setTextColor(Color.parseColor("#FF8631"));
             }else if("4".equals(newRecordChannel.state)){
                 task_status.setText("完成已上传");
+                task_status.setTextColor(Color.parseColor("#6D7790"));
             }
-            task_status.setTextColor(Color.parseColor("#FF8631"));
+            //task_status.setTextColor(Color.parseColor("#FF8631"));
         }
     }
 }

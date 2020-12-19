@@ -769,6 +769,7 @@
                     android:layout_marginRight="25dp"
                     android:background="#2A4997"
                     android:gravity="center"
+                    android:textColor="@color/white"
                     android:paddingHorizontal="15dp"
                     android:paddingVertical="30dp"
                     android:text="">
@@ -828,7 +829,6 @@
                         android:layout_marginTop="30dp"
                         android:paddingHorizontal="20dp"
                         android:paddingVertical="9dp"
-                        android:text="2020年12月12日/n18:45:21"
                         android:textColor="#ff2a4997"
                         android:textSize="11sp" />
                 </RelativeLayout>

@@ -160,6 +160,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
             search.setText(data.get(index).getRoadPlace());
             search.setSelection(data.get(index).getRoadPlace().length());
+            roadType.setText(data.get(index).getRoadPlaceType());
             popupWindow.dismiss();
         });
 
@@ -247,22 +248,22 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                 showDatePickerDialog(QueryMainActivity.this, 2);
                 break;
             case R.id.road_type:
-                DialogUtils.showChoiceDialog(QueryMainActivity.this, roadTypeData, new DialogUtils.OnButtonClickListener() {
-                    @Override
-                    public void onPositiveButtonClick() {
-
-                    }
-
-                    @Override
-                    public void onNegativeButtonClick() {
-
-                    }
-
-                    @Override
-                    public void onChoiceItem(String str, int pos) {
-                        roadType.setText(str);
-                    }
-                });
+//                DialogUtils.showChoiceDialog(QueryMainActivity.this, roadTypeData, new DialogUtils.OnButtonClickListener() {
+//                    @Override
+//                    public void onPositiveButtonClick() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNegativeButtonClick() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onChoiceItem(String str, int pos) {
+//                        roadType.setText(str);
+//                    }
+//                });
                 break;
             case R.id.road_place:
                 getRoadData();

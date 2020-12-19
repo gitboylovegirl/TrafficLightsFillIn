@@ -290,7 +290,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             setTaskState();
         });
 
-        endTime.setText(TimeUtils.time10(String.valueOf(System.currentTimeMillis())));
+        endTime.setText("点点滴滴");
     }
 
     /**
@@ -394,7 +394,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                         if (response.code == 0) {
                             imageBeans = response.data;
                             imageBeans.add(0, new ImageResponse.ImageBean());
-                            pictureAdapter.bindData(true, imageBeans);
+                            Log.e("fred",imageBeans.size()+"  数量");
+                            //pictureAdapter.bindData(true, imageBeans);
                         }
                     }
 
@@ -587,7 +588,7 @@ public class TimingEditorActivity extends AppCompatActivity {
      * 获取详细配时信息
      */
     private void initTrafficlighPeishi() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/" + "61"))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/61" ))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
@@ -632,14 +633,16 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                         }
 
-                        timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
-                        planCaseAdapter.bindData(true, weekdaysPlanCaseList);
-                        timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
+                        Log.e("fred",weekdaysPeriodCaseList.size()+"  数量**");
 
-                        lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
-                        lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
-                        lastWeekdaysTimeBean=weekdaysTimeCaseList.get(weekdaysTimeCaseList.size()-1);
-                        lastWeekdaysTimeBean=weekdaysTimeCaseList.get(weekdaysTimeCaseList.size()-1);
+//                        timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
+//                        planCaseAdapter.bindData(true, weekdaysPlanCaseList);
+//                        timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
+//
+//                        lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
+//                        lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
+//                        lastWeekdaysTimeBean=weekdaysTimeCaseList.get(weekdaysTimeCaseList.size()-1);
+//                        lastWeekdaysTimeBean=weekdaysTimeCaseList.get(weekdaysTimeCaseList.size()-1);
                     }
 
                     @Override

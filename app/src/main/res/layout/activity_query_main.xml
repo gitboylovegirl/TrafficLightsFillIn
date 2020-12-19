@@ -83,7 +83,7 @@
                     <!--自动完成文本框-->
                     <EditText
                         android:id="@+id/search"
-                        android:hint="路口名称"
+                        android:hint="请输入路口名称"
                         android:layout_width="130dp"
                         android:layout_height="29dp"
                         android:textSize="12sp"

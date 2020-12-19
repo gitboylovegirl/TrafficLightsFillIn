@@ -66,17 +66,18 @@
 
                         </TextView>
 
-                        <TextView
+                        <EditText
+                            android:padding="1dp"
                             android:id="@+id/road_name"
                             android:layout_width="130dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:background="@drawable/bg_color_f4f4f4_5dp"
                             android:gravity="center"
-                            android:text="北京大街"
+                            android:hint="请输入路口名称"
                             android:textColor="@color/main_color"
                             android:textSize="18sp"
-                            android:textStyle="bold"></TextView>
+                            android:textStyle="bold"></EditText>
                     </LinearLayout>
 
                     <LinearLayout
@@ -104,7 +105,6 @@
                             android:layout_marginTop="5dp"
                             android:background="@drawable/bg_color_f4f4f4_5dp"
                             android:gravity="center"
-                            android:text="西城区"
                             android:textColor="@color/black"
                             android:textSize="18sp" />
                     </LinearLayout>

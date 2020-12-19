@@ -184,8 +184,10 @@ public class RecordNewActivity extends AppCompatActivity {
                 task_status.setText("后台取消");
             }else if("1".equals(newRecordChannel.state)){
                 task_status.setText("未接单");
+                task_status.setTextColor(Color.parseColor("#E3BEAC"));
             }else if("2".equals(newRecordChannel.state)){
                 task_status.setText("未完成");
+                task_status.setTextColor(Color.parseColor("#6D7790"));
             }else if("3".equals(newRecordChannel.state)){
                 task_status.setText("已完成");
             }else if("4".equals(newRecordChannel.state)){

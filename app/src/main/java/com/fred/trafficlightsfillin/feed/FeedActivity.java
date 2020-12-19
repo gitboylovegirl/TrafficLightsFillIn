@@ -9,11 +9,17 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -34,6 +40,7 @@ import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.query.QueryMainActivity;
 import com.fred.trafficlightsfillin.query.bean.RoadResponse;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.GetImagePath;
@@ -52,7 +59,7 @@ import butterknife.ButterKnife;
 public class FeedActivity extends AppCompatActivity {
 
     @BindView(R.id.road_name)
-    TextView roadName;
+    EditText roadName;
     @BindView(R.id.type)
     TextView type;
     @BindView(R.id.signal_type)
@@ -81,6 +88,9 @@ public class FeedActivity extends AppCompatActivity {
     @BindView(R.id.area)
     TextView area;
 
+    PopupWindow popupWindow;
+    RoadPlaceadapter roadPlaceadapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,37 +114,133 @@ public class FeedActivity extends AppCompatActivity {
         feedPerson.setText("反馈人："+SharedPreferenceUtils.getInstance().getName());
         phone.setText("电话："+SharedPreferenceUtils.getInstance().getPhone());
 
+        roadPlaceadapter=new RoadPlaceadapter();
+
         time.setText(TimeUtils.time10(String.valueOf(System.currentTimeMillis())));
 
         submit.setOnClickListener(v -> {
             feedSubmit();
         });
-        roadName.setOnClickListener(v -> {
-            List<String> roadPlaces = new ArrayList<>();
-            for (int i = 0; i < roadChannels.size(); i++) {
-                roadPlaces.add(roadChannels.get(i).getRoadPlace());
+//        roadName.setOnClickListener(v -> {
+//            List<String> roadPlaces = new ArrayList<>();
+//            for (int i = 0; i < roadChannels.size(); i++) {
+//                roadPlaces.add(roadChannels.get(i).getRoadPlace());
+//            }
+//            DialogUtils.showChoiceDialog(FeedActivity.this, roadPlaces, new DialogUtils.OnButtonClickListener() {
+//                @Override
+//                public void onPositiveButtonClick() {
+//
+//                }
+//
+//                @Override
+//                public void onNegativeButtonClick() {
+//
+//                }
+//
+//                @Override
+//                public void onChoiceItem(String str, int pos) {
+//                    roadName.setText(str);
+//                    type.setText(roadChannels.get(pos).getModelNo());
+//                    signalType.setText(roadChannels.get(pos).getModelType());
+//                    area.setText(roadChannels.get(pos).getArea());
+//                    currentPosition = pos;
+//                }
+//            });
+//        });
+
+        roadName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
-            DialogUtils.showChoiceDialog(FeedActivity.this, roadPlaces, new DialogUtils.OnButtonClickListener() {
-                @Override
-                public void onPositiveButtonClick() {
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                List<String> roadPlaces = new ArrayList<>();
+                List<RoadResponse.RoadChannel> roadData= new ArrayList<>();
+                if(!TextUtils.isEmpty(s.toString().trim())){
+                    roadPlaces.clear();
+                    for (int i = 0; i < roadChannels.size(); i++) {
+                        if(roadChannels.get(i).getRoadPlace().contains(s.toString().trim())&&roadChannels.get(i).getRoadPlace()!=null){
+                            roadPlaces.add(roadChannels.get(i).getRoadPlace());
+                            roadData.add(roadChannels.get(i));
+                        }
+                    }
+                    Log.e("fred",roadPlaces.size()+"  路口数据");
+                    if (roadPlaces!=null&&roadPlaces.size()>0){
+                        if(popupWindow!=null&&popupWindow.isShowing()){
+                            popupWindow.dismiss();
+                        }
+                        showPopupWindow(roadName,roadData);
+                        roadPlaceadapter.bindData(true,roadPlaces);
+                        roadName.setFocusable(true);
+                    }else {
+                        if(popupWindow!=null&&popupWindow.isShowing()){
+                            popupWindow.dismiss();
+                        }
+                    }
+                }else {
+                    if(popupWindow!=null&&popupWindow.isShowing()){
+                        popupWindow.dismiss();
+                    }
                 }
-
-                @Override
-                public void onNegativeButtonClick() {
-
-                }
-
-                @Override
-                public void onChoiceItem(String str, int pos) {
-                    roadName.setText(str);
-                    type.setText(roadChannels.get(pos).getModelNo());
-                    signalType.setText(roadChannels.get(pos).getModelType());
-                    area.setText(roadChannels.get(pos).getArea());
-                    currentPosition = pos;
-                }
-            });
+            }
         });
+    }
+
+
+    private void showPopupWindow(View view,List<RoadResponse.RoadChannel> data) {
+        // 一个自定义的布局，作为显示的内容
+        View contentView = LayoutInflater.from(this).inflate(
+                R.layout.layout_popupwindow, null);
+
+        RecyclerView content=contentView.findViewById(R.id.content);
+
+        content.setLayoutManager(new LinearLayoutManager(FeedActivity.this));
+        content.setAdapter(roadPlaceadapter);
+
+        roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            roadName.setText(data.get(index).getRoadPlace());
+            type.setText(roadChannels.get(index).getModelNo());
+            signalType.setText(roadChannels.get(index).getModelType());
+            area.setText(roadChannels.get(index).getArea());
+            currentPosition = index;
+
+            popupWindow.dismiss();
+        });
+
+        popupWindow = new PopupWindow(contentView,  LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+
+        popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        //popupWindow.setTouchable(true);
+        popupWindow.setFocusable(false);
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_color_white_4dp));
+
+        // 设置好参数之后再show
+        popupWindow.showAsDropDown(view);
+    }
+
+    class RoadPlaceadapter extends BaseRecyclerAdapter<String>{
+
+        @Override
+        public int bindView(int viewType) {
+            return R.layout.layout_road_place_item;
+        }
+
+        @Override
+        public void onBindHolder(BaseViewHolder holder, @Nullable String s, int index) {
+            TextView tv_place=holder.obtainView(R.id.tv_place);
+
+            tv_place.setText(s);
+        }
     }
 
     /**
@@ -176,10 +282,10 @@ public class FeedActivity extends AppCompatActivity {
                         if (response.data != null) {
                             roadChannels.clear();
                             roadChannels.addAll(response.data);
-                            roadName.setText(roadChannels.get(0).getRoadPlace());
-                            type.setText(roadChannels.get(0).getModelNo());
-                            signalType.setText(roadChannels.get(0).getModelType());
-                            area.setText(roadChannels.get(0).getArea());
+//                            roadName.setText(roadChannels.get(0).getRoadPlace());
+//                            type.setText(roadChannels.get(0).getModelNo());
+//                            signalType.setText(roadChannels.get(0).getModelType());
+//                            area.setText(roadChannels.get(0).getArea());
 
                         }
                     }
