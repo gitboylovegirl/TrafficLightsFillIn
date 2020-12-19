@@ -62,7 +62,7 @@ public class RecordNewActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         page = 1;
-        initData();
+        initNewData();
     }
 
     private void initView() {
@@ -100,15 +100,11 @@ public class RecordNewActivity extends AppCompatActivity {
      * 请求数据
      */
     private void initNewData() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.NEW_LIST))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("engineerId", SharedPreferenceUtils.getInstance().getId())
                 .addParam("pageNum", String.valueOf(page))
-                .addParam("pageSize", "20")
-                .addParam("teamId", SharedPreferenceUtils.getInstance().getTeamId())
-                .addParam("teamName", SharedPreferenceUtils.getInstance().getTeamName())
-                .addParam("state","1")
+                .addParam("pageSize", "50")
                 .build()
                 .postAsync(new ICallback<NewRecordResponse>() {
                     @Override
@@ -120,10 +116,10 @@ public class RecordNewActivity extends AppCompatActivity {
                         if (page == 1) {
                             list.clear();
                             list=response.data.list;
-                            initData();
                         }else {
                             list.addAll(response.data.list);
                         }
+                        recordAdapter.bindData(true,list);
                         smartRefresh.finishLoadMore();
                         smartRefresh.finishRefresh();
                     }

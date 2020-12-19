@@ -71,6 +71,7 @@
                     android:layout_marginTop="88dp">
 
                     <TextView
+                        android:visibility="gone"
                         android:id="@+id/road_place"
                         android:layout_width="130dp"
                         android:layout_height="29dp"
@@ -78,6 +79,17 @@
                         android:gravity="center"
                         android:text="路口名称"
                         android:textSize="12sp"></TextView>
+
+                    <!--自动完成文本框-->
+                    <EditText
+                        android:id="@+id/search"
+                        android:hint="路口名称"
+                        android:layout_width="130dp"
+                        android:layout_height="29dp"
+                        android:textSize="12sp"
+                        android:gravity="center"
+                        android:background="@drawable/bg_color_f4f4f4_5dp"
+                    />
 
                     <TextView
                         android:id="@+id/road_type"
@@ -87,7 +99,8 @@
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
                         android:text="路口类型"
-                        android:textSize="12sp"></TextView>
+                        android:textSize="12sp">
+                    </TextView>
                 </RelativeLayout>
 
                 <TextView
@@ -203,26 +216,26 @@
 
                     <TextView
                         android:id="@+id/query_one"
-                        android:background="#AB3A1B"
+                        android:background="@drawable/button_bc2"
                         android:paddingHorizontal="26.5dp"
                         android:paddingVertical="11dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="查任务"
-                        android:textColor="#ffffffff"
+                        android:textColor="@drawable/button_bc"
                         android:textSize="15sp"
                         />
 
                     <TextView
                         android:id="@+id/query_two"
                         android:layout_marginLeft="41dp"
-                        android:background="#AB3A1B"
+                        android:background="@drawable/button_bc2"
                         android:paddingHorizontal="18.5dp"
                         android:paddingVertical="11dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="查配时表"
-                        android:textColor="#ffffffff"
+                        android:textColor="@drawable/button_bc"
                         android:textSize="15sp"
                         />
                 </LinearLayout>

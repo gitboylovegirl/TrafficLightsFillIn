@@ -10,4 +10,8 @@
     <color name="main_color">#ff133079</color>
     <color name="button_blue">#264798</color>
     <color name="main_text_color">#434AE7</color>
+
+    <color name="button_color">#AB3A1B</color>
+    <color name="button_color2">#33ffcc</color>
+
 </resources>

@@ -92,241 +92,242 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="47dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="47dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textColor="@color/black"
-                    android:text="机型："
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="机型："
+                    android:textColor="@color/black">
 
                 </TextView>
 
                 <TextView
                     android:id="@+id/model_one"
-                    android:textColor="@color/main_color"
-                    android:text="ASDFGHJKL"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="ASDFGHJKL"
+                    android:textColor="@color/main_color">
 
                 </TextView>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="47dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="47dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textColor="@color/black"
-                    android:text="信号机机型："
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="信号机机型："
+                    android:textColor="@color/black">
 
                 </TextView>
 
                 <TextView
                     android:id="@+id/model_two"
-                    android:textColor="@color/black"
-                    android:text="三星"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="三星"
+                    android:textColor="@color/black">
 
                 </TextView>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="47dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="47dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textColor="@color/black"
-                    android:text="任务车组："
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="任务车组："
+                    android:textColor="@color/black">
 
                 </TextView>
 
                 <TextView
                     android:id="@+id/team"
-                    android:textColor="@color/black"
-                    android:text="A1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="A1"
+                    android:textColor="@color/black">
 
                 </TextView>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="47dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="47dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
+
                 <TextView
-                    android:textColor="@color/black"
-                    android:text="姓名："
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="姓名："
+                    android:textColor="@color/black">
 
                 </TextView>
 
                 <TextView
                     android:id="@+id/name"
-                    android:textColor="@color/black"
-                    android:text="A1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="A1"
+                    android:textColor="@color/black">
 
                 </TextView>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="47dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="47dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textColor="@color/black"
-                    android:text="电话："
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="电话："
+                    android:textColor="@color/black">
 
                 </TextView>
 
                 <TextView
                     android:id="@+id/phone"
-                    android:textColor="@color/black"
-                    android:text="12121212121"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="12121212121"
+                    android:textColor="@color/black">
 
                 </TextView>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="47dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="47dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textColor="@color/black"
-                    android:text="任务来源："
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="任务来源："
+                    android:textColor="@color/black">
 
                 </TextView>
 
                 <TextView
                     android:id="@+id/task"
-                    android:textColor="@color/black"
-                    android:text="121大队"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="121大队"
+                    android:textColor="@color/black">
 
                 </TextView>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="47dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="47dp"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:textColor="@color/black"
-                    android:text="问题描述："
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:text="问题描述："
+                    android:textColor="@color/black">
 
                 </TextView>
             </LinearLayout>
 
 
             <RelativeLayout
-                android:gravity="center"
-                android:background="#F6F6F6"
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="47dp"
-                android:paddingVertical="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginHorizontal="47dp"
+                android:layout_marginTop="15dp"
+                android:background="#F6F6F6"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingVertical="16dp">
 
                 <TextView
                     android:id="@+id/sec"
-                    android:textColor="@color/black"
-                    android:text="问题描述："
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:textColor="#FF3C00">
 
                 </TextView>
             </RelativeLayout>
 
-            
+
             <TextView
-                android:layout_marginBottom="15dp"
                 android:id="@+id/receiving"
-                android:textColor="@color/white"
-                android:background="@color/button_blue"
-                android:layout_marginTop="25dp"
-                android:layout_gravity="center_horizontal"
-                android:text="接单"
-                android:gravity="center"
                 android:layout_width="138dp"
-                android:layout_height="37dp">
+                android:layout_height="37dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="15dp"
+                android:background="@color/button_blue"
+                android:gravity="center"
+                android:text="接单"
+                android:textColor="@color/white">
 
             </TextView>
 
-           <LinearLayout
-               android:visibility="gone"
-               android:id="@+id/bottom_view"
-               android:layout_marginBottom="15dp"
-               android:layout_marginHorizontal="40dp"
-               android:orientation="horizontal"
-               android:layout_gravity="center_horizontal"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/bottom_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-               <TextView
-                   android:id="@+id/go_to"
-                   android:textColor="@color/white"
-                   android:background="@color/button_blue"
-                   android:layout_gravity="center_horizontal"
-                   android:text="导航去这里"
-                   android:gravity="center"
-                   android:layout_width="138dp"
-                   android:layout_height="37dp">
+                <TextView
+                    android:id="@+id/go_to"
+                    android:layout_width="138dp"
+                    android:layout_height="37dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@color/button_blue"
+                    android:gravity="center"
+                    android:text="导航去这里"
+                    android:textColor="@color/white">
 
-               </TextView>
+                </TextView>
 
-               <TextView
-                   android:layout_marginLeft="20dp"
-                   android:id="@+id/finish"
-                   android:textColor="@color/white"
-                   android:background="#2C3241"
-                   android:layout_gravity="center_horizontal"
-                   android:text="完成任务单"
-                   android:gravity="center"
-                   android:layout_width="138dp"
-                   android:layout_height="37dp">
+                <TextView
+                    android:id="@+id/finish"
+                    android:layout_width="138dp"
+                    android:layout_height="37dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="20dp"
+                    android:background="#2C3241"
+                    android:gravity="center"
+                    android:text="完成任务单"
+                    android:textColor="@color/white">
 
-               </TextView>
-           </LinearLayout>
+                </TextView>
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

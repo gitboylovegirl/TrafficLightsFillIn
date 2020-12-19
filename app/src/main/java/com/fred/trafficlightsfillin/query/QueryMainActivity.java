@@ -5,8 +5,18 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -27,6 +37,7 @@ import com.fred.trafficlightsfillin.query.bean.TeamListResponse;
 import com.fred.trafficlightsfillin.record.bean.NewRecordChannel;
 import com.fred.trafficlightsfillin.record.bean.NewRecordResponse;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
+import com.fred.trafficlightsfillin.utils.SearchAdapter;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
 
@@ -70,6 +81,12 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     TextView emptyView;
 
     int queryType=1;
+
+    private LinearLayout empty;
+    private EditText search;
+
+    PopupWindow popupWindow;
+    RoadPlaceadapter roadPlaceadapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +98,98 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         getTeamList();
         getTaskList();
         getRoadTypeList();
+
+        roadPlaceadapter=new RoadPlaceadapter();
+
+        search = findViewById(R.id.search);
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                List<String> roadPlaces = new ArrayList<>();
+                List<RoadResponse.RoadChannel> roadData= new ArrayList<>();
+                if(!TextUtils.isEmpty(s.toString().trim())){
+                    roadPlaces.clear();
+                    for (int i = 0; i < roadChannels.size(); i++) {
+                        if(roadChannels.get(i).getRoadPlace().contains(s.toString().trim())&&roadChannels.get(i).getRoadPlace()!=null){
+                            roadPlaces.add(roadChannels.get(i).getRoadPlace());
+                            roadData.add(roadChannels.get(i));
+                        }
+                    }
+                    Log.e("fred",roadPlaces.size()+"  路口数据");
+                    if (roadPlaces!=null&&roadPlaces.size()>0){
+                        if(popupWindow!=null&&popupWindow.isShowing()){
+                            popupWindow.dismiss();
+                        }
+                        showPopupWindow(search,roadData);
+                        roadPlaceadapter.bindData(true,roadPlaces);
+                        search.setFocusable(true);
+                    }else {
+                        if(popupWindow!=null&&popupWindow.isShowing()){
+                            popupWindow.dismiss();
+                        }
+                    }
+                }else {
+                    if(popupWindow!=null&&popupWindow.isShowing()){
+                        popupWindow.dismiss();
+                    }
+                }
+            }
+        });
+    }
+
+    private void showPopupWindow(View view,List<RoadResponse.RoadChannel> data) {
+        // 一个自定义的布局，作为显示的内容
+        View contentView = LayoutInflater.from(this).inflate(
+                R.layout.layout_popupwindow, null);
+
+        RecyclerView content=contentView.findViewById(R.id.content);
+
+        content.setLayoutManager(new LinearLayoutManager(QueryMainActivity.this));
+        content.setAdapter(roadPlaceadapter);
+
+        roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            search.setText(data.get(index).getRoadPlace());
+            search.setSelection(data.get(index).getRoadPlace().length());
+            popupWindow.dismiss();
+        });
+
+        popupWindow = new PopupWindow(contentView,  LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+
+        popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        //popupWindow.setTouchable(true);
+        popupWindow.setFocusable(false);
+        // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+        popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_color_white_4dp));
+
+        // 设置好参数之后再show
+        popupWindow.showAsDropDown(view);
+    }
+
+    class RoadPlaceadapter extends BaseRecyclerAdapter<String>{
+
+        @Override
+        public int bindView(int viewType) {
+            return R.layout.layout_road_place_item;
+        }
+
+        @Override
+        public void onBindHolder(BaseViewHolder holder, @Nullable String s, int index) {
+            TextView tv_place=holder.obtainView(R.id.tv_place);
+
+            tv_place.setText(s);
+        }
     }
 
     private void initView() {

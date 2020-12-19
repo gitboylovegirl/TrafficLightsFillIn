@@ -141,7 +141,7 @@ public class FeedActivity extends AppCompatActivity {
      * 上报
      */
     private void feedSubmit() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.FEED_ADD))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("desc",tvFeed.getText().toString().trim())

@@ -7,8 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- 添加日历权限权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 添加日历权限权限 -->
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
@@ -23,7 +22,15 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-        <activity android:name=".query.TaskDetailsActivity"></activity>
+        <activity android:name=".WelcomeActivity"
+            android:theme="@style/SplashActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".query.TaskDetailsActivity" />
         <activity android:name=".intersection.TimingDetailsActivity" />
         <activity android:name=".intersection.TimingEditorActivity" />
         <activity android:name=".record.UpdateListActivity" />
@@ -35,11 +42,6 @@
         <activity android:name=".record.RecordListActivity" />
         <activity android:name=".login.ChangePasswordActivity" />
         <activity android:name=".login.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".MainActivity" /> <!-- 高德地图 -->
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->

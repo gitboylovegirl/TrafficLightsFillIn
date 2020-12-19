@@ -134,4 +134,10 @@ public class RequestApi {
      * 上报错误 post
      */
     public static final String FEED_ADD = "/service/add";
+
+
+    /**
+     * 获取最新任务
+     */
+    public static final String NEW_LIST="/service/task/newlist";
 }
