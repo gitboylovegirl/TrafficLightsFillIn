@@ -96,7 +96,7 @@ public class RecordListActivity extends AppCompatActivity {
                 startActivity(intent);
             }else if("4".equals(list.get(index).state)){
                 //task_status.setText("完成已上传");
-                Intent intent = new Intent(RecordListActivity.this, TimingEditorActivity.class);
+                Intent intent = new Intent(RecordListActivity.this, TimingDetailsActivity.class);
                 intent.putExtra("id", list.get(index).getId());
                 intent.putExtra("trafficLightId",list.get(index).trafficLightId);
                 startActivity(intent);

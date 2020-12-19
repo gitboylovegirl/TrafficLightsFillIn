@@ -140,4 +140,12 @@ public class RequestApi {
      * 获取最新任务
      */
     public static final String NEW_LIST="/service/task/newlist";
+
+
+    /**
+     *
+     * 工程师详情  get
+     */
+
+    public static final String ENGINEER_INFO="/service/engineer";
 }

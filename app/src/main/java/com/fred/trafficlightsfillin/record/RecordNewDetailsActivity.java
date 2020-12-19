@@ -24,6 +24,7 @@ import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.TrafficlighResonse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.record.bean.EngigeerResponse;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
@@ -220,13 +221,11 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                             roadName.setText(taskDetails.roadPlace);
                             modelOne.setText(taskDetails.modelNo);
                             modelTwo.setText(taskDetails.modelType);
-                            team.setText(taskDetails.teamName);
-
-                            name.setText(taskDetails.engineerName);
-                            phone.setText(taskDetails.carNumber);
                             task.setText(taskDetails.source);
                             sec.setText(taskDetails.desc);
                             roadPlace.setText(taskDetails.area);
+
+                            initEngigeerInfo();
                         }
                     }
 
@@ -303,6 +302,28 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                         if (trafficlighResonse.code == 0) {
                             TrafficlighResonse.TrafficlightChannel response = trafficlighResonse.data;
                             showWindow(response);
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                    }
+                });
+    }
+
+
+    private void initEngigeerInfo() {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ENGINEER_INFO) + "/" + taskDetails.getEngineerId())
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .build()
+                .getAsync(new ICallback<EngigeerResponse>() {
+                    @Override
+                    public void onSuccess(EngigeerResponse engigeerResponse) {
+                        if (engigeerResponse.code == 0) {
+                            team.setText(engigeerResponse.data.teamName);
+                            name.setText(engigeerResponse.data.name);
+                            phone.setText(engigeerResponse.data.phone);
                         }
                     }
 
