@@ -304,7 +304,7 @@
 
                 </androidx.recyclerview.widget.RecyclerView>
 
-                    <!--
+
                 <LinearLayout
                     android:layout_marginTop="8dp"
                     android:orientation="horizontal"
@@ -328,7 +328,7 @@
                         android:layout_height="wrap_content">
 
                     </TextView>
-                </LinearLayout>-->
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_marginTop="8dp"

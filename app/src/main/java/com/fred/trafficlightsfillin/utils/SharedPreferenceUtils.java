@@ -533,6 +533,17 @@ public class SharedPreferenceUtils {
     public void setIsTime(boolean time) {
         sharedPreferences.edit().putBoolean("isTime", time).apply();
     }
+
+    /**
+     * 版本
+     *
+     */
+    public Integer getNewestVersion(){
+        return sharedPreferences.getInt("version", 0);
+    }
+    public void setNewestVersion(int version){
+        sharedPreferences.edit().putInt("version", version);
+    }
     /**
      * 工作状态
      * @return

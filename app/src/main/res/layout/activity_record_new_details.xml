@@ -308,10 +308,10 @@
                     android:layout_width="138dp"
                     android:layout_height="37dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@color/button_blue"
+                    android:background="@drawable/button_bc2"
                     android:gravity="center"
                     android:text="导航去这里"
-                    android:textColor="@color/white">
+                    android:textColor="@drawable/button_bc">
 
                 </TextView>
 
@@ -321,10 +321,10 @@
                     android:layout_height="37dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="20dp"
-                    android:background="#2C3241"
+                    android:background="@drawable/button_bc2"
                     android:gravity="center"
                     android:text="完成任务单"
-                    android:textColor="@color/white">
+                    android:textColor="@drawable/button_bc">
 
                 </TextView>
             </LinearLayout>

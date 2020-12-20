@@ -2,16 +2,16 @@ package com.fred.trafficlightsfillin.login;
 
 import com.fred.trafficlightsfillin.base.BaseResponse;
 
-public class LocationResponse extends BaseResponse {
+public class TokenResponse extends BaseResponse {
 
 
-    private Long data;
+    private String data;
 
-    public Long getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(Long data) {
+    public void setData(String data) {
         this.data = data;
     }
 }

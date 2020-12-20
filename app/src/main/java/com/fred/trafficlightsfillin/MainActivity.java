@@ -24,9 +24,11 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.feed.FeedActivity;
+import com.fred.trafficlightsfillin.login.AppUpdateResponse;
 import com.fred.trafficlightsfillin.login.ChangePasswordActivity;
 import com.fred.trafficlightsfillin.login.LocationResponse;
 import com.fred.trafficlightsfillin.login.LoginActivity;
+import com.fred.trafficlightsfillin.login.TokenResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.query.QueryMainActivity;
@@ -170,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         locationInfo(String.valueOf(lat), String.valueOf(lat));
                     }
                 } else {//失败
-                    freshToken();
                     Log.i("fred", "Distance: 定位失败 :" + aMapLocation.getErrorCode() + ", errInfo:" + aMapLocation.getErrorInfo());
                 }
             }
@@ -203,12 +204,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .postAsync(new ICallback<LocationResponse>() {
                     @Override
                     public void onSuccess(LocationResponse response) {
+                        Log.e("Location", "Location: "+response.code);
                         if (response.code == 401001) {
                             freshToken();
-                            //getNewVersion();
                             SharedPreferenceUtils.getInstance().setToken("");
                         } else if (response.code == 0) {
-                            if (response.data != null && response.data.size() > 0) {
+                            if (response.getData() != null && response.getData() > 0) {
                                 if (SharedPreferenceUtils.getInstance().getSeTime() > 0) {
                                     long lastTime = SharedPreferenceUtils.getInstance().getCurrentTime();
                                     long currentTimeMillis = System.currentTimeMillis();
@@ -238,11 +239,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
-                .getAsync(new ICallback<LocationResponse>() {
+                .getAsync(new ICallback<AppUpdateResponse>() {
                     @Override
-                    public void onSuccess(LocationResponse response) {
+                    public void onSuccess(AppUpdateResponse response) {
                         if (response.code == 0) {
-
+                            int nowVersion = SharedPreferenceUtils.getInstance().getNewestVersion();
+                            if(response.getData() != null && nowVersion < response.getData()){
+                                //需要更新版本
+                            }
                         }
                     }
 
@@ -257,15 +261,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 刷新token
      */
     private void freshToken() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN) + "/" + SharedPreferenceUtils.getInstance().getToken())
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
-                .getAsync(new ICallback<LocationResponse>() {
+                .getAsync(new ICallback<TokenResponse>() {
                     @Override
-                    public void onSuccess(LocationResponse response) {
-                        Log.e("fred  刷新：", response.toString());
-
+                    public void onSuccess(TokenResponse response) {
+                        if(response.code == 401001){
+                            Intent intent = new Intent();
+                            intent.setClass(MainActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }else{
+                            Log.e("fred  刷新：", response.toString());
+                            SharedPreferenceUtils.getInstance().setToken(response.getData());
+                        }
                     }
 
                     @Override
