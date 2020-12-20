@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
-        android:background="#fcfcfc"
+        android:background="@drawable/bg_color_blue_stroke_two"
         android:orientation="vertical">
 
         <View
@@ -27,15 +27,17 @@
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="7dp"
+                android:layout_marginHorizontal="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_edite_selector"
                 android:hint="请输入"
                 android:imeOptions="actionDone"
-                android:maxLength="60"
+                android:maxLength="3"
+                android:maxLines="1"
                 android:paddingLeft="12dp"
                 android:singleLine="true"
                 android:textColor="#434AE7"
+                android:inputType="number"
                 android:textColorHint="#FFC3C3C3"
                 android:textSize="13sp" />
 

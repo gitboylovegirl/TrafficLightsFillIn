@@ -24,6 +24,7 @@ import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.TrafficlighResonse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.query.TaskUpdateActivity;
 import com.fred.trafficlightsfillin.record.bean.EngigeerResponse;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
@@ -77,7 +78,22 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
         initData();
 
         receiving.setOnClickListener(v -> {
-            submit();
+            DialogUtils.showCurrencyDialog(this, "是否确认接单？", new DialogUtils.OnButtonClickListener() {
+                @Override
+                public void onPositiveButtonClick() {
+                    submit();
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+
+                }
+            });
         });
 
         String state = getIntent().getStringExtra("state");
@@ -92,9 +108,11 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
         }
         //点击完成
         finish.setOnClickListener(v -> {
-             //changeState();
-
-
+            //changeState();
+            Intent intent=new Intent(this, TaskUpdateActivity.class);
+            intent.putExtra("id",taskDetails.id);
+            intent.putExtra("trafficLightId",taskDetails.trafficLightId);
+            startActivity(intent);
         });
 
        goTo.setOnClickListener(v -> {

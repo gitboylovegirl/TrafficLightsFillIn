@@ -211,7 +211,7 @@
                     android:id="@+id/weekday"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_color_blue_stroke"
+                    android:background="@drawable/bg_color_blue_gray_stroke_main"
                     android:gravity="center"
                     android:paddingVertical="3dp"
                     android:text="@string/work_day">

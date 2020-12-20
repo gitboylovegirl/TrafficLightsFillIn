@@ -408,7 +408,11 @@ public class FeedActivity extends AppCompatActivity {
             }
             pictureAdapter.bindData(true, imageBeans);
             pictureAdapter.notifyDataSetChanged();
-            uploadPicture(fileData);
+            for (int i = 0; i < fileData.size(); i++) {
+                List<String> updateData=new ArrayList<>();
+                updateData.add(fileData.get(i));
+                uploadPicture(fileData);
+            }
         }
 
     }

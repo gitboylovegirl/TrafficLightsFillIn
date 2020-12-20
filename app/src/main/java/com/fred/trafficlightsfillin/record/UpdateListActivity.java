@@ -145,7 +145,7 @@ public class UpdateListActivity extends AppCompatActivity {
             time.setText(TimeUtils.time7(String.valueOf(newRecordChannel.createTime)));
             task_from.setText("来源：" + newRecordChannel.source);
             road_name.setText(newRecordChannel.roadPlace);
-            task_status.setText("已完成");
+            task_status.setText("配时表未更新");
             task_status.setTextColor(Color.parseColor("#FF8631"));
         }
     }

@@ -78,4 +78,6 @@ dependencies {
 
     //滑动选择
     implementation 'com.github.open-android:WheelPicker:v1.0.0'
+
+    implementation 'com.kovachcode:timePickerWithSeconds:1.0.1'
 }

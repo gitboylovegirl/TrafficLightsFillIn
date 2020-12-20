@@ -5,14 +5,14 @@
         <!-- 画线框 -->
         <shape android:shape="rectangle">
             <solid android:color="#fff5f5f5" />
-            <corners android:radius="17dp" />
+            <corners android:radius="5dp" />
         </shape>
     </item>
     <item android:state_pressed="true">
         <!-- 画线框 -->
         <shape android:shape="rectangle">
             <solid android:color="#fff5f5f5" />
-            <corners android:radius="17dp" />
+            <corners android:radius="5dp" />
         </shape>
     </item>
 

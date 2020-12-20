@@ -130,6 +130,45 @@ public class DialogUtils {
         lp.width = display.getWidth()-100;
         dialog.getWindow().setAttributes(lp);
     }
+
+    /**
+     * 通用弹窗
+     * @param context
+     * @param listener
+     */
+    public static void showCurrencyDialog(Activity context, String title,OnButtonClickListener listener) {
+        AlertDialog dialog = new AlertDialog.Builder(context).create();
+        dialog.setCancelable(true);
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        window.setContentView(R.layout.layout_currency_window);
+        TextView confirm=window.findViewById(R.id.confirm_button);
+        TextView cancel=window.findViewById(R.id.cancel_button);
+        TextView tvTitle=window.findViewById(R.id.title);
+
+        tvTitle.setText(title);
+        confirm.setOnClickListener(v -> {
+            if(listener!=null){
+                listener.onPositiveButtonClick();
+            }
+            dialog.dismiss();
+        });
+        cancel.setOnClickListener(v -> {
+            if(listener!=null){
+                listener.onNegativeButtonClick();
+            }
+            dialog.dismiss();
+        });
+        //给弹窗设置宽高
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        WindowManager manager = context.getWindowManager();
+        Display display = manager.getDefaultDisplay();
+        lp.width = display.getWidth()-100;
+        dialog.getWindow().setAttributes(lp);
+    }
+
     public static void showChoiceTitltDialog(Activity context, List<String> data,OnButtonClickListener listener) {
         AlertDialog dialog = new AlertDialog.Builder(context).create();
         dialog.setCancelable(true);

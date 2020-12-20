@@ -69,14 +69,19 @@ import com.fred.trafficlightsfillin.utils.SoftKeyBoardListener;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.google.gson.Gson;
+import com.ikovac.timepickerwithseconds.MyTimePickerDialog;
+import com.ikovac.timepickerwithseconds.TimePicker;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -143,6 +148,9 @@ public class TimingEditorActivity extends AppCompatActivity {
     private View popuwindowView;
     private PopupWindow popupWindow;
     private TextView currentTextView;
+    private int currentType;
+    private int currentPos;
+    private int currentChoosePos;
     EditText inputComment;
 
     private List<PeriodCaseListBean> weekdaysPeriodCaseList = new ArrayList<>();//工作日时间表
@@ -159,7 +167,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     String trafficLightId;
     String id;
     List<StageResponse.StageChanel> stageChanels;//配时表数据
-    List<ImageResponse.ImageBean> imageBeans=new ArrayList<>();
+    List<ImageResponse.ImageBean> imageBeans = new ArrayList<>();
     PlanCaseAdapter planCaseAdapter;
     TimeCaseAdapter timeCaseAdapter;
 
@@ -170,6 +178,8 @@ public class TimingEditorActivity extends AppCompatActivity {
 
     TimeCaseListBean lastWeekdaysTimeBean;
     TimeCaseListBean lastWeekendTimeBean;
+    boolean isShow = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -216,7 +226,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         //工作日
         weekday.setOnClickListener(view -> {
             isWeekday = true;
-            weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_stroke));
+            weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
             planCaseAdapter.bindData(true, weekdaysPlanCaseList);
@@ -225,7 +235,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         //周日
         weekend.setOnClickListener(view -> {
             isWeekday = false;
-            weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_stroke));
+            weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekendPeriodCaseList);
             planCaseAdapter.bindData(true, weekendPlanCaseList);
@@ -236,29 +246,44 @@ public class TimingEditorActivity extends AppCompatActivity {
          * 点击提交
          */
         submit.setOnClickListener(v -> {
-            SubmitBean submitBean=new SubmitBean();
+            SubmitBean submitBean = new SubmitBean();
             submitBean.setDate(Long.parseLong(TimeUtils.time11(endTime.getText().toString())));
             submitBean.setRemark(better.getText().toString());
             submitBean.setTaskId(Integer.parseInt(id));
 
-            List<PeriodCaseListBean> periodCaseList =new ArrayList<>();
+            List<PeriodCaseListBean> periodCaseList = new ArrayList<>();
             periodCaseList.addAll(weekdaysPeriodCaseList);
             periodCaseList.addAll(weekendPeriodCaseList);
             submitBean.setPeriodCaseList(periodCaseList);
 
 
-            List<PlanCaseListBean> planCaseList =new ArrayList<>();
+            List<PlanCaseListBean> planCaseList = new ArrayList<>();
             planCaseList.addAll(weekdaysPlanCaseList);
             planCaseList.addAll(weekendPlanCaseList);
             submitBean.setPlanCaseList(planCaseList);
 
-            List<TimeCaseListBean> timeCaseList=new ArrayList<>();
+            List<TimeCaseListBean> timeCaseList = new ArrayList<>();
             timeCaseList.addAll(weekdaysTimeCaseList);
             timeCaseList.addAll(weekendTimeCaseList);
             submitBean.setTimeCaseList(timeCaseList);
 
-            Gson gson=new Gson();
-            submitTaskResult(gson.toJson(submitBean));
+            Gson gson = new Gson();
+            DialogUtils.showCurrencyDialog(this, "是否确认上传？", new DialogUtils.OnButtonClickListener() {
+                @Override
+                public void onPositiveButtonClick() {
+                    submitTaskResult(gson.toJson(submitBean));
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+
+                }
+            });
         });
 
         better.addTextChangedListener(new TextWatcher() {
@@ -288,13 +313,19 @@ public class TimingEditorActivity extends AppCompatActivity {
                 weekendPeriodCaseList.add(lastWeekendPeriodBean);
                 timeTableAdapter.bindData(true, weekendPeriodCaseList);
             }
+            lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
+            lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
             setTaskState();
+
         });
 
         /**
          * 配时表新增
          */
         timetableAdd.setOnClickListener(v -> {
+//            for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
+//                Log.e("fred  数据1",i+"   "+weekdaysTimeCaseList.get(i).getT1());
+//            }
             if (isWeekday) {
                 weekdaysTimeCaseList.add(lastWeekdaysTimeBean);
                 timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
@@ -302,7 +333,12 @@ public class TimingEditorActivity extends AppCompatActivity {
                 weekendTimeCaseList.add(lastWeekendTimeBean);
                 timeCaseAdapter.bindData(true, weekendTimeCaseList);
             }
+            lastWeekdaysTimeBean = weekdaysTimeCaseList.get(weekdaysTimeCaseList.size() - 1);
+            lastWeekendTimeBean = weekdaysTimeCaseList.get(weekendTimeCaseList.size() - 1);
             setTaskState();
+            for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
+                Log.e("fred  数据2",i+"   "+weekdaysTimeCaseList.get(i).getT1());
+            }
         });
 
         endTime.setText(TimeUtils.time10(String.valueOf(System.currentTimeMillis())));
@@ -311,14 +347,17 @@ public class TimingEditorActivity extends AppCompatActivity {
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             @Override
             public void keyBoardShow(int height) {
-                //Toast.makeText(getActivity(), "键盘显示 高度" + height, Toast.LENGTH_SHORT).show();
-                showPopupCommnet(height);
-                inputComment.requestFocus();
+                Toast.makeText(TimingEditorActivity.this, "键盘显示 高度" + height, Toast.LENGTH_SHORT).show();
+
+                if (isShow) {
+                    showPopupCommnet(height);
+                    inputComment.requestFocus();
+                }
             }
 
             @Override
             public void keyBoardHide(int height) {
-                if(popupWindow!=null){
+                if (popupWindow != null) {
                     popupWindow.dismiss();
                 }
             }
@@ -329,8 +368,7 @@ public class TimingEditorActivity extends AppCompatActivity {
      * 上传任务结果
      */
     private void submitTaskResult(String json) {
-        Log.e("json",json.toString());
-
+        Log.e("json", json.toString());
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_RESULT))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
@@ -343,14 +381,16 @@ public class TimingEditorActivity extends AppCompatActivity {
                         if (response.code == 0) {
                             finish();
                         }
-                        ToastUtil.showMsg(TimingEditorActivity.this,response.msg);
+                        ToastUtil.showMsg(TimingEditorActivity.this, response.msg);
                     }
 
                     @Override
                     public void onFail(int errorCode, String errorMsg) {
                     }
                 });
-    }    /**
+    }
+
+    /**
      * 获取次序表数据
      */
     private void initStage() {
@@ -395,7 +435,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     public void onSuccess(TrafficlighResonse trafficlighResonse) {
                         if (trafficlighResonse.code == 0) {
                             TrafficlighResonse.TrafficlightChannel response = trafficlighResonse.data;
-                            Log.e("fred", response.toString());
+                            //Log.e("fred", response.toString());
                             number.setText("编号：" + response.no);
                             roadName.setText(response.roadPlace);
                             area.setText(response.area);
@@ -426,9 +466,9 @@ public class TimingEditorActivity extends AppCompatActivity {
                         if (response.code == 0) {
                             imageBeans = response.data;
                             imageBeans.add(imageBeans.size(), new ImageResponse.ImageBean());
-                            Log.e("fred",imageBeans.size()+"  数量");
-                            if (pictureAdapter==null){
-                                pictureAdapter=new PictureAdapter();
+                            //Log.e("fred", imageBeans.size() + "  数量");
+                            if (pictureAdapter == null) {
+                                pictureAdapter = new PictureAdapter();
                             }
                             pictureAdapter.bindData(true, imageBeans);
                         }
@@ -451,7 +491,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 .getAsyncTwo(new ICallback<TaskDetailsChannel>() {
                     @Override
                     public void onSuccess(TaskDetailsChannel response) {
-                        Log.e("fred  新数据：", response.toString());
+                        //Log.e("fred  新数据：", response.toString());
                         if (response.data != null) {
                             TaskDetailsChannel.TaskDetails taskDetails = response.data;
 //                            if ("0".equals(taskDetails.state)) {
@@ -495,9 +535,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             RelativeLayout rlPicture = holder.obtainView(R.id.rl_picture);
             RelativeLayout rlMore = holder.obtainView(R.id.rl_more);
             ImageView picture = holder.obtainView(R.id.iv_picture);
-            ImageView iv_delete=holder.obtainView(R.id.iv_delete);
+            ImageView iv_delete = holder.obtainView(R.id.iv_delete);
 
-            if (index == imageBeans.size()-1) {
+            if (index == imageBeans.size() - 1) {
                 rlMore.setVisibility(View.VISIBLE);
                 rlPicture.setVisibility(View.GONE);
             } else {
@@ -513,16 +553,16 @@ public class TimingEditorActivity extends AppCompatActivity {
                     pictureAdapter.notifyDataSetChanged();
                 });
 
-                String pictureUrl = RequestApi.BASE_OFFICIAL_URL+RequestApi.DOWN_IMG + "/" + imageBean.path;
-                if(imageBean.getUri()!=null&&!TextUtils.isEmpty(imageBean.getUri().toString())){
+                String pictureUrl = RequestApi.BASE_OFFICIAL_URL + RequestApi.DOWN_IMG + "/" + imageBean.path;
+                if (imageBean.getUri() != null && !TextUtils.isEmpty(imageBean.getUri().toString())) {
                     String filePath = GetImagePath.getPath(TimingEditorActivity.this, imageBean.getUri());
-                    Bitmap bm = GetImagePath.displayImage(TimingEditorActivity.this,filePath);
-                    if(bm==null){
-                        ToastUtil.showShort(TimingEditorActivity.this,"获取图片失败");
+                    Bitmap bm = GetImagePath.displayImage(TimingEditorActivity.this, filePath);
+                    if (bm == null) {
+                        ToastUtil.showShort(TimingEditorActivity.this, "获取图片失败");
                         return;
                     }
                     picture.setImageBitmap(bm);
-                }else {
+                } else {
                     GlideUrl glideUrl = new GlideUrl(pictureUrl, new LazyHeaders.Builder()
                             .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                             .build());
@@ -542,12 +582,13 @@ public class TimingEditorActivity extends AppCompatActivity {
                                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                                         Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 100);
-                    }else {
+                    } else {
                         choicePicture();
                     }
-                }else{
+                } else {
                     choicePicture();
-                }            });
+                }
+            });
         }
     }
 
@@ -580,11 +621,11 @@ public class TimingEditorActivity extends AppCompatActivity {
             for (int i = 0; i < mSelected.size(); i++) {
                 Log.i("图片", mSelected.get(i).getPath());
                 fileData.add(getFilePathFromUri(TimingEditorActivity.this, mSelected.get(i)));
-                ImageResponse.ImageBean imageBean=new ImageResponse.ImageBean();
+                ImageResponse.ImageBean imageBean = new ImageResponse.ImageBean();
                 imageBean.setUri(mSelected.get(i));
-                imageBeans.add(0,imageBean);
+                imageBeans.add(0, imageBean);
             }
-            pictureAdapter.bindData(true,imageBeans);
+            pictureAdapter.bindData(true, imageBeans);
             pictureAdapter.notifyDataSetChanged();
             uploadPicture(fileData);
         }
@@ -616,7 +657,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 
     //删除图片
     private void delPicture(String imgID) {
-        if(TextUtils.isEmpty(imgID)){
+        if (TextUtils.isEmpty(imgID)) {
             return;
         }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.DEL_IMG) + "/" + imgID)
@@ -638,6 +679,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     }
                 });
     }
+
     public static String getFilePathFromUri(Context context, Uri uri) {
         if (null == uri) return null;
         final String scheme = uri.getScheme();
@@ -666,7 +708,7 @@ public class TimingEditorActivity extends AppCompatActivity {
      * 获取详细配时信息
      */
     private void initTrafficlighPeishi() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/61" ))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/61"))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
@@ -711,18 +753,18 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                         }
 
-                        Log.e("fred",weekdaysPeriodCaseList.size()+"  数量**");
+                       // Log.e("fred", weekdaysPeriodCaseList.size() + "  数量**");
 
-                        if(timeTableAdapter==null){
-                            timeTableAdapter=new TimeTableAdapter();
+                        if (timeTableAdapter == null) {
+                            timeTableAdapter = new TimeTableAdapter();
                         }
 
-                        if(planCaseAdapter==null){
-                            planCaseAdapter=new PlanCaseAdapter();
+                        if (planCaseAdapter == null) {
+                            planCaseAdapter = new PlanCaseAdapter();
                         }
 
-                        if(timeCaseAdapter==null){
-                            timeCaseAdapter=new TimeCaseAdapter();
+                        if (timeCaseAdapter == null) {
+                            timeCaseAdapter = new TimeCaseAdapter();
                         }
 
                         timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
@@ -731,8 +773,8 @@ public class TimingEditorActivity extends AppCompatActivity {
 
                         lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
                         lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
-                        lastWeekdaysTimeBean=weekdaysTimeCaseList.get(weekdaysTimeCaseList.size()-1);
-                        lastWeekdaysTimeBean=weekdaysTimeCaseList.get(weekdaysTimeCaseList.size()-1);
+                        lastWeekdaysTimeBean = weekdaysTimeCaseList.get(weekdaysTimeCaseList.size() - 1);
+                        lastWeekendTimeBean = weekdaysTimeCaseList.get(weekendTimeCaseList.size() - 1);
                     }
 
                     @Override
@@ -772,19 +814,59 @@ public class TimingEditorActivity extends AppCompatActivity {
                 setTaskState();
             });
 
+            no.setOnClickListener(v -> {
+                currentTextView = no;
+                currentType=1;
+                currentPos=index;
+                currentChoosePos=2;
+                showPopupCommnet(800);
+            });
+
             startTime.setOnClickListener(v -> {
-                currentTextView=startTime;
-                //showPopupCommnet();
+                MyTimePickerDialog mTimePicker = new MyTimePickerDialog(TimingEditorActivity.this, (view, hourOfDay, minute, seconds) -> {
+                    // TODO Auto-generated method stub
+                    String time=String.format("%02d", hourOfDay)+ ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds);
+                    //Log.e("fred",time);
+                    if(isWeekday){
+                        weekdaysPeriodCaseList.get(currentPos).setStart(time);
+                    }else {
+                        weekendPeriodCaseList.get(currentPos).setStart(time);
+                    }
+                    lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
+                    lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
+                    startTime.setText(time);
+                },0,0, 0, true);
+                mTimePicker.show();
             });
         }
+    }
+
+    /**
+     * 显示键盘
+     *
+     * @param et 输入焦点
+     */
+    public void showInput(final EditText et) {
+        et.requestFocus();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+                           public void run() {
+                               InputMethodManager inputManager =
+                                       (InputMethodManager) inputComment.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                               inputManager.showSoftInput(inputComment, 0);
+                           }
+
+                       },
+                200);
     }
 
     @SuppressLint("WrongConstant")
     private void showPopupCommnet(int height) {
         popuwindowView = LayoutInflater.from(TimingEditorActivity.this).inflate(
                 R.layout.layout_tv_bottom_view, null);
-        inputComment = (EditText)popuwindowView .findViewById(R.id.number_tv);
-
+        inputComment = (EditText) popuwindowView.findViewById(R.id.number_tv);
+        //inputComment.requestFocus();//请求焦点
+        showInput(inputComment);
         popupWindow = new PopupWindow(popuwindowView, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
@@ -808,7 +890,118 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-               currentTextView.setText(editable.toString().trim());
+                for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
+                    Log.e("fred  数据3",i+"   "+weekdaysTimeCaseList.get(i).getT1());
+                }
+                currentTextView.setText(editable.toString().trim());
+                for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
+                    Log.e("fred  数据4",i+"   "+weekdaysTimeCaseList.get(i).getT1());
+                }
+                if(isWeekday){
+                    //工作日
+                    if(currentType==1){
+                        //配时方案
+                        weekdaysPeriodCaseList.get(currentPos).setTimeCaseNo(editable.toString().trim());
+                    }else if (currentType==2){
+                        //配时表1
+                        if(currentChoosePos==1){
+                            weekdaysPlanCaseList.get(currentPos).setT1(editable.toString().trim());
+                        }else if(currentChoosePos==2){
+                            weekdaysPlanCaseList.get(currentPos).setT2(editable.toString().trim());
+                        }else if(currentChoosePos==3){
+                            weekdaysPlanCaseList.get(currentPos).setT3(editable.toString().trim());
+                        }else if(currentChoosePos==4){
+                            weekdaysPlanCaseList.get(currentPos).setT4(editable.toString().trim());
+                        }else if(currentChoosePos==5){
+                            weekdaysPlanCaseList.get(currentPos).setT5(editable.toString().trim());
+                        }else if(currentChoosePos==6){
+                            weekdaysPlanCaseList.get(currentPos).setT6(editable.toString().trim());
+                        }else if(currentChoosePos==7){
+                            weekdaysPlanCaseList.get(currentPos).setT7(editable.toString().trim());
+                        }else if(currentChoosePos==8){
+                            weekdaysPlanCaseList.get(currentPos).setT8(editable.toString().trim());
+                        }else if(currentChoosePos==9){
+                            weekdaysPlanCaseList.get(currentPos).setT9(editable.toString().trim());
+                        }else if(currentChoosePos==10){
+                            weekdaysPlanCaseList.get(currentPos).setT10(editable.toString().trim());
+                        }
+                    }else {
+                        //配时表2
+                        if(currentChoosePos==1){
+                            weekdaysTimeCaseList.get(currentPos).setT1(editable.toString().trim());
+                        }else if(currentChoosePos==2){
+                            weekdaysTimeCaseList.get(currentPos).setT2(editable.toString().trim());
+                        }else if(currentChoosePos==3){
+                            weekdaysTimeCaseList.get(currentPos).setT3(editable.toString().trim());
+                        }else if(currentChoosePos==4){
+                            weekdaysTimeCaseList.get(currentPos).setT4(editable.toString().trim());
+                        }else if(currentChoosePos==5){
+                            weekdaysTimeCaseList.get(currentPos).setT5(editable.toString().trim());
+                        }else if(currentChoosePos==6){
+                            weekdaysTimeCaseList.get(currentPos).setT6(editable.toString().trim());
+                        }else if(currentChoosePos==7){
+                            weekdaysTimeCaseList.get(currentPos).setT7(editable.toString().trim());
+                        }else if(currentChoosePos==8){
+                            weekdaysTimeCaseList.get(currentPos).setT8(editable.toString().trim());
+                        }else if(currentChoosePos==9){
+                            weekdaysTimeCaseList.get(currentPos).setT9(editable.toString().trim());
+                        }else if(currentChoosePos==10){
+                            weekdaysTimeCaseList.get(currentPos).setT10(editable.toString().trim());
+                        }
+                    }
+                }else {
+                    //周末
+                    if(currentType==1){
+                        //配时方案
+                        weekendPeriodCaseList.get(currentPos).setTimeCaseNo(editable.toString().trim());
+                    }else if (currentType==2){
+                        //配时表1
+                        if(currentChoosePos==1){
+                            weekendPlanCaseList.get(currentPos).setT1(editable.toString().trim());
+                        }else if(currentChoosePos==2){
+                            weekendPlanCaseList.get(currentPos).setT2(editable.toString().trim());
+                        }else if(currentChoosePos==3){
+                            weekendPlanCaseList.get(currentPos).setT3(editable.toString().trim());
+                        }else if(currentChoosePos==4){
+                            weekendPlanCaseList.get(currentPos).setT4(editable.toString().trim());
+                        }else if(currentChoosePos==5){
+                            weekendPlanCaseList.get(currentPos).setT5(editable.toString().trim());
+                        }else if(currentChoosePos==6){
+                            weekendPlanCaseList.get(currentPos).setT6(editable.toString().trim());
+                        }else if(currentChoosePos==7){
+                            weekendPlanCaseList.get(currentPos).setT7(editable.toString().trim());
+                        }else if(currentChoosePos==8){
+                            weekendPlanCaseList.get(currentPos).setT8(editable.toString().trim());
+                        }else if(currentChoosePos==9){
+                            weekendPlanCaseList.get(currentPos).setT9(editable.toString().trim());
+                        }else if(currentChoosePos==10){
+                            weekendPlanCaseList.get(currentPos).setT10(editable.toString().trim());
+                        }
+                    }else {
+                        //配时表2
+                        if(currentChoosePos==1){
+                            weekendTimeCaseList.get(currentPos).setT1(editable.toString().trim());
+                        }else if(currentChoosePos==2){
+                            weekendTimeCaseList.get(currentPos).setT2(editable.toString().trim());
+                        }else if(currentChoosePos==3){
+                            weekendTimeCaseList.get(currentPos).setT3(editable.toString().trim());
+                        }else if(currentChoosePos==4){
+                            weekendTimeCaseList.get(currentPos).setT4(editable.toString().trim());
+                        }else if(currentChoosePos==5){
+                            weekendTimeCaseList.get(currentPos).setT5(editable.toString().trim());
+                        }else if(currentChoosePos==6){
+                            weekendTimeCaseList.get(currentPos).setT6(editable.toString().trim());
+                        }else if(currentChoosePos==7){
+                            weekendTimeCaseList.get(currentPos).setT7(editable.toString().trim());
+                        }else if(currentChoosePos==8){
+                            weekendTimeCaseList.get(currentPos).setT8(editable.toString().trim());
+                        }else if(currentChoosePos==9){
+                            weekendTimeCaseList.get(currentPos).setT9(editable.toString().trim());
+                        }else if(currentChoosePos==10){
+                            weekendTimeCaseList.get(currentPos).setT10(editable.toString().trim());
+                        }
+                    }
+                }
             }
         });
 
@@ -824,9 +1017,10 @@ public class TimingEditorActivity extends AppCompatActivity {
         popupWindow.update();
         popupWindow.setOnDismissListener(() -> {
             //隐藏软键盘
-            Toast.makeText(this, "软键盘隐藏" + height, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "软键盘隐藏" + height, Toast.LENGTH_SHORT).show();
             //liveRoomText.clearFocus();
             hideKeyBoard(this);
+            isShow = false;
         });
     }
 
@@ -844,6 +1038,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             }
         }
     }
+
     /**
      * 配时方案1 adapter
      */
@@ -883,13 +1078,93 @@ public class TimingEditorActivity extends AppCompatActivity {
             TextView programme_nine = holder.obtainView(R.id.programme_nine);
             TextView programme_ten = holder.obtainView(R.id.programme_ten);
 
+            programme_one.setOnClickListener(v -> {
+                currentTextView=programme_one;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=1;
+                showPopupCommnet(800);
+            });
+
+            programme_two.setOnClickListener(v -> {
+                currentTextView=programme_two;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=2;
+                showPopupCommnet(800);
+            });
+
+            programme_three.setOnClickListener(v -> {
+                currentTextView=programme_three;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=3;
+                showPopupCommnet(800);
+            });
+
+            programme_four.setOnClickListener(v -> {
+                currentTextView=programme_four;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=4;
+                showPopupCommnet(800);
+            });
+
+            programme_five.setOnClickListener(v -> {
+                currentTextView=programme_five;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=5;
+                showPopupCommnet(800);
+            });
+
+            programme_six.setOnClickListener(v -> {
+                currentTextView=programme_six;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=6;
+                showPopupCommnet(800);
+            });
+
+            programme_seven.setOnClickListener(v -> {
+                currentTextView=programme_seven;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=7;
+                showPopupCommnet(800);
+            });
+
+            programme_eight.setOnClickListener(v -> {
+                currentTextView=programme_eight;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=8;
+                showPopupCommnet(800);
+            });
+
+            programme_nine.setOnClickListener(v -> {
+                currentTextView=programme_nine;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=9;
+                showPopupCommnet(800);
+            });
+
+            programme_ten.setOnClickListener(v -> {
+                currentTextView=programme_ten;
+                currentType=2;
+                currentPos=index;
+                currentChoosePos=10;
+                showPopupCommnet(800);
+            });
+
             if ("1".equals(planCaseListBean.getType())) {
                 typeOne.setVisibility(View.GONE);
                 typeTwo.setVisibility(View.VISIBLE);
                 typeThree.setVisibility(View.GONE);
 
                 for (int i = 0; i < stageChanels.size(); i++) {
-                    Log.e("fred", stageChanels.get(i).image);
+                    //Log.e("fred", stageChanels.get(i).image);
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT1())) {
                         //String str2=str.replace(" ", "")
                         String[] split = stageChanels.get(i).image.split(",");
@@ -1281,7 +1556,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             TextView programme_nine = holder.obtainView(R.id.programme_nine);
             TextView programme_ten = holder.obtainView(R.id.programme_ten);
 
-            TextView tvDelete=holder.obtainView(R.id.tv_delete);
+            TextView tvDelete = holder.obtainView(R.id.tv_delete);
             tvDelete.setVisibility(View.VISIBLE);
 
 //            if (index == 0) {
@@ -1306,16 +1581,96 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             titleId.setText(timeCaseListBean.getNo());
 
+            programme_one.setOnClickListener(v -> {
+               currentTextView=programme_one;
+               currentType=3;
+               currentPos=index;
+               currentChoosePos=1;
+                showPopupCommnet(800);
+            });
+
+            programme_two.setOnClickListener(v -> {
+                currentTextView=programme_two;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=2;
+                showPopupCommnet(800);
+            });
+
+            programme_three.setOnClickListener(v -> {
+                currentTextView=programme_three;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=3;
+                showPopupCommnet(800);
+            });
+
+            programme_four.setOnClickListener(v -> {
+                currentTextView=programme_four;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=4;
+                showPopupCommnet(800);
+            });
+
+            programme_five.setOnClickListener(v -> {
+                currentTextView=programme_five;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=5;
+                showPopupCommnet(800);
+            });
+
+            programme_six.setOnClickListener(v -> {
+                currentTextView=programme_six;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=6;
+                showPopupCommnet(800);
+            });
+
+            programme_seven.setOnClickListener(v -> {
+                currentTextView=programme_seven;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=7;
+                showPopupCommnet(800);
+            });
+
+            programme_eight.setOnClickListener(v -> {
+                currentTextView=programme_eight;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=8;
+                showPopupCommnet(800);
+            });
+
+            programme_nine.setOnClickListener(v -> {
+                currentTextView=programme_nine;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=9;
+                showPopupCommnet(800);
+            });
+
+            programme_ten.setOnClickListener(v -> {
+                currentTextView=programme_ten;
+                currentType=3;
+                currentPos=index;
+                currentChoosePos=10;
+                showPopupCommnet(800);
+            });
+
             //删除
             tvDelete.setOnClickListener(v -> {
-                lastWeekdaysTimeBean=weekdaysTimeCaseList.get(weekdaysTimeCaseList.size()-1);
-                lastWeekendTimeBean=weekendTimeCaseList.get(weekendTimeCaseList.size()-1);
-                if (isWeekday){
+                lastWeekdaysTimeBean = weekdaysTimeCaseList.get(weekdaysTimeCaseList.size() - 1);
+                lastWeekendTimeBean = weekendTimeCaseList.get(weekendTimeCaseList.size() - 1);
+                if (isWeekday) {
                     weekdaysTimeCaseList.remove(index);
-                    timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
-                }else {
+                    timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
+                } else {
                     weekendTimeCaseList.remove(index);
-                    timeCaseAdapter.bindData(true,weekendTimeCaseList);
+                    timeCaseAdapter.bindData(true, weekendTimeCaseList);
                 }
                 setTaskState();
             });

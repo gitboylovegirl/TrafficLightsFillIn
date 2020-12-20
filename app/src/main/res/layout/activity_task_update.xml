@@ -15,7 +15,6 @@
 
     </ImageView>
 
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -255,7 +254,6 @@
                     android:background="#A0A5B2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="红绿灯时间南北配置不合理，有时信号不稳定，请尽快处理。。。。。。"
                     android:textColor="#ffffffff"
                     android:textSize="13sp"
                     />
@@ -272,122 +270,143 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_marginTop="15dp"
-                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="配时优化调整内容："
+                    android:textColor="#ff0e0e0e"
                     android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:text="现场图片"
+                    android:textSize="15sp"
+                    />
+
+
+                <EditText
+                    android:id="@+id/input_better"
+                    android:hint="请输入内容"
+                    android:textColorHint="@color/white"
+                    android:layout_marginTop="15dp"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="30dp"
+                    android:textColor="@color/white"
+                    android:background="#2A4997"
+                    android:textSize="12sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </EditText>
+
+                <TextView
+                    android:layout_marginTop="30dp"
+                    android:textColor="#ff0e0e0e"
+                    android:textStyle="bold"
+                    android:textSize="15sp"
+                    android:text="上传现场图片（可选）"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
                 </TextView>
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:layout_marginTop="15dp"
                     android:id="@+id/picture"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
-                <LinearLayout
-                    android:orientation="horizontal"
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="22dp"
+                    android:paddingLeft="33dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="结果"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/task_end"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/state"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="已完成"
+                            android:textColor="#ff2a4997"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="25dp"
+                        android:text="时间"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/end_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="30dp"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="9dp"
+                        android:textColor="#ff2a4997"
+                        android:textSize="11sp" />
+                </RelativeLayout>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="备注："
+                    android:textStyle="bold"
+                    android:textColor="#ff0e0e0e"
+                    android:textSize="15sp"
+                    />
+
+                <TextView
+                    android:id="@+id/remark"
+                    android:textColorHint="@color/white"
+                    android:layout_marginTop="10dp"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="30dp"
+                    android:textColor="@color/white"
+                    android:background="#F4F4F4"
+                    android:textSize="12sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-
-                    <TextView
-                        android:text="路口状态:"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/road_state"
-                        android:text="章程"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-
-                    <TextView
-                        android:text="最后配时时间:"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/time"
-                        android:text="2020年"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-
-                    <TextView
-                        android:text="最后配时车组:"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/team"
-                        android:text="A2"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_marginTop="8dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-
-                    <TextView
-                        android:text="任务状态:"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/task_state"
-                        android:text="A2"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-                </LinearLayout>
-
+                </TextView>
             </LinearLayout>
+
+            <TextView
+                android:layout_marginVertical="15dp"
+                android:id="@+id/submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="#2A4997"
+                android:paddingHorizontal="19dp"
+                android:paddingVertical="11dp"
+                android:text="已检查好，上传完成"
+                android:textColor="#ffffffff"
+                android:textSize="15sp" />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

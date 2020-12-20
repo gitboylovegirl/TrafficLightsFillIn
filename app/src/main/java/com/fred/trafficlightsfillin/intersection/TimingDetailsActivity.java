@@ -145,7 +145,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
         timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
         //工作日
         weekday.setOnClickListener(view -> {
-            weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_stroke));
+            weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
             planCaseAdapter.bindData(true,weekdaysPlanCaseList);
@@ -153,7 +153,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
         });
         //周日
         weekend.setOnClickListener(view -> {
-            weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_stroke));
+            weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekendPeriodCaseList);
             planCaseAdapter.bindData(true,weekendPlanCaseList);
