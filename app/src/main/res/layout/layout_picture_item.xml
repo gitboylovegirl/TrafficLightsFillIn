@@ -4,23 +4,6 @@
     android:layout_width="84dp"
     android:layout_height="127dp">
 
-    <RelativeLayout
-        android:visibility="gone"
-        android:id="@+id/rl_more"
-        android:layout_width="84dp"
-        android:layout_height="127dp"
-        android:background="#A0A5B2">
-
-        <ImageView
-            android:id="@+id/iv_add"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_centerInParent="true"
-            android:src="@mipmap/test">
-
-        </ImageView>
-
-    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rl_picture"
@@ -47,5 +30,23 @@
             android:visibility="gone">
 
         </ImageView>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/rl_more"
+        android:layout_width="84dp"
+        android:layout_height="127dp"
+        android:background="#A0A5B2">
+
+        <ImageView
+            android:id="@+id/iv_add"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/test">
+
+        </ImageView>
+
     </RelativeLayout>
 </RelativeLayout>

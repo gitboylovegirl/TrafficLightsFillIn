@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.feed.FeedActivity;
 import com.fred.trafficlightsfillin.login.ChangePasswordActivity;
 import com.fred.trafficlightsfillin.login.LocationResponse;
+import com.fred.trafficlightsfillin.login.LoginActivity;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.query.QueryMainActivity;
@@ -77,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView listRecord;
     @BindView(R.id.timing_record)
     TextView timingRecord;
+    @BindView(R.id.login_out)
+    TextView loginOut;
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_CALENDAR,
@@ -275,6 +279,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         feed.setOnClickListener(this::onClick);
         tipSet.setOnClickListener(this::onClick);
         update.setOnClickListener(this::onClick);
+        if("1".equals(SharedPreferenceUtils.getInstance().getFlag())){
+            status.setText("上班");
+        }else{
+            status.setText("下班");
+        }
+        changeStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                {
+                    SharedPreferenceUtils.getInstance().setFlag("1");
+                    status.setText("上班");
+                }else{
+                    SharedPreferenceUtils.getInstance().setFlag("0");
+                    status.setText("下班");
+
+                }
+            }
+        });
 
         newRecord.setOnClickListener(this);
         newRecordTop.setOnClickListener(this::onClick);
@@ -288,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         timingRecord.setOnClickListener(this::onClick);
         timingRecordTop.setOnClickListener(this::onClick);
 
+        loginOut.setOnClickListener(this::onClick);
         changePassword.setOnClickListener(this::onClick);
     }
 
@@ -349,6 +373,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.timing_record://配时查询
             case R.id.timing_record_top:
                 intent.setClass(MainActivity.this, QueryMainActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.login_out:
+                intent.setClass(MainActivity.this, LoginActivity.class);
+                SharedPreferenceUtils.getInstance().setToken(null);
+                SharedPreferenceUtils.getInstance().setrefreshToken(null);
                 startActivity(intent);
                 break;
             case R.id.change_password:

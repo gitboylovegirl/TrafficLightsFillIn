@@ -43,8 +43,8 @@ public class LoginActivity extends BaseActivity {
     EditText userPhone;
     @BindView(R.id.user_password)
     EditText userPassword;
-    @BindView(R.id.change_password)
-    TextView changePassword;
+    @BindView(R.id.forget_password)
+    TextView forgetPassowrd;
     @BindView(R.id.password_view)
     RelativeLayout passwordView;
     @BindView(R.id.login)
@@ -62,7 +62,7 @@ public class LoginActivity extends BaseActivity {
     public void initView() {
         login.setOnClickListener(this::onClickEvent);
         cancel.setOnClickListener(this::onClickEvent);
-        changePassword.setOnClickListener(this::onClickEvent);
+        forgetPassowrd.setOnClickListener(this::onClickEvent);
     }
 
     @Override
@@ -90,10 +90,10 @@ public class LoginActivity extends BaseActivity {
             userName.setText(SharedPreferenceUtils.getInstance().getName());
         }
         if(!TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getPhone())){
-            userName.setText(SharedPreferenceUtils.getInstance().getPhone());
+            userPhone.setText(SharedPreferenceUtils.getInstance().getPhone());
         }
-        if(!TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getTeamId())){
-            userName.setText(SharedPreferenceUtils.getInstance().getTeamId());
+        if(!TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getTeamName())){
+            userTeam.setText(SharedPreferenceUtils.getInstance().getTeamName());
         }
     }
 
@@ -108,7 +108,7 @@ public class LoginActivity extends BaseActivity {
                 //退出系统
                 System.exit(0);
                 break;
-            case R.id.change_password:
+            case R.id.forget_password:
                 openActivity(ChangePasswordActivity.class);
                 break;
         }

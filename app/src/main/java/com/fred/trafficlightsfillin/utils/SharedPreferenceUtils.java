@@ -537,7 +537,7 @@ public class SharedPreferenceUtils {
      * 工作状态
      * @return
      */
-    public String getFlag(){return sharedPreferences.getString("flag", "1");}
+    public String getFlag(){return sharedPreferences.getString("flag", "0");}
 
     public void setFlag(String str) {
         sharedPreferences.edit().putString("flag", str).apply();

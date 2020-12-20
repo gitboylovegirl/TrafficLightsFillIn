@@ -249,5 +249,13 @@ public class TaskDetailsChannel extends BaseResponse implements Serializable {
         public void setTrafficLightState(String trafficLightState) {
             this.trafficLightState = trafficLightState;
         }
+
+        public String getCause() {
+            return cause;
+        }
+
+        public void setCause(String cause) {
+            this.cause = cause;
+        }
     }
 }

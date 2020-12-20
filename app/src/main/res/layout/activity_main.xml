@@ -50,10 +50,23 @@
         <TextView
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="40dp"
-            android:id="@+id/change_password"
-            android:layout_marginRight="35dp"
+            android:id="@+id/login_out"
+            android:layout_marginRight="100dp"
             android:layout_alignParentRight="true"
-            android:layout_width="64dp"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:text="@string/login_out"
+            android:textColor="#CFD0F2"
+            android:textSize="13sp"
+            />
+
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="40dp"
+            android:id="@+id/change_password"
+            android:layout_marginRight="25dp"
+            android:layout_alignParentRight="true"
+            android:layout_width="55dp"
             android:layout_height="wrap_content"
             android:text="修改密码"
             android:textColor="#CFD0F2"

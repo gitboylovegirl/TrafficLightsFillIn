@@ -5,9 +5,11 @@
     <string name="team">班组</string>
     <string name="phone">手机</string>
     <string name="password">密码</string>
+    <string name="login_out">注销</string>
     <string name="change_password">修改密码</string>
-    <string name="old_password">请输入原密码</string>
-    <string name="new_password">新密码确认</string>
+    <string name="old_password">原密码（6-12位的数字和字母组合!）</string>
+    <string name="new_password">新密码（6-12位的数字和字母组合!）</string>
+    <string name="re_new_password">新密码确认</string>
     <string name="back">返回</string>
     <string name="new_record">最新任务</string>
     <string name="update">上传更新</string>

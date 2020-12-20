@@ -17,6 +17,10 @@ import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.utils.AccountManager;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
+import com.fred.trafficlightsfillin.utils.ValidatorUtil;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,8 +57,48 @@ public class ChangePasswordActivity extends BaseActivity {
 
     @Override
     public void initView() {
-      confirmButton.setOnClickListener(this::onClickEvent);
-      cancel.setOnClickListener(this::onClickEvent);
+        confirmButton.setOnClickListener(this::onClickEvent);
+        cancel.setOnClickListener(this::onClickEvent);
+        userOldPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){//失去焦点
+                    String content = userOldPassword.getText() == null ? "" : userOldPassword.getText().toString().trim();
+                    if(!ValidatorUtil.checkPwd(content)){
+                        ToastUtil.showMsg(ChangePasswordActivity.this,"原密码格式不对请重新输入");
+                        userOldPassword.setText("");
+                    }
+                }
+            }
+        });
+
+
+        userNewPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){//失去焦点
+                    String content = userNewPassword.getText() == null ? "" : userNewPassword.getText().toString().trim();
+                    if(!ValidatorUtil.checkPwd(content)){
+                        ToastUtil.showMsg(ChangePasswordActivity.this,"新密码格式不对请重新输入");
+                        userNewPassword.setText("");
+                    }
+                }
+            }
+        });
+
+        userNewPasswordTwo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){//失去焦点
+
+                    String newPwd= userNewPassword.getText() == null ? "" : userNewPassword.getText().toString().trim();
+                    String newPwdTwo = userNewPasswordTwo.getText() == null ? "" : userNewPasswordTwo.getText().toString().trim();
+                    if(!newPwd.equals(newPwdTwo)){
+                        ToastUtil.showMsg(ChangePasswordActivity.this,"两次设置的密码不一致");
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -71,10 +115,13 @@ public class ChangePasswordActivity extends BaseActivity {
     public void onClickEvent(View view) {
        switch (view.getId()){
            case R.id.confirm_button:
-               if(TextUtils.isEmpty(userNewPassword.getText().toString().trim())||TextUtils.isEmpty(userNewPasswordTwo.getText().toString().trim())||TextUtils.isEmpty(userOldPassword.getText().toString().trim())){
+               String oldPwd = userOldPassword.getText() == null ? "" : userOldPassword.getText().toString().trim();
+               String newPwd= userNewPassword.getText() == null ? "" : userNewPassword.getText().toString().trim();
+               String newPwdTwo = userNewPasswordTwo.getText() == null ? "" : userNewPasswordTwo.getText().toString().trim();
+               if(TextUtils.isEmpty(oldPwd)||TextUtils.isEmpty(newPwd)||TextUtils.isEmpty(newPwdTwo)){
                    ToastUtil.showMsg(ChangePasswordActivity.this,"密码不能为空");
                }else {
-                   changeUserPassword(userNewPassword.getText().toString().trim(),userOldPassword.getText().toString().trim(),userNewPasswordTwo.getText().toString().trim());
+                   changeUserPassword(newPwd,oldPwd,newPwdTwo);
                }
                break;
            case R.id.cancel:
@@ -101,6 +148,7 @@ public class ChangePasswordActivity extends BaseActivity {
                         public void onSuccess(LoginResponse response) {
                             if(response.code==0){
                                 finish();
+                                openActivity(MainActivity.class);
                             }
                             ToastUtil.showMsg(ChangePasswordActivity.this,response.msg);
                         }

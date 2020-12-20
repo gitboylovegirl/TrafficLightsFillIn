@@ -1,5 +1,6 @@
 package com.fred.trafficlightsfillin.query;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -50,14 +51,16 @@ public class TaskDetailsActivity extends AppCompatActivity {
     TextView desc;
     @BindView(R.id.picture)
     RecyclerView picture;
-    @BindView(R.id.road_state)
-    TextView roadState;
+    /*@BindView(R.id.road_state)
+    TextView roadState;*/
     @BindView(R.id.time)
     TextView time;
     @BindView(R.id.team)
     TextView team;
     @BindView(R.id.task_state)
     TextView taskState;
+    @BindView(R.id.better)
+    TextView better;
     PictureAdapter pictureAdapter;
 
     String id;
@@ -95,18 +98,16 @@ public class TaskDetailsActivity extends AppCompatActivity {
                             roadName.setText(taskDetails.roadPlace);
                             modelNumber.setText(taskDetails.modelNo);
                             modelType.setText(taskDetails.modelType);
-                            team.setText(taskDetails.teamName);
-
-                            roadPosition.setText(taskDetails.location);
                             roadType.setText(taskDetails.roadPlaceType);
+                            area.setText(taskDetails.area);
+                            team.setText(taskDetails.teamName);
+                            roadPosition.setText(taskDetails.location);
                             taskFrom.setText(taskDetails.source);
                             desc.setText(taskDetails.desc);
-                            area.setText(taskDetails.area);
-
-                            roadState.setText(taskDetails.state);
+                            better.setText(taskDetails.getCause());
+                            taskState.setText(intStr2TaskState(taskDetails.state));
 
                             time.setText(TimeUtils.time7(taskDetails.trafficLightLastUpdateTime));
-                            team.setText(taskDetails.teamName);
                         }
                     }
 
@@ -114,6 +115,35 @@ public class TaskDetailsActivity extends AppCompatActivity {
                     public void onFail(int errorCode, String errorMsg) {
                     }
                 });
+    }
+
+
+    private String intStr2RoadState(String state){
+        //0异常 1正常 2停用
+        if("0".equals(state)){
+            return "异常";
+        }else if("1".equals(state)){
+            return "正常";
+        }else if("2".equals(state)){
+            return "停用";
+        }
+        return "未知";
+    }
+
+    private String intStr2TaskState(String state){
+        //任务状态 0 后台取消 1 未接单、2 未完成、3 已完成、4 完成已上传
+        if("0".equals(state)){
+            return "后台取消";
+        }else if("1".equals(state)){
+            return "未接单";
+        }else if("2".equals(state)){
+            return "未完成";
+        }else if("3".equals(state)){
+            return "已完成";
+        }else if("4".equals(state)){
+            return "完成已上传";
+        }
+        return "未知";
     }
 
     /**

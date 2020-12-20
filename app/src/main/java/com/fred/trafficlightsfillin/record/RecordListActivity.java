@@ -15,10 +15,10 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.RequestApi;
-import com.fred.trafficlightsfillin.intersection.TimingDetailsActivity;
 import com.fred.trafficlightsfillin.intersection.TimingEditorActivity;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.query.TaskDetailsActivity;
 import com.fred.trafficlightsfillin.record.bean.NewRecordChannel;
 import com.fred.trafficlightsfillin.record.bean.NewRecordResponse;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
@@ -96,7 +96,7 @@ public class RecordListActivity extends AppCompatActivity {
                 startActivity(intent);
             }else if("4".equals(list.get(index).state)){
                 //task_status.setText("完成已上传");
-                Intent intent = new Intent(RecordListActivity.this, TimingDetailsActivity.class);
+                Intent intent = new Intent(RecordListActivity.this, TaskDetailsActivity.class);
                 intent.putExtra("id", list.get(index).getId());
                 intent.putExtra("trafficLightId",list.get(index).trafficLightId);
                 startActivity(intent);

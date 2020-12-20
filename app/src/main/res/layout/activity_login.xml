@@ -140,12 +140,12 @@
                 <TextView
                     android:visibility="gone"
                     android:layout_marginTop="3dp"
-                    android:id="@+id/change_password"
+                    android:id="@+id/forget_password"
                     android:layout_marginRight="45dp"
                     android:layout_alignParentRight="true"
                     android:layout_width="64dp"
                     android:layout_height="wrap_content"
-                    android:text="修改密码"
+                    android:text="忘记密码"
                     android:textColor="@color/main_color"
                     android:textSize="15sp"
                     />

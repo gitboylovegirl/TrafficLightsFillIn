@@ -54,7 +54,6 @@
                     android:layout_width="126dp"
                     android:layout_height="12dp"
                     android:layout_marginTop="19dp"
-                    android:text="编号：85436549684"
                     android:textColor="#ffc6c6c6"
                     android:textSize="12sp" />
 
@@ -71,7 +70,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="70dp"
-                    android:text="清华大街"
                     android:textColor="@color/black"
                     android:textSize="20sp">
 
@@ -96,7 +94,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
-                        android:text="西城区"
                         android:textColor="#ff0e0e0e"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -126,7 +123,6 @@
                         android:id="@+id/road_position"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="四环-五环"
                         android:textColor="#ff0e0e0e"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -148,7 +144,6 @@
                         android:id="@+id/road_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="平面十字"
                         android:textColor="#ff0e0e0e"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -171,7 +166,6 @@
                         android:id="@+id/model_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="mcu_6"
                         android:textColor="#ff0e0e0e"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -194,7 +188,6 @@
                         android:id="@+id/model_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="平面十字"
                         android:textColor="#ff0e0e0e"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -241,7 +234,7 @@
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:text="问题描述：:"
+                    android:text="问题描述："
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
@@ -255,7 +248,29 @@
                     android:background="#A0A5B2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="红绿灯时间南北配置不合理，有时信号不稳定，请尽快处理。。。。。。"
+                    android:textColor="#ffffffff"
+                    android:textSize="13sp"
+                    />
+
+                <TextView
+                    android:layout_marginTop="15dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:text="配时优化调整内容："
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/better"
+                    android:layout_marginTop="15dp"
+                    android:paddingVertical="30dp"
+                    android:paddingHorizontal="25dp"
+                    android:background="#A0A5B2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:textColor="#ffffffff"
                     android:textSize="13sp"
                     />
@@ -289,29 +304,7 @@
 
                 </androidx.recyclerview.widget.RecyclerView>
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-
-                    <TextView
-                        android:text="路口状态:"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/road_state"
-                        android:text="章程"
-                        android:textColor="#A0A5B2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-                </LinearLayout>
+                    <!--
                 <LinearLayout
                     android:layout_marginTop="8dp"
                     android:orientation="horizontal"
@@ -335,7 +328,7 @@
                         android:layout_height="wrap_content">
 
                     </TextView>
-                </LinearLayout>
+                </LinearLayout>-->
 
                 <LinearLayout
                     android:layout_marginTop="8dp"
@@ -361,7 +354,6 @@
 
                     </TextView>
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_marginTop="8dp"
                     android:orientation="horizontal"
@@ -379,7 +371,7 @@
 
                     <TextView
                         android:id="@+id/task_state"
-                        android:text="A2"
+                        android:text=""
                         android:textColor="#A0A5B2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
