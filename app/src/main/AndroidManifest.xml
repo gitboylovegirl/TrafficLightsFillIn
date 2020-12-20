@@ -22,7 +22,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-        <activity android:name=".WelcomeActivity"
+        <activity android:name=".query.TaskUpdateActivity"></activity>
+        <activity
+            android:name=".WelcomeActivity"
             android:theme="@style/SplashActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,8 +43,7 @@
         <activity android:name=".record.RecordNewActivity" />
         <activity android:name=".record.RecordListActivity" />
         <activity android:name=".login.ChangePasswordActivity" />
-        <activity android:name=".login.LoginActivity">
-        </activity>
+        <activity android:name=".login.LoginActivity"></activity>
         <activity android:name=".MainActivity" /> <!-- 高德地图 -->
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" />

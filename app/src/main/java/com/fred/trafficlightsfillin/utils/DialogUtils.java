@@ -2,13 +2,10 @@ package com.fred.trafficlightsfillin.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Display;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -25,6 +22,8 @@ import com.fred.trafficlightsfillin.intersection.bean.StageResponse;
 import com.itheima.wheelpicker.WheelPicker;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DialogUtils {
     /**
@@ -59,6 +58,7 @@ public class DialogUtils {
         window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         window.setContentView(R.layout.layout_str_pictiker);
         WheelPicker picker = window.findViewById(R.id.picker);
+        TextView confirm=window.findViewById(R.id.confirm_button);
 
         picker.setData(data);
         picker.setOnItemSelectedListener((wheelPicker, o, i) -> {
@@ -68,6 +68,10 @@ public class DialogUtils {
         });
 
         picker.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        confirm.setOnClickListener(v -> {
             dialog.dismiss();
         });
         //给弹窗设置宽高
@@ -83,6 +87,48 @@ public class DialogUtils {
 //                listener.onChoiceItem(data.get(picker.getCurrentItemPosition()),picker.getCurrentItemPosition());
 //            }
 //        });
+    }
+
+    /**
+     * 地图选择弹窗
+     * @param context
+     * @param data
+     * @param listener
+     */
+    public static void showMapChoiceDialog(Activity context, List<String> data,OnButtonClickListener listener) {
+        AlertDialog dialog = new AlertDialog.Builder(context).create();
+        dialog.setCancelable(true);
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        window.setContentView(R.layout.layout_str_map_pictiker);
+        WheelPicker picker = window.findViewById(R.id.picker);
+        TextView confirm=window.findViewById(R.id.confirm_button);
+
+        picker.setData(data);
+        AtomicReference<String> choiceStr = new AtomicReference<>();
+        AtomicInteger choicePos = new AtomicInteger();
+        picker.setOnItemSelectedListener((wheelPicker, o, i) -> {
+              choicePos.set(i);
+              choiceStr.set(data.get(i));
+        });
+
+        confirm.setOnClickListener(v -> {
+            if(listener!=null){
+                listener.onChoiceItem(choiceStr.get(), choicePos.get());
+            }
+            dialog.dismiss();
+        });
+        picker.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        //给弹窗设置宽高
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        WindowManager manager = context.getWindowManager();
+        Display display = manager.getDefaultDisplay();
+        lp.width = display.getWidth()-100;
+        dialog.getWindow().setAttributes(lp);
     }
     public static void showChoiceTitltDialog(Activity context, List<String> data,OnButtonClickListener listener) {
         AlertDialog dialog = new AlertDialog.Builder(context).create();
