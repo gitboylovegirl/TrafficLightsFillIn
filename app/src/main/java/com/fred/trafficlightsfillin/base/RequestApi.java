@@ -146,6 +146,10 @@ public class RequestApi {
      *
      * 工程师详情  get
      */
-
     public static final String ENGINEER_INFO="/service/engineer";
+
+    /**
+     * 删除图片  DELETE
+     */
+    public static final String DEL_IMG="/service/trafficlight/del/img";
 }

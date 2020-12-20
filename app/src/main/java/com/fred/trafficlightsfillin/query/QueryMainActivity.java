@@ -376,7 +376,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                         if (response.data != null) {
                             roadChannels.clear();
                             roadChannels.addAll(response.data);
-                            roadPlace.setText(roadChannels.get(0).getRoadPlace());
+                            //roadPlace.setText(roadChannels.get(0).getRoadPlace());
                         }
                     }
 
@@ -403,7 +403,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                         if (response.data != null) {
                             teamListChannels.clear();
                             teamListChannels.addAll(response.data);
-                            team.setText(teamListChannels.get(0).name);
+                            //team.setText(teamListChannels.get(0).name);
                         }
                     }
 
@@ -430,7 +430,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                         if (response.data != null) {
                             taskListChannels.clear();
                             taskListChannels.addAll(response.data);
-                            from.setText(taskListChannels.get(0).source);
+                            //from.setText(taskListChannels.get(0).source);
                         }
                     }
 
@@ -455,7 +455,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                         if (response.data != null) {
                             roadTypeData.clear();
                             roadTypeData.addAll(response.data);
-                            from.setText(roadTypeData.get(0));
+                            //from.setText(roadTypeData.get(0));
                         }
                     }
 

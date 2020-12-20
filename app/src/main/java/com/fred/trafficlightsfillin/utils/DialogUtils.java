@@ -93,6 +93,7 @@ public class DialogUtils {
         window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         window.setContentView(R.layout.layout_str_pictike_titler);
         WheelPicker picker = window.findViewById(R.id.picker);
+        TextView confirm=window.findViewById(R.id.confirm_button);
 
         picker.setData(data);
         picker.setOnItemSelectedListener((wheelPicker, o, i) -> {
@@ -101,6 +102,9 @@ public class DialogUtils {
             }
         });
 
+        confirm.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
         picker.setOnClickListener(v -> {
             dialog.dismiss();
         });

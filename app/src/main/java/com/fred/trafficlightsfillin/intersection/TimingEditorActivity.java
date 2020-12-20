@@ -1,6 +1,8 @@
 package com.fred.trafficlightsfillin.intersection;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,12 +20,19 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +49,7 @@ import com.fred.trafficlightsfillin.base.BaseResponse;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.MyGlideEngine;
 import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.feed.FeedActivity;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.intersection.bean.PeriodCaseListBean;
 import com.fred.trafficlightsfillin.intersection.bean.PlanCaseListBean;
@@ -54,6 +65,7 @@ import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.GetImagePath;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
+import com.fred.trafficlightsfillin.utils.SoftKeyBoardListener;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.google.gson.Gson;
@@ -127,6 +139,11 @@ public class TimingEditorActivity extends AppCompatActivity {
     TextView timeListAdd;
     @BindView(R.id.timetable_add)
     TextView timetableAdd;
+
+    private View popuwindowView;
+    private PopupWindow popupWindow;
+    private TextView currentTextView;
+    EditText inputComment;
 
     private List<PeriodCaseListBean> weekdaysPeriodCaseList = new ArrayList<>();//工作日时间表
     private List<PeriodCaseListBean> weekendPeriodCaseList = new ArrayList<>();//周末时间表
@@ -289,6 +306,23 @@ public class TimingEditorActivity extends AppCompatActivity {
         });
 
         endTime.setText(TimeUtils.time10(String.valueOf(System.currentTimeMillis())));
+
+        //键盘显示监听
+        SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            @Override
+            public void keyBoardShow(int height) {
+                //Toast.makeText(getActivity(), "键盘显示 高度" + height, Toast.LENGTH_SHORT).show();
+                showPopupCommnet(height);
+                inputComment.requestFocus();
+            }
+
+            @Override
+            public void keyBoardHide(int height) {
+                if(popupWindow!=null){
+                    popupWindow.dismiss();
+                }
+            }
+        });
     }
 
     /**
@@ -391,7 +425,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     public void onSuccess(ImageResponse response) {
                         if (response.code == 0) {
                             imageBeans = response.data;
-                            imageBeans.add(0, new ImageResponse.ImageBean());
+                            imageBeans.add(imageBeans.size(), new ImageResponse.ImageBean());
                             Log.e("fred",imageBeans.size()+"  数量");
                             if (pictureAdapter==null){
                                 pictureAdapter=new PictureAdapter();
@@ -461,40 +495,59 @@ public class TimingEditorActivity extends AppCompatActivity {
             RelativeLayout rlPicture = holder.obtainView(R.id.rl_picture);
             RelativeLayout rlMore = holder.obtainView(R.id.rl_more);
             ImageView picture = holder.obtainView(R.id.iv_picture);
+            ImageView iv_delete=holder.obtainView(R.id.iv_delete);
 
-            //  .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-
-            String pictureUrl = RequestApi.BASE_OFFICIAL_URL+RequestApi.DOWN_IMG + "/" + imageBean.path;
-            if(imageBean.getUri()!=null&&!TextUtils.isEmpty(imageBean.getUri().toString())){
-                String filePath = GetImagePath.getPath(TimingEditorActivity.this, imageBean.getUri());
-                Bitmap bm = GetImagePath.displayImage(TimingEditorActivity.this,filePath);
-                if(bm==null){
-                    ToastUtil.showShort(TimingEditorActivity.this,"获取图片失败");
-                    return;
-                }
-                picture.setImageBitmap(bm);
-            }else {
-                Log.e("fred地址" ,pictureUrl);
-                GlideUrl glideUrl = new GlideUrl(pictureUrl, new LazyHeaders.Builder()
-                        .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                        .build());
-
-                Glide.with(TimingEditorActivity.this)
-                        .load(glideUrl)
-                        .into(picture);
-            }
-            if (index == 0) {
+            if (index == imageBeans.size()-1) {
                 rlMore.setVisibility(View.VISIBLE);
                 rlPicture.setVisibility(View.GONE);
             } else {
                 rlMore.setVisibility(View.GONE);
                 rlPicture.setVisibility(View.VISIBLE);
+                iv_delete.setVisibility(View.VISIBLE);
+
+                //删除
+                iv_delete.setOnClickListener(v -> {
+                    delPicture(imageBeans.get(index).id);
+                    imageBeans.remove(index);
+                    pictureAdapter.bindData(true, imageBeans);
+                    pictureAdapter.notifyDataSetChanged();
+                });
+
+                String pictureUrl = RequestApi.BASE_OFFICIAL_URL+RequestApi.DOWN_IMG + "/" + imageBean.path;
+                if(imageBean.getUri()!=null&&!TextUtils.isEmpty(imageBean.getUri().toString())){
+                    String filePath = GetImagePath.getPath(TimingEditorActivity.this, imageBean.getUri());
+                    Bitmap bm = GetImagePath.displayImage(TimingEditorActivity.this,filePath);
+                    if(bm==null){
+                        ToastUtil.showShort(TimingEditorActivity.this,"获取图片失败");
+                        return;
+                    }
+                    picture.setImageBitmap(bm);
+                }else {
+                    GlideUrl glideUrl = new GlideUrl(pictureUrl, new LazyHeaders.Builder()
+                            .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                            .build());
+
+                    Glide.with(TimingEditorActivity.this)
+                            .load(glideUrl)
+                            .into(picture);
+                }
             }
 
             //点击添加图片
             rlMore.setOnClickListener(v -> {
-                choicePicture();
-            });
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (TimingEditorActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                        //如果没有写sd卡权限
+                        TimingEditorActivity.this.requestPermissions(
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                100);
+                    }else {
+                        choicePicture();
+                    }
+                }else{
+                    choicePicture();
+                }            });
         }
     }
 
@@ -503,7 +556,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         Matisse.from(TimingEditorActivity.this)
                 .choose(MimeType.of(MimeType.JPEG, MimeType.PNG, MimeType.WEBP))
                 .countable(true)
-                .maxSelectable(3)
+                .maxSelectable(1)
                 .gridExpectedSize(400)
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
                 .thumbnailScale(0.85f)
@@ -529,7 +582,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 fileData.add(getFilePathFromUri(TimingEditorActivity.this, mSelected.get(i)));
                 ImageResponse.ImageBean imageBean=new ImageResponse.ImageBean();
                 imageBean.setUri(mSelected.get(i));
-                imageBeans.add(1,imageBean);
+                imageBeans.add(0,imageBean);
             }
             pictureAdapter.bindData(true,imageBeans);
             pictureAdapter.notifyDataSetChanged();
@@ -561,6 +614,30 @@ public class TimingEditorActivity extends AppCompatActivity {
                 });
     }
 
+    //删除图片
+    private void delPicture(String imgID) {
+        if(TextUtils.isEmpty(imgID)){
+            return;
+        }
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.DEL_IMG) + "/" + imgID)
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .build()
+                .deleteAsync(new ICallback<BaseResponse>() {
+                    @Override
+                    public void onSuccess(BaseResponse response) {
+                        if (response.code == 0) {
+                            initPictrue();
+                            ToastUtil.showMsg(TimingEditorActivity.this, "图片删除成功");
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                        ToastUtil.showMsg(TimingEditorActivity.this, "图片删除失败");
+                    }
+                });
+    }
     public static String getFilePathFromUri(Context context, Uri uri) {
         if (null == uri) return null;
         final String scheme = uri.getScheme();
@@ -694,9 +771,79 @@ public class TimingEditorActivity extends AppCompatActivity {
                 }
                 setTaskState();
             });
+
+            startTime.setOnClickListener(v -> {
+                currentTextView=startTime;
+                //showPopupCommnet();
+            });
         }
     }
 
+    @SuppressLint("WrongConstant")
+    private void showPopupCommnet(int height) {
+        popuwindowView = LayoutInflater.from(TimingEditorActivity.this).inflate(
+                R.layout.layout_tv_bottom_view, null);
+        inputComment = (EditText)popuwindowView .findViewById(R.id.number_tv);
+
+        popupWindow = new PopupWindow(popuwindowView, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+        popupWindow.setTouchable(true);
+        popupWindow.setTouchInterceptor((v, event) -> false);
+        popupWindow.setFocusable(true);
+        // 设置点击窗口外边窗口消失
+        popupWindow.setOutsideTouchable(true);
+
+        //输入变化监听
+        inputComment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+               currentTextView.setText(editable.toString().trim());
+            }
+        });
+
+        popupWindow.showAtLocation(popuwindowView, Gravity.BOTTOM, 0, 0);
+        ColorDrawable cd = new ColorDrawable(0x000000);
+        popupWindow.setBackgroundDrawable(cd);
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.alpha = 1.0f;
+
+        getWindow().setAttributes(params);
+        // 设置popWindow的显示和消失动画
+        popupWindow.setAnimationStyle(R.style.BottomDialogStyle);
+        popupWindow.update();
+        popupWindow.setOnDismissListener(() -> {
+            //隐藏软键盘
+            Toast.makeText(this, "软键盘隐藏" + height, Toast.LENGTH_SHORT).show();
+            //liveRoomText.clearFocus();
+            hideKeyBoard(this);
+        });
+    }
+
+    /**
+     * 隐藏软键盘
+     *
+     * @param activity
+     */
+    public static void hideKeyBoard(Activity activity) {
+        if (activity != null && activity.getWindow() != null && activity.getWindow().getAttributes() != null) {
+            if (activity.getCurrentFocus() != null && activity.getCurrentFocus().getWindowToken() != null) {
+                ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(activity
+                        .getCurrentFocus()
+                        .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        }
+    }
     /**
      * 配时方案1 adapter
      */

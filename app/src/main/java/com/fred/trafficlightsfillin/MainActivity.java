@@ -2,10 +2,7 @@ package com.fred.trafficlightsfillin;
 
 import android.Manifest;
 import android.app.AppOpsManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -21,17 +19,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.AppOpsManagerCompat;
 import androidx.core.content.ContextCompat;
 
-import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationListener;
-import com.fred.trafficlightsfillin.base.MyGlideEngine;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.feed.FeedActivity;
 import com.fred.trafficlightsfillin.login.ChangePasswordActivity;
 import com.fred.trafficlightsfillin.login.LocationResponse;
-import com.fred.trafficlightsfillin.login.LoginActivity;
-import com.fred.trafficlightsfillin.login.LoginResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.query.QueryMainActivity;
@@ -45,13 +38,9 @@ import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.zhihu.matisse.Matisse;
-import com.zhihu.matisse.MimeType;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +50,7 @@ import butterknife.ButterKnife;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 10;
     private static final int REQUEST_CODE_CHOOSE = 99;
     @BindView(R.id.status)
@@ -94,6 +83,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Manifest.permission.WRITE_CALENDAR};
 
     private static final int REQUEST_PERMISSION_CODE = 1;
+    @BindView(R.id.change_status)
+    Switch changeStatus;
+    @BindView(R.id.change_password)
+    TextView changePassword;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getNewVersion();
         requestPermissions();
     }
+
     /**
      * 申请权限
      */
@@ -125,14 +120,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
     }
+
     /**
      * 定位权限
      */
     private void initLocation() {
-        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED){//未开启定位权限
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PERMISSION_GRANTED) {//未开启定位权限
             //开启定位权限,200是标识码
-            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
         }
         if (!LocationUtils.isLocServiceEnable(MainActivity.this)) {//检测是否开启定位服务
             //未开启定位服务的操作
@@ -167,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     double lat = aMapLocation.getLatitude();
                     double lng = aMapLocation.getLongitude();
                     if (lat > 0 && lng > 0) {
-                        locationInfo(String.valueOf(lat),String.valueOf(lat));
+                        locationInfo(String.valueOf(lat), String.valueOf(lat));
                     }
                 } else {//失败
                     freshToken();
@@ -183,37 +179,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             runOnUiThread(() -> {
                 mLocationClient.startLocation();
             });
-        }, 0, 100, TimeUnit.SECONDS);
+        }, 0, 10, TimeUnit.SECONDS);
     }
 
     /**
      * 上传位置信息
+     *
      * @param lat
      * @param lon
      */
-    private void locationInfo(String lat,String lon){
+    private void locationInfo(String lat, String lon) {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.LOCATIO))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("flag",SharedPreferenceUtils.getInstance().getFlag())
-                .addParam("lat",lat)
-                .addParam("lon",lon)
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addParam("flag", SharedPreferenceUtils.getInstance().getFlag())
+                .addParam("lat", lat)
+                .addParam("lon", lon)
                 .build()
                 .postAsync(new ICallback<LocationResponse>() {
                     @Override
                     public void onSuccess(LocationResponse response) {
-                        if(response.code==401001){
+                        if (response.code == 401001) {
                             freshToken();
                             //getNewVersion();
                             SharedPreferenceUtils.getInstance().setToken("");
-                        }else if (response.code==0){
-                            if(response.data!=null&&response.data.size()>0){
-                                if(SharedPreferenceUtils.getInstance().getSeTime()>0){
+                        } else if (response.code == 0) {
+                            if (response.data != null && response.data.size() > 0) {
+                                if (SharedPreferenceUtils.getInstance().getSeTime() > 0) {
                                     long lastTime = SharedPreferenceUtils.getInstance().getCurrentTime();
                                     long currentTimeMillis = System.currentTimeMillis();
                                     long seTime = SharedPreferenceUtils.getInstance().getSeTime();
-                                    if(currentTimeMillis>lastTime){
-                                        long time=currentTimeMillis+(seTime*60*60*1000);
+                                    if (currentTimeMillis > lastTime) {
+                                        long time = currentTimeMillis + (seTime * 60 * 60 * 1000);
                                         CalendarReminderUtils.addCalendarEvent(MainActivity.this, "配时中心提醒", "您有未完成的任务，请及时登陆完成", time, 1);
                                     }
 
@@ -232,15 +229,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 获取最新版本号
      */
-    private void getNewVersion(){
+    private void getNewVersion() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.NEW_VERSION))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<LocationResponse>() {
                     @Override
                     public void onSuccess(LocationResponse response) {
-                        if(response.code==0){
+                        if (response.code == 0) {
 
                         }
                     }
@@ -255,15 +252,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 刷新token
      */
-    private void freshToken(){
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN)+"/"+SharedPreferenceUtils.getInstance().getToken())
+    private void freshToken() {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN) + "/" + SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<LocationResponse>() {
                     @Override
                     public void onSuccess(LocationResponse response) {
-                        Log.e("fred  刷新：",response.toString());
+                        Log.e("fred  刷新：", response.toString());
 
                     }
 
@@ -274,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    private void initView(){
+    private void initView() {
         feed.setOnClickListener(this::onClick);
         tipSet.setOnClickListener(this::onClick);
         update.setOnClickListener(this::onClick);
@@ -290,27 +287,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         timingRecord.setOnClickListener(this::onClick);
         timingRecordTop.setOnClickListener(this::onClick);
+
+        changePassword.setOnClickListener(this::onClick);
     }
 
     @Override
     public void onClick(View v) {
-        Intent intent=new Intent();
-        switch (v.getId()){
+        Intent intent = new Intent();
+        switch (v.getId()) {
             case R.id.feed://反馈
                 intent.setClass(MainActivity.this, FeedActivity.class);
                 startActivity(intent);
                 break;
             case R.id.tip_set://提醒
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-                    if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_CALENDAR) != PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
                         return;
                     }
                 }
 
                 List<String> timeSet = new ArrayList<>();
-                for (int i = 1; i <25 ; i++) {
-                    timeSet.add(i+"小时候后");
+                for (int i = 1; i < 25; i++) {
+                    timeSet.add(i + "小时候后");
                 }
                 DialogUtils.showChoiceTitltDialog(MainActivity.this, timeSet, new DialogUtils.OnButtonClickListener() {
                     @Override
@@ -325,12 +324,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onChoiceItem(String str, int pos) {
-                        SharedPreferenceUtils.getInstance().setSetTime(pos+1);
+                        SharedPreferenceUtils.getInstance().setSetTime(pos + 1);
                     }
                 });
                 break;
             case R.id.update://更新
-                ToastUtil.showMsg(MainActivity.this,"当前已是最新版本");
+                ToastUtil.showMsg(MainActivity.this, "当前已是最新版本");
                 break;
             case R.id.new_record://新任务
             case R.id.new_record_top:
@@ -350,6 +349,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.timing_record://配时查询
             case R.id.timing_record_top:
                 intent.setClass(MainActivity.this, QueryMainActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.change_password:
+                intent.setClass(MainActivity.this, ChangePasswordActivity.class);
                 startActivity(intent);
                 break;
         }

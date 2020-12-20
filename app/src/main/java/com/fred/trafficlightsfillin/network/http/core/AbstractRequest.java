@@ -21,4 +21,5 @@ public abstract class AbstractRequest {
 
     public abstract void putAsync(ICallback listener);
 
+    public abstract void deleteAsync(ICallback listener);
 }

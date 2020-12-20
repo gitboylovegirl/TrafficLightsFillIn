@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/p_player_edit_field"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:background="#fcfcfc"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/p_player_edit_field_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#dcdcdc" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/number_tv"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_edite_selector"
+                android:hint="请输入"
+                android:imeOptions="actionDone"
+                android:maxLength="60"
+                android:paddingLeft="12dp"
+                android:singleLine="true"
+                android:textColor="#434AE7"
+                android:textColorHint="#FFC3C3C3"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

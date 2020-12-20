@@ -1,5 +1,6 @@
 package com.fred.trafficlightsfillin.network.http.core;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.MultipartBody;
@@ -7,9 +8,11 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -57,6 +60,14 @@ public interface BaseApiService {
     @Headers({"Content-Type: application/json", "Accept: application/json"})//需要添加头
     @POST()
     Call<ResponseBody> doPost(@Url String url, @QueryMap Map<String, String> maps, @Body RequestBody body);
+
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//需要添加头
+    @DELETE
+    Call<ResponseBody> doDelete(@Url String url, @Body RequestBody body);
+
+    @Headers({"Content-Type: application/json", "Accept: application/json"})//需要添加头
+    @DELETE
+    Call<ResponseBody> doDelete(@Url String url);
 
     @Multipart
     @POST

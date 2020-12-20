@@ -2,10 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_color_white"
+    android:background="@drawable/bg_color_white_10dp"
     android:orientation="vertical"
     android:gravity="center"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:text="选滑动选择"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold">
+
+    </TextView>
     <com.itheima.wheelpicker.WheelPicker
         android:id="@+id/picker"
         android:layout_width="wrap_content"
@@ -13,8 +25,21 @@
         app:wheel_atmospheric="true"
         app:wheel_curved="true"
         app:wheel_cyclic="true"
+        app:wheel_item_text_color="#8F8F8F"
+        app:wheel_item_text_size="16sp"
         app:wheel_selected_item_position="5"
-        app:wheel_item_text_color="#C1CDCD"
-        app:wheel_selected_item_text_color="#000000"/>
+        app:wheel_selected_item_text_color="#1D1D1D"/>
 
+
+    <TextView
+        android:id="@+id/confirm_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="30dp"
+        android:background="#2A4997"
+        android:paddingHorizontal="40dp"
+        android:paddingVertical="11dp"
+        android:text="确定"
+        android:textColor="#ffffffff"
+        android:textSize="15sp" />
 </LinearLayout>

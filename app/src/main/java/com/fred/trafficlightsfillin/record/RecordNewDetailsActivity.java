@@ -249,8 +249,8 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(BaseResponse response) {
                         if(response.code==0){
-                            bottomView.setVisibility(View.GONE);
-                            receiving.setVisibility(View.VISIBLE);
+                            bottomView.setVisibility(View.VISIBLE);
+                            receiving.setVisibility(View.GONE);
                         }
                         ToastUtil.showMsg(RecordNewDetailsActivity.this, response.msg);
                     }

@@ -20,6 +20,20 @@ public class ImageResponse extends BaseResponse implements Serializable {
     }
 
     public static class ImageBean {
+        @Override
+        public String toString() {
+            return "ImageBean{" +
+                    "createTime='" + createTime + '\'' +
+                    ", createUser='" + createUser + '\'' +
+                    ", id='" + id + '\'' +
+                    ", path='" + path + '\'' +
+                    ", trafficLightId='" + trafficLightId + '\'' +
+                    ", updateTime='" + updateTime + '\'' +
+                    ", updateUser='" + updateUser + '\'' +
+                    ", uri=" + uri +
+                    '}';
+        }
+
         /**
          * createTime : 0
          * createUser :

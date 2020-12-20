@@ -177,6 +177,19 @@ public class RetrofitRequestImpl extends AbstractRequest {
         execute(call, listener,context);
     }
 
+    @Override
+    public void deleteAsync(ICallback listener) {
+        Call<ResponseBody> call;
+        if (requestBuilder.params == null || requestBuilder.params.size() == 0) {
+            call = getBaseApiService().doDelete(requestBuilder.url);
+        } else {
+            JSONObject json =new JSONObject(requestBuilder.params);
+            RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+            call = getBaseApiService().doDelete(requestBuilder.url, body);
+        }
+        execute(call, listener,context);
+    }
+
     private BaseApiService getBaseApiService() {
         return new RetrofitBuilder(requestBuilder).buildRetrofitCall(BaseApiService.class);
     }

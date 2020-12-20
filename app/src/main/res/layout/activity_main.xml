@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="140dp"
             android:gravity="bottom"
             android:orientation="horizontal">
 
@@ -46,6 +46,19 @@
                 android:layout_height="wrap_content"
                  />
         </LinearLayout>
+
+        <TextView
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="40dp"
+            android:id="@+id/change_password"
+            android:layout_marginRight="35dp"
+            android:layout_alignParentRight="true"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:text="修改密码"
+            android:textColor="#CFD0F2"
+            android:textSize="13sp"
+            />
     </RelativeLayout>
     <ScrollView
         android:layout_width="match_parent"
