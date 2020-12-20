@@ -77,6 +77,10 @@ public class RequestApi {
      */
     public static final String TASK_PAGE = "/service/task/page";
     /**
+     * 获取红绿灯列表 post
+     */
+    public static final String TRAFFICLIGHT_PAGE = "/service/trafficlight/page";
+    /**
      * 任务详情
      */
     public static final String TASK_DETAILS = "/service/task";

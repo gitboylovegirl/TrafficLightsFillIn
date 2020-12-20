@@ -36,6 +36,8 @@ import com.fred.trafficlightsfillin.query.bean.RoadTypeResponse;
 import com.fred.trafficlightsfillin.query.bean.TeamListResponse;
 import com.fred.trafficlightsfillin.record.bean.NewRecordChannel;
 import com.fred.trafficlightsfillin.record.bean.NewRecordResponse;
+import com.fred.trafficlightsfillin.record.bean.TrafficligthResponse;
+import com.fred.trafficlightsfillin.record.bean.TrafficligthVo;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.SearchAdapter;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
@@ -66,6 +68,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     RecyclerView content;
 
     List<NewRecordChannel> list = new ArrayList<>();
+    List<TrafficligthVo> trafficlightList = new ArrayList<>();
     List<RoadResponse.RoadChannel> roadChannels = new ArrayList<>();
     List<TeamListResponse.TeamListChannel> teamListChannels = new ArrayList<>();
     List<TeamListResponse.TeamListChannel> taskListChannels = new ArrayList<>();
@@ -73,14 +76,13 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     List<String> roadTypeData = new ArrayList<>();
     int page = 1;
     NewRecordAdapter recordAdapter;
+    TrafficLightAdapter trafficLightAdapter;
     @BindView(R.id.road_place)
     TextView roadPlace;
     @BindView(R.id.road_type)
     TextView roadType;
     @BindView(R.id.empty_view)
     TextView emptyView;
-
-    int queryType=1;
 
     private LinearLayout empty;
     private EditText search;
@@ -203,41 +205,41 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         roadType.setOnClickListener(this);
         team.setOnClickListener(this::onClick);
 
-        recordAdapter = new NewRecordAdapter();
+
         content.setLayoutManager(new LinearLayoutManager(QueryMainActivity.this));
-        content.setAdapter(recordAdapter);
+        recordAdapter = new NewRecordAdapter();
+        trafficLightAdapter = new TrafficLightAdapter();
+
 
         long timeMillis = System.currentTimeMillis();
         startTime.setText(TimeUtils.time9(String.valueOf(timeMillis)));
         endIme.setText(TimeUtils.time9(String.valueOf(timeMillis)));
-
+        team.setText(SharedPreferenceUtils.getInstance().getTeamName());
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
-            if (queryType==1){
-                Intent intent=new Intent(QueryMainActivity.this,TaskDetailsActivity.class);
-                intent.putExtra("id",list.get(index).id);
-                intent.putExtra("trafficLightId",list.get(index).trafficLightId);
-                startActivity(intent);
-            }else {
-                Intent intent=new Intent(QueryMainActivity.this, TimingDetailsActivity.class);
-                intent.putExtra("id",list.get(index).id);
-                intent.putExtra("trafficLightId",list.get(index).trafficLightId);
-                startActivity(intent);
-            }
+            Intent intent=new Intent(QueryMainActivity.this,TaskDetailsActivity.class);
+            intent.putExtra("id",list.get(index).id);
+            intent.putExtra("trafficLightId",list.get(index).trafficLightId);
+            startActivity(intent);
         });
 
-
+        trafficLightAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            Intent intent=new Intent(QueryMainActivity.this, TimingDetailsActivity.class);
+            intent.putExtra("id",list.get(index).id);
+            intent.putExtra("trafficLightId",list.get(index).trafficLightId);
+            startActivity(intent);
+        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.query_one:
-                queryType=1;
+                content.setAdapter(recordAdapter);
                 page=1;
                 initData();
                 break;
             case R.id.query_two:
-                queryType=2;
+                content.setAdapter(trafficLightAdapter);
                 page=1;
                 initTimingData();
                 break;
@@ -511,30 +513,28 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
      * 查配时表
      */
     private void initTimingData() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGHT_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", String.valueOf(page))
                 .addParam("pageSize", "50")
-                .addParam("teamName", team.getText().toString().trim())
-                .addParam("source", from.getText().toString().trim())
+                .addParam("roadPlace", roadPlace.getText().toString().trim())
                 .addParam("startTime", TimeUtils.time8(startTime.getText().toString().trim()))
                 .addParam("endTime", TimeUtils.time8(endIme.getText().toString().trim()))
-                .addParam("state","4")
                 .build()
-                .postAsync(new ICallback<NewRecordResponse>() {
+                .postAsync(new ICallback<TrafficligthResponse>() {
                     @Override
-                    public void onSuccess(NewRecordResponse response) {
+                    public void onSuccess(TrafficligthResponse response) {
                         if (page == 1) {
-                            list.clear();
-                            list.addAll(response.data.list);
-                            recordAdapter.bindData(true, list);
+                            trafficlightList.clear();
+                            trafficlightList.addAll(response.data.list);
+                            trafficLightAdapter.bindData(true, trafficlightList);
                         } else {
-                            list.addAll(response.data.list);
-                            recordAdapter.bindData(false, list);
+                            trafficlightList.addAll(response.data.list);
+                            trafficLightAdapter.bindData(false, trafficlightList);
                         }
 
-                        if(list.isEmpty()){
+                        if(trafficlightList.isEmpty()){
                             emptyView.setVisibility(View.VISIBLE);
                             content.setVisibility(View.GONE);
                         }else {
@@ -571,6 +571,23 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    class TrafficLightAdapter extends BaseRecyclerAdapter<TrafficligthVo> {
 
+        @Override
+        public int bindView(int viewType) {
+            return R.layout.layout_query_trafficlight_item;
+        }
+
+        @Override
+        public void onBindHolder(BaseViewHolder holder, @Nullable TrafficligthVo trafficligthVo, int index) {
+            TextView road_name = holder.obtainView(R.id.road_name);
+            TextView road_type = holder.obtainView(R.id.road_type);
+            TextView time = holder.obtainView(R.id.time);
+
+            time.setText(TimeUtils.time7(String.valueOf(trafficligthVo.date)));
+            road_name.setText(trafficligthVo.roadPlace);
+            road_type.setText(trafficligthVo.roadPlaceType);
+        }
+    }
 
 }
