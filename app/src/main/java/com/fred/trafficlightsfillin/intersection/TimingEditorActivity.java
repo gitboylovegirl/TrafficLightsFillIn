@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -36,20 +37,19 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
-import com.fred.trafficlightsfillin.MainActivity;
 import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseResponse;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.MyGlideEngine;
 import com.fred.trafficlightsfillin.base.RequestApi;
-import com.fred.trafficlightsfillin.feed.FeedActivity;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.intersection.bean.PeriodCaseListBean;
 import com.fred.trafficlightsfillin.intersection.bean.PlanCaseListBean;
@@ -70,15 +70,10 @@ import com.fred.trafficlightsfillin.utils.TimeUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.google.gson.Gson;
 import com.ikovac.timepickerwithseconds.MyTimePickerDialog;
-import com.ikovac.timepickerwithseconds.TimePicker;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -88,7 +83,6 @@ import butterknife.ButterKnife;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okio.BufferedSink;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -144,6 +138,14 @@ public class TimingEditorActivity extends AppCompatActivity {
     TextView timeListAdd;
     @BindView(R.id.timetable_add)
     TextView timetableAdd;
+    @BindView(R.id.scrollView)
+    NestedScrollView scrollView;
+    @BindView(R.id.layout_hide_tab)
+    RecyclerView layoutHideTab;
+    @BindView(R.id.layout_hide_scrollview)
+    HorizontalScrollView layoutHideScrollview;
+    @BindView(R.id.scrollView_one)
+    HorizontalScrollView scrollViewOne;
 
     private View popuwindowView;
     private PopupWindow popupWindow;
@@ -168,7 +170,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     String id;
     List<StageResponse.StageChanel> stageChanels;//配时表数据
     List<ImageResponse.ImageBean> imageBeans = new ArrayList<>();
-    PlanCaseAdapter planCaseAdapter;
+    PlanCaseAdapter planCaseAdapter, hideplanCaseAdapter;
     TimeCaseAdapter timeCaseAdapter;
 
     boolean isWeekday = true;
@@ -219,10 +221,34 @@ public class TimingEditorActivity extends AppCompatActivity {
         programme.setLayoutManager(new LinearLayoutManager(this));
         programme.setAdapter(planCaseAdapter);
 
+        hideplanCaseAdapter = new PlanCaseAdapter();
+        layoutHideTab.setLayoutManager(new LinearLayoutManager(this));
+        layoutHideTab.setAdapter(hideplanCaseAdapter);
+
         timeCaseAdapter = new TimeCaseAdapter();
         timetable.setLayoutManager(new LinearLayoutManager(this));
         timetable.setAdapter(timeCaseAdapter);
 
+        //监听
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                Log.e("fred", "%%%%     " + scrollY);
+                if (scrollY > 1180) {//滑动距离大于v_report_divider的底坐标
+                    layoutHideScrollview.setVisibility(View.VISIBLE);
+                } else {
+                    layoutHideScrollview.setVisibility(View.GONE);
+                }
+            });
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollViewOne.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    layoutHideScrollview.scrollTo(scrollX,scrollY);
+                }
+            });
+        }
         //工作日
         weekday.setOnClickListener(view -> {
             isWeekday = true;
@@ -337,7 +363,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             lastWeekendTimeBean = weekdaysTimeCaseList.get(weekendTimeCaseList.size() - 1);
             setTaskState();
             for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-                Log.e("fred  数据2",i+"   "+weekdaysTimeCaseList.get(i).getT1());
+                Log.e("fred  数据2", i + "   " + weekdaysTimeCaseList.get(i).getT1());
             }
         });
 
@@ -347,8 +373,6 @@ public class TimingEditorActivity extends AppCompatActivity {
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             @Override
             public void keyBoardShow(int height) {
-                Toast.makeText(TimingEditorActivity.this, "键盘显示 高度" + height, Toast.LENGTH_SHORT).show();
-
                 if (isShow) {
                     showPopupCommnet(height);
                     inputComment.requestFocus();
@@ -753,7 +777,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                         }
 
-                       // Log.e("fred", weekdaysPeriodCaseList.size() + "  数量**");
+                        // Log.e("fred", weekdaysPeriodCaseList.size() + "  数量**");
 
                         if (timeTableAdapter == null) {
                             timeTableAdapter = new TimeTableAdapter();
@@ -770,6 +794,14 @@ public class TimingEditorActivity extends AppCompatActivity {
                         timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
                         planCaseAdapter.bindData(true, weekdaysPlanCaseList);
                         timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
+
+                        List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
+                        for (int i = 0; i < weekdaysPlanCaseList.size(); i++) {
+                            if ("1".equals(weekdaysPlanCaseList.get(i).getType())) {
+                                hideWeekdaysPlanCaseList.add(weekdaysPlanCaseList.get(i));
+                            }
+                        }
+                        hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
 
                         lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
                         lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
@@ -816,26 +848,26 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             no.setOnClickListener(v -> {
                 currentTextView = no;
-                currentType=1;
-                currentPos=index;
-                currentChoosePos=2;
+                currentType = 1;
+                currentPos = index;
+                currentChoosePos = 2;
                 showPopupCommnet(800);
             });
 
             startTime.setOnClickListener(v -> {
                 MyTimePickerDialog mTimePicker = new MyTimePickerDialog(TimingEditorActivity.this, (view, hourOfDay, minute, seconds) -> {
                     // TODO Auto-generated method stub
-                    String time=String.format("%02d", hourOfDay)+ ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds);
+                    String time = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds);
                     //Log.e("fred",time);
-                    if(isWeekday){
+                    if (isWeekday) {
                         weekdaysPeriodCaseList.get(currentPos).setStart(time);
-                    }else {
+                    } else {
                         weekendPeriodCaseList.get(currentPos).setStart(time);
                     }
                     lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
                     lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
                     startTime.setText(time);
-                },0,0, 0, true);
+                }, 0, 0, 0, true);
                 mTimePicker.show();
             });
         }
@@ -890,114 +922,119 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-                    Log.e("fred  数据3",i+"   "+weekdaysTimeCaseList.get(i).getT1());
-                }
                 currentTextView.setText(editable.toString().trim());
                 for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-                    Log.e("fred  数据4",i+"   "+weekdaysTimeCaseList.get(i).getT1());
+                    Log.e("fred  数据4", i + "   " + weekdaysTimeCaseList.get(i).getT1());
                 }
-                if(isWeekday){
+                if (isWeekday) {
                     //工作日
-                    if(currentType==1){
+                    if (currentType == 1) {
                         //配时方案
                         weekdaysPeriodCaseList.get(currentPos).setTimeCaseNo(editable.toString().trim());
-                    }else if (currentType==2){
+                        Log.e("fred", "  数据6");
+                    } else if (currentType == 2) {
+                        Log.e("fred", "  数据6 " + currentChoosePos + "    " + currentPos);
                         //配时表1
-                        if(currentChoosePos==1){
+                        if (currentChoosePos == 1) {
                             weekdaysPlanCaseList.get(currentPos).setT1(editable.toString().trim());
-                        }else if(currentChoosePos==2){
+                        } else if (currentChoosePos == 2) {
                             weekdaysPlanCaseList.get(currentPos).setT2(editable.toString().trim());
-                        }else if(currentChoosePos==3){
+                        } else if (currentChoosePos == 3) {
                             weekdaysPlanCaseList.get(currentPos).setT3(editable.toString().trim());
-                        }else if(currentChoosePos==4){
+                        } else if (currentChoosePos == 4) {
                             weekdaysPlanCaseList.get(currentPos).setT4(editable.toString().trim());
-                        }else if(currentChoosePos==5){
+                        } else if (currentChoosePos == 5) {
                             weekdaysPlanCaseList.get(currentPos).setT5(editable.toString().trim());
-                        }else if(currentChoosePos==6){
+                        } else if (currentChoosePos == 6) {
                             weekdaysPlanCaseList.get(currentPos).setT6(editable.toString().trim());
-                        }else if(currentChoosePos==7){
+                        } else if (currentChoosePos == 7) {
                             weekdaysPlanCaseList.get(currentPos).setT7(editable.toString().trim());
-                        }else if(currentChoosePos==8){
+                        } else if (currentChoosePos == 8) {
                             weekdaysPlanCaseList.get(currentPos).setT8(editable.toString().trim());
-                        }else if(currentChoosePos==9){
+                        } else if (currentChoosePos == 9) {
                             weekdaysPlanCaseList.get(currentPos).setT9(editable.toString().trim());
-                        }else if(currentChoosePos==10){
+                        } else if (currentChoosePos == 10) {
                             weekdaysPlanCaseList.get(currentPos).setT10(editable.toString().trim());
                         }
-                    }else {
+                    } else {
+                        Log.e("fred", "  数据7 " + currentChoosePos + "    " + currentPos);
                         //配时表2
-                        if(currentChoosePos==1){
+                        if (currentChoosePos == 1) {
                             weekdaysTimeCaseList.get(currentPos).setT1(editable.toString().trim());
-                        }else if(currentChoosePos==2){
+                        } else if (currentChoosePos == 2) {
                             weekdaysTimeCaseList.get(currentPos).setT2(editable.toString().trim());
-                        }else if(currentChoosePos==3){
+                        } else if (currentChoosePos == 3) {
                             weekdaysTimeCaseList.get(currentPos).setT3(editable.toString().trim());
-                        }else if(currentChoosePos==4){
+                        } else if (currentChoosePos == 4) {
                             weekdaysTimeCaseList.get(currentPos).setT4(editable.toString().trim());
-                        }else if(currentChoosePos==5){
+                        } else if (currentChoosePos == 5) {
                             weekdaysTimeCaseList.get(currentPos).setT5(editable.toString().trim());
-                        }else if(currentChoosePos==6){
+                        } else if (currentChoosePos == 6) {
                             weekdaysTimeCaseList.get(currentPos).setT6(editable.toString().trim());
-                        }else if(currentChoosePos==7){
+                        } else if (currentChoosePos == 7) {
                             weekdaysTimeCaseList.get(currentPos).setT7(editable.toString().trim());
-                        }else if(currentChoosePos==8){
+                        } else if (currentChoosePos == 8) {
                             weekdaysTimeCaseList.get(currentPos).setT8(editable.toString().trim());
-                        }else if(currentChoosePos==9){
+                        } else if (currentChoosePos == 9) {
                             weekdaysTimeCaseList.get(currentPos).setT9(editable.toString().trim());
-                        }else if(currentChoosePos==10){
+                        } else if (currentChoosePos == 10) {
                             weekdaysTimeCaseList.get(currentPos).setT10(editable.toString().trim());
                         }
                     }
-                }else {
+
+                    for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
+                        String t1 = weekdaysTimeCaseList.get(i).getT1();
+                        Log.e("fred  数据5", i + "   " + weekdaysTimeCaseList.get(i).getT1());
+                    }
+                } else {
                     //周末
-                    if(currentType==1){
+                    if (currentType == 1) {
                         //配时方案
                         weekendPeriodCaseList.get(currentPos).setTimeCaseNo(editable.toString().trim());
-                    }else if (currentType==2){
+                    } else if (currentType == 2) {
                         //配时表1
-                        if(currentChoosePos==1){
+                        if (currentChoosePos == 1) {
                             weekendPlanCaseList.get(currentPos).setT1(editable.toString().trim());
-                        }else if(currentChoosePos==2){
+                        } else if (currentChoosePos == 2) {
                             weekendPlanCaseList.get(currentPos).setT2(editable.toString().trim());
-                        }else if(currentChoosePos==3){
+                        } else if (currentChoosePos == 3) {
                             weekendPlanCaseList.get(currentPos).setT3(editable.toString().trim());
-                        }else if(currentChoosePos==4){
+                        } else if (currentChoosePos == 4) {
                             weekendPlanCaseList.get(currentPos).setT4(editable.toString().trim());
-                        }else if(currentChoosePos==5){
+                        } else if (currentChoosePos == 5) {
                             weekendPlanCaseList.get(currentPos).setT5(editable.toString().trim());
-                        }else if(currentChoosePos==6){
+                        } else if (currentChoosePos == 6) {
                             weekendPlanCaseList.get(currentPos).setT6(editable.toString().trim());
-                        }else if(currentChoosePos==7){
+                        } else if (currentChoosePos == 7) {
                             weekendPlanCaseList.get(currentPos).setT7(editable.toString().trim());
-                        }else if(currentChoosePos==8){
+                        } else if (currentChoosePos == 8) {
                             weekendPlanCaseList.get(currentPos).setT8(editable.toString().trim());
-                        }else if(currentChoosePos==9){
+                        } else if (currentChoosePos == 9) {
                             weekendPlanCaseList.get(currentPos).setT9(editable.toString().trim());
-                        }else if(currentChoosePos==10){
+                        } else if (currentChoosePos == 10) {
                             weekendPlanCaseList.get(currentPos).setT10(editable.toString().trim());
                         }
-                    }else {
+                    } else {
                         //配时表2
-                        if(currentChoosePos==1){
+                        if (currentChoosePos == 1) {
                             weekendTimeCaseList.get(currentPos).setT1(editable.toString().trim());
-                        }else if(currentChoosePos==2){
+                        } else if (currentChoosePos == 2) {
                             weekendTimeCaseList.get(currentPos).setT2(editable.toString().trim());
-                        }else if(currentChoosePos==3){
+                        } else if (currentChoosePos == 3) {
                             weekendTimeCaseList.get(currentPos).setT3(editable.toString().trim());
-                        }else if(currentChoosePos==4){
+                        } else if (currentChoosePos == 4) {
                             weekendTimeCaseList.get(currentPos).setT4(editable.toString().trim());
-                        }else if(currentChoosePos==5){
+                        } else if (currentChoosePos == 5) {
                             weekendTimeCaseList.get(currentPos).setT5(editable.toString().trim());
-                        }else if(currentChoosePos==6){
+                        } else if (currentChoosePos == 6) {
                             weekendTimeCaseList.get(currentPos).setT6(editable.toString().trim());
-                        }else if(currentChoosePos==7){
+                        } else if (currentChoosePos == 7) {
                             weekendTimeCaseList.get(currentPos).setT7(editable.toString().trim());
-                        }else if(currentChoosePos==8){
+                        } else if (currentChoosePos == 8) {
                             weekendTimeCaseList.get(currentPos).setT8(editable.toString().trim());
-                        }else if(currentChoosePos==9){
+                        } else if (currentChoosePos == 9) {
                             weekendTimeCaseList.get(currentPos).setT9(editable.toString().trim());
-                        }else if(currentChoosePos==10){
+                        } else if (currentChoosePos == 10) {
                             weekendTimeCaseList.get(currentPos).setT10(editable.toString().trim());
                         }
                     }
@@ -1079,82 +1116,82 @@ public class TimingEditorActivity extends AppCompatActivity {
             TextView programme_ten = holder.obtainView(R.id.programme_ten);
 
             programme_one.setOnClickListener(v -> {
-                currentTextView=programme_one;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=1;
+                currentTextView = programme_one;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 1;
                 showPopupCommnet(800);
             });
 
             programme_two.setOnClickListener(v -> {
-                currentTextView=programme_two;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=2;
+                currentTextView = programme_two;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 2;
                 showPopupCommnet(800);
             });
 
             programme_three.setOnClickListener(v -> {
-                currentTextView=programme_three;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=3;
+                currentTextView = programme_three;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 3;
                 showPopupCommnet(800);
             });
 
             programme_four.setOnClickListener(v -> {
-                currentTextView=programme_four;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=4;
+                currentTextView = programme_four;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 4;
                 showPopupCommnet(800);
             });
 
             programme_five.setOnClickListener(v -> {
-                currentTextView=programme_five;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=5;
+                currentTextView = programme_five;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 5;
                 showPopupCommnet(800);
             });
 
             programme_six.setOnClickListener(v -> {
-                currentTextView=programme_six;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=6;
+                currentTextView = programme_six;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 6;
                 showPopupCommnet(800);
             });
 
             programme_seven.setOnClickListener(v -> {
-                currentTextView=programme_seven;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=7;
+                currentTextView = programme_seven;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 7;
                 showPopupCommnet(800);
             });
 
             programme_eight.setOnClickListener(v -> {
-                currentTextView=programme_eight;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=8;
+                currentTextView = programme_eight;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 8;
                 showPopupCommnet(800);
             });
 
             programme_nine.setOnClickListener(v -> {
-                currentTextView=programme_nine;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=9;
+                currentTextView = programme_nine;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 9;
                 showPopupCommnet(800);
             });
 
             programme_ten.setOnClickListener(v -> {
-                currentTextView=programme_ten;
-                currentType=2;
-                currentPos=index;
-                currentChoosePos=10;
+                currentTextView = programme_ten;
+                currentType = 2;
+                currentPos = index;
+                currentChoosePos = 10;
                 showPopupCommnet(800);
             });
 
@@ -1582,82 +1619,82 @@ public class TimingEditorActivity extends AppCompatActivity {
             titleId.setText(timeCaseListBean.getNo());
 
             programme_one.setOnClickListener(v -> {
-               currentTextView=programme_one;
-               currentType=3;
-               currentPos=index;
-               currentChoosePos=1;
+                currentTextView = programme_one;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 1;
                 showPopupCommnet(800);
             });
 
             programme_two.setOnClickListener(v -> {
-                currentTextView=programme_two;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=2;
+                currentTextView = programme_two;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 2;
                 showPopupCommnet(800);
             });
 
             programme_three.setOnClickListener(v -> {
-                currentTextView=programme_three;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=3;
+                currentTextView = programme_three;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 3;
                 showPopupCommnet(800);
             });
 
             programme_four.setOnClickListener(v -> {
-                currentTextView=programme_four;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=4;
+                currentTextView = programme_four;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 4;
                 showPopupCommnet(800);
             });
 
             programme_five.setOnClickListener(v -> {
-                currentTextView=programme_five;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=5;
+                currentTextView = programme_five;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 5;
                 showPopupCommnet(800);
             });
 
             programme_six.setOnClickListener(v -> {
-                currentTextView=programme_six;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=6;
+                currentTextView = programme_six;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 6;
                 showPopupCommnet(800);
             });
 
             programme_seven.setOnClickListener(v -> {
-                currentTextView=programme_seven;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=7;
+                currentTextView = programme_seven;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 7;
                 showPopupCommnet(800);
             });
 
             programme_eight.setOnClickListener(v -> {
-                currentTextView=programme_eight;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=8;
+                currentTextView = programme_eight;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 8;
                 showPopupCommnet(800);
             });
 
             programme_nine.setOnClickListener(v -> {
-                currentTextView=programme_nine;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=9;
+                currentTextView = programme_nine;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 9;
                 showPopupCommnet(800);
             });
 
             programme_ten.setOnClickListener(v -> {
-                currentTextView=programme_ten;
-                currentType=3;
-                currentPos=index;
-                currentChoosePos=10;
+                currentTextView = programme_ten;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 10;
                 showPopupCommnet(800);
             });
 
