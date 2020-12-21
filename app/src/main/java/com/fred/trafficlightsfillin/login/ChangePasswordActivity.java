@@ -148,7 +148,7 @@ public class ChangePasswordActivity extends BaseActivity {
                         public void onSuccess(LoginResponse response) {
                             if(response.code==0){
                                 finish();
-                                openActivity(MainActivity.class);
+                                openActivity(LoginActivity.class);
                             }
                             ToastUtil.showMsg(ChangePasswordActivity.this,response.msg);
                         }

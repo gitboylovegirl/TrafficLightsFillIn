@@ -285,10 +285,10 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="25dp"
                 android:layout_marginBottom="15dp"
-                android:background="@color/button_blue"
+                android:textColor="@drawable/button_bc"
+                android:background="@drawable/button_bc2"
                 android:gravity="center"
-                android:text="接单"
-                android:textColor="@color/white">
+                android:text="接单">
 
             </TextView>
 

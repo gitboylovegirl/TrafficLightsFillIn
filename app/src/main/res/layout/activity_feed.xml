@@ -210,7 +210,6 @@
                     android:gravity="center"
                     android:paddingHorizontal="15dp"
                     android:paddingVertical="30dp"
-                    android:text=""
                     android:textColor="@color/white">
 
                 </EditText>
@@ -242,7 +241,7 @@
                         android:id="@+id/feed_set"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="反馈车组：A1">
+                        android:text="车组">
 
                     </TextView>
 
@@ -251,7 +250,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="40dp"
-                        android:text="反馈人：大患">
+                        android:text="反馈人">
 
                     </TextView>
                 </LinearLayout>
@@ -287,14 +286,14 @@
                         android:layout_marginLeft="25dp"
                         android:background="#F4F4F4"
                         android:gravity="center"
-                        android:text="2020年12月12日  18:45:21"
+                        android:hint="时间"
                         android:textColor="#ff2a4997"
                         android:textSize="11sp">
 
                     </TextView>
                 </LinearLayout>
 
-                <TextView
+                <!--<TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
@@ -309,7 +308,7 @@
                     android:background="#F4F4F4"
                     android:gravity="center_vertical">
 
-                </EditText>
+                </EditText>-->
             </LinearLayout>
 
             <TextView

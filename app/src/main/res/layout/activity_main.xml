@@ -56,6 +56,7 @@
             android:layout_width="32dp"
             android:layout_height="wrap_content"
             android:text="@string/login_out"
+            android:foreground="?android:attr/selectableItemBackground"
             android:textColor="#CFD0F2"
             android:textSize="13sp"
             />
@@ -67,6 +68,7 @@
             android:layout_marginRight="25dp"
             android:layout_alignParentRight="true"
             android:layout_width="55dp"
+            android:foreground="?android:attr/selectableItemBackground"
             android:layout_height="wrap_content"
             android:text="修改密码"
             android:textColor="#CFD0F2"
@@ -98,6 +100,7 @@
                     android:layout_width="0dp"
                     android:layout_height="150dp"
                     android:layout_weight="1"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center">
 
                     <LinearLayout
@@ -129,6 +132,7 @@
                     android:layout_width="0dp"
                     android:layout_height="150dp"
                     android:layout_weight="1"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center">
 
                     <LinearLayout
@@ -168,6 +172,7 @@
                     android:layout_width="0dp"
                     android:layout_height="150dp"
                     android:layout_weight="1"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center">
 
                     <LinearLayout
@@ -199,6 +204,7 @@
                     android:layout_width="0dp"
                     android:layout_height="150dp"
                     android:layout_weight="1"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center">
 
                     <LinearLayout
@@ -245,6 +251,7 @@
                 android:paddingHorizontal="13dp"
                 android:background="@drawable/bg_color_red"
                 android:id="@+id/feed"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="反馈"
@@ -266,6 +273,7 @@
                 android:id="@+id/tip_set"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:text="@string/tip"
                 android:textColor="@color/white">
 
@@ -285,6 +293,7 @@
                 android:id="@+id/update"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:text="@string/upgrade"
                 android:textColor="@color/white">
 
@@ -307,6 +316,7 @@
             android:drawableTop="@mipmap/new_record"
             android:drawablePadding="3dp"
             android:gravity="center_horizontal"
+            android:foreground="?android:attr/selectableItemBackground"
             android:text="@string/new_record"
             android:textColor="@android:color/darker_gray">
 
@@ -320,6 +330,7 @@
             android:drawableTop="@mipmap/update_record"
             android:drawablePadding="3dp"
             android:gravity="center_horizontal"
+            android:foreground="?android:attr/selectableItemBackground"
             android:text="配时更新"
             android:textColor="@android:color/darker_gray">
 
@@ -333,6 +344,7 @@
             android:drawableTop="@mipmap/record_list"
             android:drawablePadding="3dp"
             android:gravity="center_horizontal"
+            android:foreground="?android:attr/selectableItemBackground"
             android:text="@string/work_list"
             android:textColor="@android:color/darker_gray">
 
@@ -346,6 +358,7 @@
             android:drawableTop="@mipmap/record_timing"
             android:drawablePadding="3dp"
             android:gravity="center_horizontal"
+            android:foreground="?android:attr/selectableItemBackground"
             android:text="@string/timing"
             android:textColor="@android:color/darker_gray">
 
