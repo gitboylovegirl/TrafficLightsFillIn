@@ -42,6 +42,7 @@ import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.SearchAdapter;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
+import com.fred.trafficlightsfillin.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -471,11 +472,16 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
      * 查任务
      */
     private void initData() {
+        if(TextUtils.isEmpty(search.getText().toString().trim())){
+            ToastUtil.showMsg(QueryMainActivity.this,"请先选择路口");
+            return;
+        }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", String.valueOf(page))
                 .addParam("pageSize", "50")
+                .addParam("roadPlace",search.getText().toString().trim())
                 .addParam("teamName", team.getText().toString().trim())
                 .addParam("source", from.getText().toString().trim())
                 .addParam("startTime", TimeUtils.time8(startTime.getText().toString().trim()))
@@ -512,12 +518,16 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
      * 查配时表
      */
     private void initTimingData() {
+        if(TextUtils.isEmpty(search.getText().toString().trim())){
+            ToastUtil.showMsg(QueryMainActivity.this,"请先选择路口");
+            return;
+        }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGHT_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", String.valueOf(page))
                 .addParam("pageSize", "50")
-                .addParam("roadPlace", roadPlace.getText().toString().trim())
+                .addParam("roadPlace", search.getText().toString().trim())
                 .addParam("startTime", TimeUtils.time8(startTime.getText().toString().trim()))
                 .addParam("endTime", TimeUtils.time8(endIme.getText().toString().trim()))
                 .build()

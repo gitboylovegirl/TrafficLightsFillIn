@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -33,7 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -146,6 +146,8 @@ public class TimingEditorActivity extends AppCompatActivity {
     HorizontalScrollView layoutHideScrollview;
     @BindView(R.id.scrollView_one)
     HorizontalScrollView scrollViewOne;
+    @BindView(R.id.scrollView_two)
+    HorizontalScrollView scrollViewTwo;
 
     private View popuwindowView;
     private PopupWindow popupWindow;
@@ -242,11 +244,23 @@ public class TimingEditorActivity extends AppCompatActivity {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            scrollViewOne.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    layoutHideScrollview.scrollTo(scrollX,scrollY);
-                }
+            scrollViewOne.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                layoutHideScrollview.scrollTo(scrollX, scrollY);
+                scrollViewTwo.scrollTo(scrollX, scrollY);
+            });
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            layoutHideScrollview.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                scrollViewOne.scrollTo(scrollX, scrollY);
+                scrollViewTwo.scrollTo(scrollX, scrollY);
+            });
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollViewTwo.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                layoutHideScrollview.scrollTo(scrollX, scrollY);
+                scrollViewOne.scrollTo(scrollX, scrollY);
             });
         }
         //工作日
@@ -621,7 +635,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         Matisse.from(TimingEditorActivity.this)
                 .choose(MimeType.of(MimeType.JPEG, MimeType.PNG, MimeType.WEBP))
                 .countable(true)
-                .maxSelectable(1)
+                .maxSelectable(9)
                 .gridExpectedSize(400)
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
                 .thumbnailScale(0.85f)
@@ -827,7 +841,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         public void onBindHolder(BaseViewHolder holder, @Nullable PeriodCaseListBean periodCaseListBean, int index) {
             TextView startTime = holder.obtainView(R.id.start_time);
             TextView no = holder.obtainView(R.id.number);
-            TextView timetable_delete = holder.obtainView(R.id.timetable_delete);
+            ImageView timetable_delete = holder.obtainView(R.id.timetable_delete);
             timetable_delete.setVisibility(View.VISIBLE);
 
             startTime.setText(periodCaseListBean.getStart());
@@ -856,9 +870,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             startTime.setOnClickListener(v -> {
                 MyTimePickerDialog mTimePicker = new MyTimePickerDialog(TimingEditorActivity.this, (view, hourOfDay, minute, seconds) -> {
-                    // TODO Auto-generated method stub
                     String time = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds);
-                    //Log.e("fred",time);
                     if (isWeekday) {
                         weekdaysPeriodCaseList.get(currentPos).setStart(time);
                     } else {
@@ -867,6 +879,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
                     lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
                     startTime.setText(time);
+                    startTime.setTextColor(Color.parseColor("#ff2d51"));
                 }, 0, 0, 0, true);
                 mTimePicker.show();
             });
@@ -923,6 +936,8 @@ public class TimingEditorActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 currentTextView.setText(editable.toString().trim());
+                currentTextView.setTextColor(Color.parseColor("#ff2d51"));
+                setTaskState();
                 for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
                     Log.e("fred  数据4", i + "   " + weekdaysTimeCaseList.get(i).getT1());
                 }
@@ -959,7 +974,9 @@ public class TimingEditorActivity extends AppCompatActivity {
                     } else {
                         Log.e("fred", "  数据7 " + currentChoosePos + "    " + currentPos);
                         //配时表2
-                        if (currentChoosePos == 1) {
+                        if(currentChoosePos ==0){
+                            weekdaysTimeCaseList.get(currentPos).setNo(editable.toString().trim());
+                        } else if (currentChoosePos == 1) {
                             weekdaysTimeCaseList.get(currentPos).setT1(editable.toString().trim());
                         } else if (currentChoosePos == 2) {
                             weekdaysTimeCaseList.get(currentPos).setT2(editable.toString().trim());
@@ -1016,7 +1033,9 @@ public class TimingEditorActivity extends AppCompatActivity {
                         }
                     } else {
                         //配时表2
-                        if (currentChoosePos == 1) {
+                        if(currentChoosePos ==0){
+                            weekendTimeCaseList.get(currentPos).setNo(editable.toString().trim());
+                        } else if (currentChoosePos == 1) {
                             weekendTimeCaseList.get(currentPos).setT1(editable.toString().trim());
                         } else if (currentChoosePos == 2) {
                             weekendTimeCaseList.get(currentPos).setT2(editable.toString().trim());
@@ -1296,6 +1315,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1320,6 +1341,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1345,6 +1368,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1370,6 +1395,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1395,6 +1422,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1420,6 +1449,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1445,6 +1476,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1470,6 +1503,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1495,6 +1530,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
+
                         }
                     });
                 });
@@ -1520,6 +1557,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                             }
                             planCaseAdapter.notifyDataSetChanged();
                             setTaskState();
+                            update();
                         }
                     });
                 });
@@ -1554,6 +1592,26 @@ public class TimingEditorActivity extends AppCompatActivity {
                     titleId.setText("最小绿");
                 }
             }
+        }
+    }
+
+    private void update() {
+        if (isWeekday) {
+            List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
+            for (int i = 0; i < weekdaysPlanCaseList.size(); i++) {
+                if ("1".equals(weekdaysPlanCaseList.get(i).getType())) {
+                    hideWeekdaysPlanCaseList.add(weekdaysPlanCaseList.get(i));
+                }
+            }
+            hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
+        } else {
+            List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
+            for (int i = 0; i < weekendPlanCaseList.size(); i++) {
+                if ("1".equals(weekendPlanCaseList.get(i).getType())) {
+                    hideWeekdaysPlanCaseList.add(weekendPlanCaseList.get(i));
+                }
+            }
+            hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
         }
     }
 
@@ -1593,7 +1651,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             TextView programme_nine = holder.obtainView(R.id.programme_nine);
             TextView programme_ten = holder.obtainView(R.id.programme_ten);
 
-            TextView tvDelete = holder.obtainView(R.id.tv_delete);
+            ImageView tvDelete = holder.obtainView(R.id.tv_delete);
             tvDelete.setVisibility(View.VISIBLE);
 
 //            if (index == 0) {
@@ -1617,6 +1675,14 @@ public class TimingEditorActivity extends AppCompatActivity {
             programme_ten.setText(timeCaseListBean.getT10());
 
             titleId.setText(timeCaseListBean.getNo());
+
+            titleId.setOnClickListener(v -> {
+                currentTextView = titleId;
+                currentType = 3;
+                currentPos = index;
+                currentChoosePos = 0;
+                showPopupCommnet(800);
+            });
 
             programme_one.setOnClickListener(v -> {
                 currentTextView = programme_one;

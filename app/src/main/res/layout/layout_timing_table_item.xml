@@ -285,18 +285,18 @@
             android:layout_width="57dp"
             android:layout_height="wrap_content">
 
-            <TextView
+            <ImageView
                 android:visibility="invisible"
                 android:id="@+id/tv_delete"
                 android:textColor="@color/black"
-                android:text="-"
-                android:padding="4dp"
+                android:background="@mipmap/delete_bg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-            </TextView>
+            </ImageView>
 
             <TextView
+                android:layout_marginLeft="7dp"
                 android:gravity="center"
                 android:id="@+id/title_id"
                 android:layout_gravity="center_vertical"

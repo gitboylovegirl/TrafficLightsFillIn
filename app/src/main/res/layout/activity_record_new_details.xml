@@ -183,7 +183,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="信号机编号："
+                        android:text="编号："
                         android:textStyle="bold"
                         android:textSize="15sp"
                         android:textColor="#ff0e0e0e"/>
