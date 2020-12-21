@@ -149,6 +149,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:background="@color/white"
         android:visibility="gone"
         android:id="@+id/type_two"
         android:layout_width="match_parent"

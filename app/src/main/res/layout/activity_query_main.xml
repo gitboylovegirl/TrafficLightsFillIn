@@ -160,7 +160,6 @@
 
                         <TextView
                             android:id="@+id/team"
-                            android:hint="班组"
                             android:layout_marginTop="20dp"
                             android:textColor="#4F4F4F"
                             android:layout_width="130dp"
@@ -190,7 +189,6 @@
 
                         <TextView
                             android:id="@+id/from"
-                            android:hint="问题来源"
                             android:layout_marginTop="20dp"
                             android:textColor="#4F4F4F"
                             android:layout_width="130dp"

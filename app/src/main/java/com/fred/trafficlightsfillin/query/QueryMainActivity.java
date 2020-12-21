@@ -212,9 +212,9 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
 
 
         long timeMillis = System.currentTimeMillis();
-        startTime.setText(TimeUtils.time9(String.valueOf(timeMillis)));
-        endIme.setText(TimeUtils.time9(String.valueOf(timeMillis)));
-        team.setText(SharedPreferenceUtils.getInstance().getTeamName());
+        //startTime.setText(TimeUtils.time9(String.valueOf(timeMillis)));
+        //endIme.setText(TimeUtils.time9(String.valueOf(timeMillis)));
+        //team.setText(SharedPreferenceUtils.getInstance().getTeamName());
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
             Intent intent=new Intent(QueryMainActivity.this,TaskDetailsActivity.class);
             intent.putExtra("id",list.get(index).id);
