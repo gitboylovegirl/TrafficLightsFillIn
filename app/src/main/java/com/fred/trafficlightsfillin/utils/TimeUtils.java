@@ -64,6 +64,10 @@ public class TimeUtils {
 
 
     public static String time8(String inputTime){
+
+        if(TextUtils.isEmpty(inputTime)){
+            return "";
+        }
         SimpleDateFormat format =  new SimpleDateFormat("yyyy年MM月dd日");
         Date date = null;
         try {
