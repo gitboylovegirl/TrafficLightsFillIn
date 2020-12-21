@@ -77,7 +77,6 @@
                         android:layout_height="29dp"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
-                        android:text="路口名称"
                         android:textSize="12sp"></TextView>
 
                     <!--自动完成文本框-->
@@ -93,12 +92,12 @@
 
                     <TextView
                         android:id="@+id/road_type"
+                        android:hint="路口类型"
                         android:layout_width="130dp"
                         android:layout_height="29dp"
                         android:layout_alignParentRight="true"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
-                        android:text="路口类型"
                         android:textSize="12sp">
                     </TextView>
                 </RelativeLayout>
@@ -126,7 +125,6 @@
                         android:layout_height="29dp"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
-                        android:text="2020年10月21日 "
                         android:textSize="10sp"></TextView>
 
                     <TextView
@@ -137,7 +135,6 @@
                         android:layout_alignParentRight="true"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
-                        android:text="2020年10月22日 "
                         android:textSize="10sp"></TextView>
                 </RelativeLayout>
 
@@ -163,6 +160,7 @@
 
                         <TextView
                             android:id="@+id/team"
+                            android:hint="班组"
                             android:layout_marginTop="20dp"
                             android:textColor="#4F4F4F"
                             android:layout_width="130dp"
@@ -170,7 +168,6 @@
                             android:layout_alignParentRight="true"
                             android:background="@drawable/bg_color_f4f4f4_5dp"
                             android:gravity="center"
-                            android:text="A1 "
                             android:textSize="10sp">
 
                         </TextView>
@@ -193,6 +190,7 @@
 
                         <TextView
                             android:id="@+id/from"
+                            android:hint="问题来源"
                             android:layout_marginTop="20dp"
                             android:textColor="#4F4F4F"
                             android:layout_width="130dp"
@@ -200,7 +198,6 @@
                             android:layout_alignParentRight="true"
                             android:background="@drawable/bg_color_f4f4f4_5dp"
                             android:gravity="center"
-                            android:text="任务"
                             android:textSize="10sp">
                         </TextView>
                     </LinearLayout>
