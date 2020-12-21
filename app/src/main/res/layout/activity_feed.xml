@@ -318,8 +318,9 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/button_bc2"
-                android:textColor="@drawable/button_bc"
+                android:background="@drawable/selector_btn_bg"
+                android:textColor="@drawable/selector_btn_font"
+                android:textStyle="bold"
                 android:paddingHorizontal="18dp"
                 android:paddingVertical="11dp"
                 android:text="提交反馈">

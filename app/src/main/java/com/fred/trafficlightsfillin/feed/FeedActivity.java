@@ -84,12 +84,12 @@ public class FeedActivity extends AppCompatActivity {
     @BindView(R.id.submit)
     TextView submit;
     PictureAdapter pictureAdapter;
+    private Long trafficLightId = 0L;
     List<ImageResponse.ImageBean> imageBeans = new ArrayList<>();
     List<RoadResponse.RoadChannel> roadChannels = new ArrayList<>();
 
     private static final int REQUEST_CODE_CHOOSE = 99;
 
-    int currentPosition;
     @BindView(R.id.area)
     TextView area;
 
@@ -214,8 +214,7 @@ public class FeedActivity extends AppCompatActivity {
             type.setText(roadChannels.get(index).getModelNo());
             signalType.setText(roadChannels.get(index).getModelType());
             area.setText(roadChannels.get(index).getArea());
-            currentPosition = index;
-
+            trafficLightId = data.get(index).getId();
             popupWindow.dismiss();
         });
 
@@ -256,7 +255,7 @@ public class FeedActivity extends AppCompatActivity {
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("desc",tvFeed.getText().toString().trim())
-                .addParam("trafficLightId", String.valueOf(roadChannels.get(currentPosition).getId()))
+                .addParam("trafficLightId", trafficLightId+"")
                 .build()
                 .postAsync(new ICallback<BaseResponse>() {
                     @Override
@@ -356,6 +355,10 @@ public class FeedActivity extends AppCompatActivity {
 
             //点击添加图片
             rlMore.setOnClickListener(v -> {
+                if(trafficLightId <= 0){
+                    ToastUtil.showShort(FeedActivity.this, "请先选择路口！");
+                    return;
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (FeedActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
                         //如果没有写sd卡权限
@@ -378,7 +381,7 @@ public class FeedActivity extends AppCompatActivity {
         Matisse.from(FeedActivity.this)
                 .choose(MimeType.of(MimeType.JPEG, MimeType.PNG, MimeType.WEBP))
                 .countable(true)
-                .maxSelectable(1)
+                .maxSelectable(9)
                 .gridExpectedSize(400)
                 .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
                 .thumbnailScale(0.85f)
@@ -398,28 +401,24 @@ public class FeedActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             List<Uri> mSelected = Matisse.obtainResult(data);
-            List<String> fileData = new ArrayList<>();
             for (int i = 0; i < mSelected.size(); i++) {
                 Log.i("图片", mSelected.get(i).getPath());
-                fileData.add(getFilePathFromUri(FeedActivity.this, mSelected.get(i)));
+                List<String> updateData=new ArrayList<>();
+                updateData.add(getFilePathFromUri(FeedActivity.this, mSelected.get(i)));
+                uploadPicture(updateData);
                 ImageResponse.ImageBean imageBean = new ImageResponse.ImageBean();
                 imageBean.setUri(mSelected.get(i));
                 imageBeans.add(0, imageBean);
             }
             pictureAdapter.bindData(true, imageBeans);
             pictureAdapter.notifyDataSetChanged();
-            for (int i = 0; i < fileData.size(); i++) {
-                List<String> updateData=new ArrayList<>();
-                updateData.add(fileData.get(i));
-                uploadPicture(fileData);
-            }
         }
 
     }
 
     //上传图片
     private void uploadPicture(List<String> data) {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.UP_IMG) + "/" + roadChannels.get(currentPosition).getId())
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.UP_IMG) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addUploadFiles(data)

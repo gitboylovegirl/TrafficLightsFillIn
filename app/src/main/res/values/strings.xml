@@ -27,6 +27,7 @@
     <string name="back_home">下班</string>
     <string name="change_btn">点击切换</string>
     <string name="intersection_inurdoce">路口基本资料</string>
+    <string name="road_peishi_info">路口配时信息</string>
     <string name="work_day">工作日</string>
     <string name="weekend">周末</string>
 </resources>

@@ -3,7 +3,6 @@ package com.fred.trafficlightsfillin.intersection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -18,12 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.load.model.LazyHeaderFactory;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
-import com.fred.trafficlightsfillin.base.MyGlideUrl;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.intersection.bean.PeriodCaseListBean;
@@ -34,10 +31,8 @@ import com.fred.trafficlightsfillin.intersection.bean.TimingDetailsResponse;
 import com.fred.trafficlightsfillin.intersection.bean.TrafficlighResonse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
-import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
-import com.fred.trafficlightsfillin.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,16 +64,6 @@ public class TimingDetailsActivity extends AppCompatActivity {
     RecyclerView timeList;
     @BindView(R.id.picture_list)
     RecyclerView pictureList;
-    @BindView(R.id.better)
-    TextView better;
-    @BindView(R.id.task_end)
-    ImageView taskEnd;
-    @BindView(R.id.end_time)
-    TextView endTime;
-    @BindView(R.id.submit)
-    TextView submit;
-    @BindView(R.id.state)
-    TextView state;
 
     @BindView(R.id.week_title)
     LinearLayout weekTitle;
@@ -88,6 +73,9 @@ public class TimingDetailsActivity extends AppCompatActivity {
     TextView weekday;
     @BindView(R.id.weekend)
     TextView weekend;
+
+    @BindView(R.id.last_peishi_time)
+    TextView lastPeishiTime;
 
     private List<PeriodCaseListBean> weekdaysPeriodCaseList = new ArrayList<>();//工作日时间表
     private List<PeriodCaseListBean> weekendPeriodCaseList = new ArrayList<>();//周末时间表
@@ -102,8 +90,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
     TimeTableAdapter timeTableAdapter;
     PlanCaseAdapter planCaseAdapter;
     TimeCaseAdapter timeCaseAdapter;
-    String trafficLightId;
-    String id;
+    long trafficLightId;
     List<StageResponse.StageChanel> stageChanels;//配时表数据
 
     @Override
@@ -112,8 +99,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timing_details);
         ButterKnife.bind(this);
 
-        trafficLightId = getIntent().getStringExtra("trafficLightId");
-        id = getIntent().getStringExtra("id");
+        trafficLightId = getIntent().getLongExtra("trafficLightId", 0);
         initView();
         initStage();
     }
@@ -181,7 +167,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
 //                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 //                            imageView.setImageBitmap(decodedByte);
                             initTrafficlighInfo();
-                            initTaskInfo();
+                            //initTaskInfo();
                             initPictrue();
                             initTrafficlighPeishi();
                         }
@@ -213,6 +199,10 @@ public class TimingDetailsActivity extends AppCompatActivity {
                             roadType.setText(response.roadPlaceType);
                             modelType.setText(response.modelType);
                             modelNumber.setText(response.modelNo);
+                            if(response.date != null && !"".equals(response.date.trim()))
+                                lastPeishiTime.setText(TimeUtils.time7(response.date));
+                            else
+                                lastPeishiTime.setText("暂无最后配时时间");
                         }
                     }
 
@@ -247,7 +237,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
     /**
      * 获取任务详情
      */
-    private void initTaskInfo() {
+    /*private void initTaskInfo() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS) + "/" + id)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
@@ -283,7 +273,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
                     public void onFail(int errorCode, String errorMsg) {
                     }
                 });
-    }
+    }*/
 
     class PictureAdapter extends BaseRecyclerAdapter<ImageResponse.ImageBean> {
 

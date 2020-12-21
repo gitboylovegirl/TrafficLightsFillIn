@@ -258,7 +258,6 @@
             <TextView
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginTop="10dp"
-                android:text="啧啧啧"
                 android:id="@+id/describe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -269,9 +268,10 @@
                 android:id="@+id/receiving_orders"
                 android:layout_marginTop="20dp"
                 android:layout_gravity="center_horizontal"
-                android:textColor="@drawable/button_bc"
-                android:background="@drawable/button_bc2"
                 android:text="接单"
+                android:background="@drawable/selector_btn_bg"
+                android:textColor="@drawable/selector_btn_font"
+                android:textStyle="bold"
                 android:gravity="center"
                 android:layout_width="208dp"
                 android:layout_height="38dp">
@@ -286,9 +286,9 @@
         android:gravity="center"
         android:textSize="18sp"
         android:layout_alignParentBottom="true"
-        android:background="@color/main_color"
+        android:background="@drawable/selector_btn_bg"
+        android:textColor="@drawable/selector_btn_font"
         android:text="@string/back"
-        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 

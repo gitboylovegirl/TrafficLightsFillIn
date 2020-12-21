@@ -40,37 +40,40 @@ import butterknife.ButterKnife;
 
 public class RecordNewDetailsActivity extends AppCompatActivity {
 
+
+    @BindView(R.id.number)
+    TextView number;
     @BindView(R.id.road_name)
     TextView roadName;
-    @BindView(R.id.road_place)
-    TextView roadPlace;
-    @BindView(R.id.model_one)
-    TextView modelOne;
-    @BindView(R.id.model_two)
-    TextView modelTwo;
-    @BindView(R.id.team)
-    TextView team;
-    @BindView(R.id.name)
-    TextView name;
-    @BindView(R.id.phone)
-    TextView phone;
-    @BindView(R.id.task)
-    TextView task;
-    @BindView(R.id.sec)
-    TextView sec;
-    @BindView(R.id.remark)
-    TextView remark;
+    @BindView(R.id.area)
+    TextView area;
+    @BindView(R.id.road_position)
+    TextView roadPosition;
+    @BindView(R.id.road_type)
+    TextView roadType;
+    @BindView(R.id.model_type)
+    TextView modelType;
+    @BindView(R.id.model_number)
+    TextView modelNo;
+
+    @BindView(R.id.task_source)
+    TextView taskSource;
+    @BindView(R.id.task_desc)
+    TextView taskDesc;
+    @BindView(R.id.task_remark)
+    TextView taskRemark;
 
 
     @BindView(R.id.receiving)
-    TextView receiving;
-    String id;
+    TextView receiving;//接单
     @BindView(R.id.go_to)
-    TextView goTo;
+    TextView goTo;//导航
     @BindView(R.id.finish)
-    TextView finish;
+    TextView finish;//完成任务单
     @BindView(R.id.bottom_view)
+
     LinearLayout bottomView;
+    String taskId;
 
     TaskDetailsChannel.TaskDetails taskDetails;
     @Override
@@ -234,8 +237,8 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        id = getIntent().getStringExtra("id");
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS) + "/" + id)
+        taskId = getIntent().getStringExtra("taskId");
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS) + "/" + taskId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
@@ -245,14 +248,16 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                         Log.e("fred  新数据：", response.toString());
                         if (response.data != null) {
                             taskDetails = response.data;
+                            roadPosition.setText(taskDetails.location);
+                            roadType.setText(taskDetails.roadPlaceType);
                             roadName.setText(taskDetails.roadPlace);
-                            modelOne.setText(taskDetails.modelNo);
-                            modelTwo.setText(taskDetails.modelType);
-                            task.setText(taskDetails.source);
-                            sec.setText(taskDetails.desc);
-                            roadPlace.setText(taskDetails.area);
-                            remark.setText(taskDetails.remark);
-                            initEngigeerInfo();
+                            modelNo.setText(taskDetails.modelNo);
+                            modelType.setText(taskDetails.modelType);
+                            taskSource.setText(taskDetails.source);
+                            taskDesc.setText(taskDetails.desc);
+                            area.setText(taskDetails.area);
+                            taskRemark.setText(taskDetails.remark);
+                            //initEngigeerInfo();
                         }
                     }
 
@@ -269,7 +274,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_STATE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("taskId", id)
+                .addParam("taskId", taskId)
                 .addParam("state", "2")
                 .build()
                 .putAsync(new ICallback<BaseResponse>() {
@@ -295,7 +300,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_STATE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("taskId", id)
+                .addParam("taskId", taskId)
                 .addParam("state", "3")
                 .build()
                 .putAsync(new ICallback<BaseResponse>() {
@@ -412,7 +417,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                 });
     }
 
-    private void initEngigeerInfo() {
+    /*private void initEngigeerInfo() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ENGINEER_INFO) + "/" + taskDetails.getEngineerId())
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
@@ -431,5 +436,5 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                     public void onFail(int errorCode, String errorMsg) {
                     }
                 });
-    }
+    }*/
 }

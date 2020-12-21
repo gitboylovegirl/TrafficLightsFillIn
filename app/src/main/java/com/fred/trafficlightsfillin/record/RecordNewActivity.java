@@ -90,7 +90,7 @@ public class RecordNewActivity extends AppCompatActivity {
         initNewData();
         recordAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
             Intent intent =new Intent(RecordNewActivity.this,RecordNewDetailsActivity.class);
-            intent.putExtra("id",list.get(index).getId());
+            intent.putExtra("taskId",list.get(index).getId());
             intent.putExtra("state",list.get(index).state);
             startActivity(intent);
         });

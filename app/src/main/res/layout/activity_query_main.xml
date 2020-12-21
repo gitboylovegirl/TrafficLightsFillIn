@@ -125,6 +125,7 @@
                         android:layout_height="29dp"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
+                        android:hint="开始时间"
                         android:textSize="10sp"></TextView>
 
                     <TextView
@@ -135,6 +136,7 @@
                         android:layout_alignParentRight="true"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
+                        android:hint="结束时间"
                         android:textSize="10sp"></TextView>
                 </RelativeLayout>
 
@@ -167,6 +169,7 @@
                             android:layout_alignParentRight="true"
                             android:background="@drawable/bg_color_f4f4f4_5dp"
                             android:gravity="center"
+                            android:hint="班组"
                             android:textSize="10sp">
 
                         </TextView>
@@ -196,6 +199,7 @@
                             android:layout_alignParentRight="true"
                             android:background="@drawable/bg_color_f4f4f4_5dp"
                             android:gravity="center"
+                            android:hint="问题来源"
                             android:textSize="10sp">
                         </TextView>
                     </LinearLayout>

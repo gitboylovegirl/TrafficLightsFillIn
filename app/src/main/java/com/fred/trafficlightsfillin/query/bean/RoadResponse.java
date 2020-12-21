@@ -22,7 +22,7 @@ public class RoadResponse extends BaseResponse {
          */
 
         private String area;
-        private int id;
+        private long id;
         private int lastSelectEngineerId;
         private int lastSelectTeamId;
         private String modelNo;
@@ -49,7 +49,7 @@ public class RoadResponse extends BaseResponse {
             this.area = area;
         }
 
-        public int getId() {
+        public long getId() {
             return id;
         }
 

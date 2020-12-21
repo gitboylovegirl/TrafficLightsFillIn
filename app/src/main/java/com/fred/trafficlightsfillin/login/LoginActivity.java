@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,13 +23,18 @@ import com.fred.trafficlightsfillin.base.BaseActivity;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.query.QueryMainActivity;
+import com.fred.trafficlightsfillin.query.bean.TeamListResponse;
 import com.fred.trafficlightsfillin.utils.AccountManager;
+import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.fred.trafficlightsfillin.utils.ValidatorUtil;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -39,7 +45,7 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.user_name)
     EditText userName;
     @BindView(R.id.user_team)
-    EditText userTeam;
+    TextView userTeam;
     @BindView(R.id.user_phone)
     EditText userPhone;
     @BindView(R.id.user_password)
@@ -52,6 +58,10 @@ public class LoginActivity extends BaseActivity {
     TextView login;
     @BindView(R.id.cancel)
     TextView cancel;
+    @BindView(R.id.work_state)
+    CheckBox checkBox;
+
+    List<String> teamList = new ArrayList<>();
 
     @Override
     public void setContentLayout() {
@@ -64,6 +74,8 @@ public class LoginActivity extends BaseActivity {
         login.setOnClickListener(this::onClickEvent);
         cancel.setOnClickListener(this::onClickEvent);
         forgetPassowrd.setOnClickListener(this::onClickEvent);
+        userTeam.setOnClickListener(this::onClickEvent);
+        initTeamList();
     }
 
     @Override
@@ -112,7 +124,53 @@ public class LoginActivity extends BaseActivity {
             case R.id.forget_password:
                 openActivity(FeedPasswordActivity.class);
                 break;
+            case R.id.user_team:
+                String teamName = userTeam.getText() == null ? "" : userTeam.getText().toString().trim();
+                if(teamList.size() > 0 && "".equals(teamName)){
+                    userTeam.setText(teamList.get(0));
+                }
+                DialogUtils.showChoiceDialog(LoginActivity.this, teamList, new DialogUtils.OnButtonClickListener() {
+                    @Override
+                    public void onPositiveButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onNegativeButtonClick() {
+
+                    }
+
+                    @Override
+                    public void onChoiceItem(String str, int pos) {
+                        userTeam.setText(str);
+                    }
+                });
+                break;
         }
+    }
+
+    private void initTeamList(){
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TEAM_LIST))
+                .addParam("pageNum", "1")
+                .addParam("pageSize", "100")
+                .build()
+                .postAsync(new ICallback<TeamListResponse>() {
+                    @Override
+                    public void onSuccess(TeamListResponse response) {
+                        List<TeamListResponse.TeamListChannel> data = response.data;
+                        if(data != null && data.size() > 0){
+                            for (TeamListResponse.TeamListChannel team : data
+                            ) {
+                                teamList.add(team.name);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+
+                    }
+                });
     }
 
     /**
@@ -166,7 +224,11 @@ public class LoginActivity extends BaseActivity {
                             SharedPreferenceUtils.getInstance().setSex(response.data.sex);
                             SharedPreferenceUtils.getInstance().setTeamId(response.data.teamId);
                             SharedPreferenceUtils.getInstance().setTeamName(response.data.teamName);
-
+                            if(checkBox.isChecked()){
+                                SharedPreferenceUtils.getInstance().setFlag("1");
+                            }else{
+                                SharedPreferenceUtils.getInstance().setFlag("0");
+                            }
                             LoginResponse.LoginBean data = response.data;
                             AccountManager.getInstance().setLoginResponse(response);
                             openActivity(MainActivity.class);

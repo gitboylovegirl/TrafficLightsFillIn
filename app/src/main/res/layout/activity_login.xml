@@ -52,7 +52,7 @@
             </View>
 
 
-            <EditText
+            <TextView
                 android:layout_marginTop="70dp"
                 android:layout_below="@+id/user_name"
                 android:id="@+id/user_team"
@@ -65,7 +65,7 @@
                 android:textColorHint="#C5C5C5"
                 android:textSize="14sp">
 
-            </EditText>
+            </TextView>
 
             <View
                 android:layout_marginTop="18dp"
@@ -126,12 +126,24 @@
 
                 </EditText>
 
+                <CheckBox
+                    android:id="@+id/work_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/user_password"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="30dp"
+                    android:checked="true"
+                    android:textSize="16sp"
+                    android:text="上班"
+                    android:textColor="@color/main_color"/>
+
                 <View
-                    android:layout_marginTop="18dp"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_below="@+id/user_password"
                     android:layout_marginHorizontal="45dp"
+                    android:layout_marginTop="18dp"
                     android:background="#9C9C9C">
 
                 </View>
@@ -164,9 +176,9 @@
 
             <TextView
                 android:layout_marginTop="80dp"
-                android:textSize="18sp"
-                android:textColor="@color/white"
-                android:background="@color/main_color"
+                android:textSize="20sp"
+                android:textColor="@drawable/selector_btn_font"
+                android:background="@drawable/selector_btn_bg"
                 android:layout_marginHorizontal="45dp"
                 android:paddingVertical="17dp"
                 android:id="@+id/login"
@@ -174,6 +186,7 @@
                 android:layout_below="@+id/password_view"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:text="登录"
+                android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

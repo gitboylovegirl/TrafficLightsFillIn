@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FAFAFA"
     tools:context=".record.RecordNewDetailsActivity">
 
     <ImageView
@@ -20,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="60dp"
-        android:text="路口基本资料"
+        android:text="任务信息"
         android:textColor="@color/white"
         android:textSize="24dp"
         android:textStyle="bold">
@@ -28,300 +29,296 @@
     </TextView>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="100dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="19dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="17dp"
-                android:layout_marginTop="110dp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/bg_color_white"
-                android:paddingHorizontal="30dp">
+                android:paddingHorizontal="19dp"
+                android:paddingBottom="18dp">
+
+                <TextView
+                    android:id="@+id/number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="19dp"
+                    android:textColor="#ffc6c6c6"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="45dp"
-                    android:text="查询类型"
-                    android:textColor="@color/black"
+                    android:layout_marginTop="49dp"
+                    android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textStyle="bold">
-
-                </TextView>
+                    android:text="路口名称："
+                    android:textColor="#ff0e0e0e" />
 
                 <TextView
                     android:id="@+id/road_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="70dp"
-                    android:text="前门大街"
-                    android:textColor="@color/main_color"
-                    android:textSize="20sp"
-                    android:textStyle="bold">
-
-                </TextView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginTop="45dp"
-                    android:text="所属区域"
-                    android:textColor="@color/black"
+                    android:textColor="@color/main_text_color"
                     android:textSize="16sp">
 
                 </TextView>
 
-                <TextView
-                    android:id="@+id/road_place"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_marginTop="70dp"
-                    android:text="无门"
-                    android:textColor="@color/black"
-                    android:textSize="16sp">
+                    android:layout_marginTop="59dp"
+                    android:orientation="vertical">
 
-                </TextView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="所属区域"
+                        android:textSize="14sp"
+                        android:textColor="#ff0e0e0e"/>
+
+                    <TextView
+                        android:id="@+id/area"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:textColor="#ff0e0e0e"
+                        android:textSize="14sp" />
+                </LinearLayout>
             </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="机型："
-                    android:textColor="@color/black">
-
-                </TextView>
-
-                <TextView
-                    android:id="@+id/model_one"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ASDFGHJKL"
-                    android:textColor="@color/main_color">
-
-                </TextView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="信号机机型："
-                    android:textColor="@color/black">
-
-                </TextView>
-
-                <TextView
-                    android:id="@+id/model_two"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="三星"
-                    android:textColor="@color/black">
-
-                </TextView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="任务车组："
-                    android:textColor="@color/black">
-
-                </TextView>
-
-                <TextView
-                    android:id="@+id/team"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="A1"
-                    android:textColor="@color/black">
-
-                </TextView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="姓名："
-                    android:textColor="@color/black">
-
-                </TextView>
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="A1"
-                    android:textColor="@color/black">
-
-                </TextView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="电话："
-                    android:textColor="@color/black">
-
-                </TextView>
-
-                <TextView
-                    android:id="@+id/phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="12121212121"
-                    android:textColor="@color/black">
-
-                </TextView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="任务来源："
-                    android:textColor="@color/black">
-
-                </TextView>
-
-                <TextView
-                    android:id="@+id/task"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="121大队"
-                    android:textColor="@color/black">
-
-                </TextView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="问题描述："
-                    android:textColor="@color/black">
-
-                </TextView>
-            </LinearLayout>
-
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
                 android:layout_marginTop="15dp"
-                android:background="#F6F6F6"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingVertical="16dp">
+                android:background="@drawable/bg_color_white"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="25dp">
 
-                <TextView
-                    android:id="@+id/sec"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#FF3C00">
+                    android:orientation="horizontal">
 
-                </TextView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="地理位置："
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="#ff0e0e0e" />
+
+                    <TextView
+                        android:id="@+id/road_position"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#ff3f50e9"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="路口类型："
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="#ff0e0e0e"/>
+
+                    <TextView
+                        android:id="@+id/road_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#ff3f50e9"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="信号机类型："
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="#ff0e0e0e"/>
+
+                    <TextView
+                        android:id="@+id/model_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#ff3f50e9"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="25dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="信号机编号："
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="#ff0e0e0e"/>
+
+                    <TextView
+                        android:id="@+id/model_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#ff3f50e9"
+                        android:textSize="13sp" />
+                </LinearLayout>
             </RelativeLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="备注："
-                    android:textColor="@color/black">
-
-                </TextView>
-            </LinearLayout>
-
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="47dp"
                 android:layout_marginTop="15dp"
-                android:background="#F6F6F6"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingVertical="16dp">
-
-                <TextView
-                    android:id="@+id/remark"
+                android:background="@drawable/bg_color_white"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="25dp">
+                <LinearLayout
+                    android:id="@+id/layout_task_source"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black">
-                </TextView>
-            </RelativeLayout>
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:text="任务来源："
+                        android:textColor="@color/black">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/task_source"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black">
+
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/layout_task_desc_label"
+                    android:layout_below="@id/layout_task_source"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:text="问题描述："
+                        android:textColor="@color/black">
+
+                    </TextView>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layout_task_desc"
+                    android:layout_below="@id/layout_task_desc_label"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F6F6F6"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp">
+
+                    <TextView
+                        android:id="@+id/task_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FF3C00">
+
+                    </TextView>
+                </RelativeLayout>
+                <LinearLayout
+                    android:id="@+id/layout_task_remark_label"
+                    android:layout_below="@id/layout_task_desc"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:text="备注："
+                        android:textColor="@color/black">
+
+                    </TextView>
+                </LinearLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/layout_task_remark"
+                    android:layout_below="@id/layout_task_remark_label"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F6F6F6"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp">
+
+                    <TextView
+                        android:id="@+id/task_remark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black">
+                    </TextView>
+                </RelativeLayout>
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/receiving"
-                android:layout_width="138dp"
+                android:layout_width="80dp"
                 android:layout_height="37dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="25dp"
                 android:layout_marginBottom="15dp"
-                android:textColor="@drawable/button_bc"
-                android:background="@drawable/button_bc2"
                 android:gravity="center"
+                android:background="@drawable/selector_btn_bg"
+                android:textColor="@drawable/selector_btn_font"
+                android:textStyle="bold"
                 android:text="接单">
 
             </TextView>
@@ -339,26 +336,28 @@
 
                 <TextView
                     android:id="@+id/go_to"
-                    android:layout_width="138dp"
+                    android:layout_width="100dp"
                     android:layout_height="37dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/button_bc2"
+                    android:background="@drawable/selector_btn_bg"
+                    android:textColor="@drawable/selector_btn_font"
+                    android:textStyle="bold"
                     android:gravity="center"
-                    android:text="导航去这里"
-                    android:textColor="@drawable/button_bc">
+                    android:text="导航去这里">
 
                 </TextView>
 
                 <TextView
                     android:id="@+id/finish"
-                    android:layout_width="138dp"
+                    android:layout_width="100dp"
                     android:layout_height="37dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginLeft="20dp"
-                    android:background="@drawable/button_bc2"
                     android:gravity="center"
                     android:text="完成任务单"
-                    android:textColor="@drawable/button_bc">
+                    android:background="@drawable/selector_btn_bg"
+                    android:textColor="@drawable/selector_btn_font"
+                    android:textStyle="bold">
 
                 </TextView>
             </LinearLayout>

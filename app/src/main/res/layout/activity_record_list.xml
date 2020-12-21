@@ -47,9 +47,9 @@
         android:gravity="center"
         android:textSize="18sp"
         android:layout_alignParentBottom="true"
-        android:background="@color/main_color"
+        android:background="@drawable/selector_btn_bg"
+        android:textColor="@drawable/selector_btn_font"
         android:text="@string/back"
-        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 

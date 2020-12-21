@@ -61,9 +61,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="49dp"
-                    android:text="路口名称 "
+                    android:text="路口名称"
+                    android:textStyle="bold"
                     android:textColor="#ff0e0e0e"
-                    android:textSize="15sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/road_name"
@@ -116,8 +117,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="地理位置："
+                        android:textStyle="bold"
                         android:textColor="#ff0e0e0e"
-                        android:textSize="13sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/road_position"
@@ -137,8 +139,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="路口类型："
+                        android:textStyle="bold"
                         android:textColor="#ff0e0e0e"
-                        android:textSize="13sp" />
+                        android:textSize="15sp"/>
 
                     <TextView
                         android:id="@+id/road_type"
@@ -159,8 +162,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="信号机类型："
+                        android:textStyle="bold"
                         android:textColor="#ff0e0e0e"
-                        android:textSize="13sp" />
+                        android:textSize="15sp"/>
 
                     <TextView
                         android:id="@+id/model_type"
@@ -181,8 +185,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="信号机编号："
+                        android:textStyle="bold"
                         android:textColor="#ff0e0e0e"
-                        android:textSize="13sp" />
+                        android:textSize="15sp"/>
 
                     <TextView
                         android:id="@+id/model_number"
@@ -219,7 +224,7 @@
 
                     <TextView
                         android:id="@+id/task_from"
-                        android:text="支队"
+                        android:textStyle="bold"
                         android:layout_marginLeft="5dp"
                         android:textColor="@color/black"
                         android:textSize="16sp"
@@ -287,7 +292,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="5dp"
                     android:textColor="@color/black"
                     android:textStyle="bold"
                     android:textSize="16sp"
@@ -322,7 +327,6 @@
 
                     <TextView
                         android:id="@+id/time"
-                        android:text="2020年"
                         android:textColor="#A0A5B2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">

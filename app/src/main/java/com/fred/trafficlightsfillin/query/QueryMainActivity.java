@@ -224,8 +224,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
 
         trafficLightAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
             Intent intent=new Intent(QueryMainActivity.this, TimingDetailsActivity.class);
-            intent.putExtra("id",list.get(index).id);
-            intent.putExtra("trafficLightId",list.get(index).trafficLightId);
+            intent.putExtra("trafficLightId",trafficlightList.get(index).id);
             startActivity(intent);
         });
     }
@@ -584,7 +583,10 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
             TextView road_type = holder.obtainView(R.id.road_type);
             TextView time = holder.obtainView(R.id.time);
 
-            time.setText(TimeUtils.time7(String.valueOf(trafficligthVo.date)));
+            if(trafficligthVo.date != null)
+                time.setText(TimeUtils.time7(String.valueOf(trafficligthVo.date)));
+            else
+                time.setText("暂无最后配时时间");
             road_name.setText(trafficligthVo.roadPlace);
             road_type.setText(trafficligthVo.roadPlaceType);
         }
