@@ -58,6 +58,10 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     TextView task;
     @BindView(R.id.sec)
     TextView sec;
+    @BindView(R.id.remark)
+    TextView remark;
+
+
     @BindView(R.id.receiving)
     TextView receiving;
     String id;
@@ -247,7 +251,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                             task.setText(taskDetails.source);
                             sec.setText(taskDetails.desc);
                             roadPlace.setText(taskDetails.area);
-
+                            remark.setText(taskDetails.remark);
                             initEngigeerInfo();
                         }
                     }

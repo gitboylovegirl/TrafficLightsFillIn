@@ -43,6 +43,7 @@
         <activity android:name=".record.RecordNewActivity" />
         <activity android:name=".record.RecordListActivity" />
         <activity android:name=".login.ChangePasswordActivity" />
+        <activity android:name=".login.FeedPasswordActivity" />
         <activity android:name=".login.LoginActivity"></activity>
         <activity android:name=".MainActivity" /> <!-- 高德地图 -->
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->

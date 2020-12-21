@@ -60,6 +60,16 @@ public class RequestApi {
     public static final String CHANGE_PASSWORD = "/service/engineer/pwd";
 
     /**
+     * 发送验证码 get
+     */
+    public static final String SEND_SMS_CODE = "/service/engineer/send/code/";
+
+    /**
+     * 找回密码 post
+     */
+    public static final String FEED_PASSWORD = "/service/engineer/check/code";
+
+    /**
      * 刷新token get
      */
     public static final String REFRESH_TOKEN = "/service/engineer/token";

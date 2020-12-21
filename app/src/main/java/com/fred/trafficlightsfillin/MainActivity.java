@@ -291,8 +291,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         update.setOnClickListener(this::onClick);
         if("1".equals(SharedPreferenceUtils.getInstance().getFlag())){
             status.setText("上班");
+            changeStatus.setChecked(true);
         }else{
             status.setText("下班");
+            changeStatus.setChecked(false);
         }
         changeStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

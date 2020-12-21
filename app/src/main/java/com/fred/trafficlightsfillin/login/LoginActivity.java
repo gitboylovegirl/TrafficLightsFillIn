@@ -25,6 +25,7 @@ import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.utils.AccountManager;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
+import com.fred.trafficlightsfillin.utils.ValidatorUtil;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -109,7 +110,7 @@ public class LoginActivity extends BaseActivity {
                 System.exit(0);
                 break;
             case R.id.forget_password:
-                openActivity(ChangePasswordActivity.class);
+                openActivity(FeedPasswordActivity.class);
                 break;
         }
     }
@@ -131,6 +132,10 @@ public class LoginActivity extends BaseActivity {
             return;
         }
         if(TextUtils.isEmpty(phone)){
+            ToastUtil.showMsg(LoginActivity.this,getString(R.string.phone_not_null));
+            return;
+        }
+        if(!ValidatorUtil.iseMobile(phone)){
             ToastUtil.showMsg(LoginActivity.this,getString(R.string.phone_not_null));
             return;
         }

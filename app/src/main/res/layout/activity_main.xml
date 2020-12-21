@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:text="@string/login_out"
             android:foreground="?android:attr/selectableItemBackground"
-            android:textColor="#CFD0F2"
+            android:textColor="@drawable/button_bc"
             android:textSize="13sp"
             />
 
@@ -71,7 +71,7 @@
             android:foreground="?android:attr/selectableItemBackground"
             android:layout_height="wrap_content"
             android:text="修改密码"
-            android:textColor="#CFD0F2"
+            android:textColor="@drawable/button_bc"
             android:textSize="13sp"
             />
     </RelativeLayout>
@@ -100,7 +100,6 @@
                     android:layout_width="0dp"
                     android:layout_height="150dp"
                     android:layout_weight="1"
-                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center">
 
                     <LinearLayout
@@ -109,6 +108,7 @@
                         android:layout_height="145dp"
                         android:background="@drawable/bg_color_215263"
                         android:gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:orientation="vertical">
 
                         <ImageView
@@ -123,7 +123,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="最新任务"
-                            android:textColor="#ffffffff"
+                            android:textColor="@drawable/button_bc"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </RelativeLayout>
@@ -132,7 +132,6 @@
                     android:layout_width="0dp"
                     android:layout_height="150dp"
                     android:layout_weight="1"
-                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center">
 
                     <LinearLayout
@@ -141,6 +140,7 @@
                         android:layout_height="145dp"
                         android:background="@drawable/bg_color_215263"
                         android:gravity="center"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:orientation="vertical">
 
                         <ImageView
@@ -155,7 +155,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="配时更新"
-                            android:textColor="#ffffffff"
+                            android:textColor="@drawable/button_bc"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </RelativeLayout>
@@ -172,13 +172,13 @@
                     android:layout_width="0dp"
                     android:layout_height="150dp"
                     android:layout_weight="1"
-                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center">
 
                     <LinearLayout
                         android:id="@+id/list_record_top"
                         android:layout_width="145dp"
                         android:layout_height="145dp"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:background="@drawable/bg_color_215263"
                         android:gravity="center"
                         android:orientation="vertical">
@@ -195,7 +195,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="@string/record_list"
-                            android:textColor="#ffffffff"
+                            android:textColor="@drawable/button_bc"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </RelativeLayout>
@@ -204,13 +204,13 @@
                     android:layout_width="0dp"
                     android:layout_height="150dp"
                     android:layout_weight="1"
-                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center">
 
                     <LinearLayout
                         android:id="@+id/timing_record_top"
                         android:layout_width="145dp"
                         android:layout_height="145dp"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:background="@drawable/bg_color_215263"
                         android:gravity="center"
                         android:orientation="vertical">
@@ -227,7 +227,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="@string/timing"
-                            android:textColor="#ffffffff"
+                            android:textColor="@drawable/button_bc"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </RelativeLayout>
@@ -275,7 +275,8 @@
                 android:layout_height="wrap_content"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:text="@string/tip"
-                android:textColor="@color/white">
+                android:textColor="@drawable/button_bc"
+                >
 
             </TextView>
         </RelativeLayout>
@@ -295,7 +296,8 @@
                 android:layout_height="wrap_content"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:text="@string/upgrade"
-                android:textColor="@color/white">
+                android:textColor="@drawable/button_bc"
+                >
 
             </TextView>
         </RelativeLayout>

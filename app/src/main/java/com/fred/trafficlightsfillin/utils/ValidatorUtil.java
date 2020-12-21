@@ -18,4 +18,15 @@ public class ValidatorUtil{
         Matcher m = pattern.matcher(pwd);
         return m.matches();
     }
+
+    /**
+     * 验证手机号
+     *
+     * @param mobile
+     * @return
+     */
+    public static boolean iseMobile(String mobile) {
+        Pattern pattern = Pattern.compile("^[1]\\d{10}$");
+        return pattern.matcher(mobile).matches();
+    }
 }
