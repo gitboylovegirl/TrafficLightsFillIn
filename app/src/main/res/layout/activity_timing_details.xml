@@ -52,7 +52,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="19dp"
-                    android:text="编号：85436549684"
                     android:textColor="#ffc6c6c6"
                     android:textSize="12sp" />
 
@@ -70,7 +69,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="70dp"
-                    android:text="清华大街"
                     android:textColor="@color/main_text_color"
                     android:textSize="18sp">
 
@@ -95,7 +93,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
-                        android:text="西城区"
                         android:textColor="#ff0e0e0e"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -127,7 +124,6 @@
                         android:id="@+id/road_position"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="四环-五环"
                         android:textColor="#ff3f50e9"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -150,7 +146,6 @@
                         android:id="@+id/road_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="平面十字"
                         android:textColor="#ff3f50e9"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -174,7 +169,6 @@
                         android:id="@+id/model_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="mcu_6"
                         android:textColor="#ff3f50e9"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -198,7 +192,6 @@
                         android:id="@+id/model_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="平面十字"
                         android:textColor="#ff3f50e9"
                         android:textSize="13sp" />
                 </LinearLayout>

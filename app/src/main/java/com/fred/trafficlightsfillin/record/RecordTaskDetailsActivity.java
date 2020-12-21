@@ -1,6 +1,5 @@
-package com.fred.trafficlightsfillin.query;
+package com.fred.trafficlightsfillin.record;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -18,7 +17,6 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.RequestApi;
-import com.fred.trafficlightsfillin.intersection.TimingDetailsActivity;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
@@ -29,7 +27,7 @@ import com.fred.trafficlightsfillin.utils.TimeUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TaskDetailsActivity extends AppCompatActivity {
+public class RecordTaskDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.number)
     TextView number;
@@ -51,16 +49,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
     TextView desc;
     @BindView(R.id.picture)
     RecyclerView picture;
-
-    @BindView(R.id.task_team_name)
-    TextView taskTeamName;
-    @BindView(R.id.task_engineer_name)
-    TextView taskEngineerName;
-    @BindView(R.id.task_car)
-    TextView taskCar;
-    @BindView(R.id.task_phone)
-    TextView taskPhone;
-
     /*@BindView(R.id.road_state)
     TextView roadState;*/
     @BindView(R.id.time)
@@ -77,7 +65,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task_details);
+        setContentView(R.layout.activity_record_task_details);
         ButterKnife.bind(this);
 
         initView();
@@ -116,12 +104,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
                             desc.setText(taskDetails.desc);
                             better.setText(taskDetails.getCause());
                             taskState.setText(intStr2TaskState(taskDetails.state));
-
-                            taskPhone.setText(taskDetails.engineerPhone);
-                            taskTeamName.setText(taskDetails.teamName);
-                            taskEngineerName.setText(taskDetails.engineerName);
-                            taskCar.setText(taskDetails.carNumber);
-
 
                             time.setText(TimeUtils.time7(taskDetails.trafficLightLastUpdateTime));
                         }
@@ -205,7 +187,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
                     .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                     .build());
 
-            Glide.with(TaskDetailsActivity.this)
+            Glide.with(RecordTaskDetailsActivity.this)
                     .load(glideUrl)
                     .into(picture);
         }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FAFAFA"
-    tools:context=".query.TaskDetailsActivity">
+    tools:context=".record.RecordTaskDetailsActivity">
 
     <ImageView
         android:layout_width="match_parent"
@@ -206,87 +206,6 @@
                 android:paddingHorizontal="19dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="班组："
-                        android:textStyle="bold"
-                        android:textColor="#ff0e0e0e"
-                        android:textSize="15sp" />
-                    <TextView
-                        android:id="@+id/task_team_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#ff3f50e9"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="工程师："
-                        android:textStyle="bold"
-                        android:textColor="#ff0e0e0e"
-                        android:textSize="15sp"/>
-                    <TextView
-                        android:id="@+id/task_engineer_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#ff3f50e9"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="车牌号："
-                        android:textStyle="bold"
-                        android:textColor="#ff0e0e0e"
-                        android:textSize="15sp"/>
-
-                    <TextView
-                        android:id="@+id/task_car"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#ff3f50e9"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="手机号："
-                        android:textStyle="bold"
-                        android:textColor="#ff0e0e0e"
-                        android:textSize="15sp"/>
-                    <TextView
-                        android:id="@+id/task_phone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="#ff3f50e9"
-                        android:textSize="13sp" />
-                </LinearLayout>
 
                 <LinearLayout
                     android:orientation="horizontal"

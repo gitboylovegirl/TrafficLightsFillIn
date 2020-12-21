@@ -37,6 +37,7 @@ public class TaskDetailsChannel extends BaseResponse implements Serializable {
         public String desc;
         public String engineerId;
         public String engineerName;
+        public String engineerPhone;//手机号
         public String id;
         public String location;
         public String modelNo;
@@ -256,6 +257,14 @@ public class TaskDetailsChannel extends BaseResponse implements Serializable {
 
         public void setCause(String cause) {
             this.cause = cause;
+        }
+
+        public String getEngineerPhone() {
+            return engineerPhone;
+        }
+
+        public void setEngineerPhone(String engineerPhone) {
+            this.engineerPhone = engineerPhone;
         }
     }
 }
