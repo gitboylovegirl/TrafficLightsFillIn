@@ -1,18 +1,23 @@
 package com.fred.trafficlightsfillin;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,6 +48,7 @@ import com.fred.trafficlightsfillin.utils.StatusBarUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.zhihu.matisse.Matisse;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -152,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startLocation() {
+
         //检查权限
         //声明AMapLocationClient类对象
         AMapLocationClient mLocationClient = new AMapLocationClient(MainActivity.this.getApplicationContext());
@@ -392,6 +399,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SharedPreferenceUtils.getInstance().setToken(null);
                 SharedPreferenceUtils.getInstance().setrefreshToken(null);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.change_password:
                 intent.setClass(MainActivity.this, ChangePasswordActivity.class);
@@ -411,4 +419,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
+    private static boolean isExit = false;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            exit();
+            return false;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
+
+    private void exit(){
+        if(!isExit){
+            isExit=true;
+            Toast.makeText(getApplicationContext(),"再按一次退出",Toast.LENGTH_SHORT).show();
+                    //利用handler延迟发送更改状态信息
+                    handler.sendEmptyMessageDelayed(0,2000);
+        }else{
+            finish();
+            System.exit(0);
+        }
+    }
+
+    Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            super.handleMessage(msg);
+            isExit=false;
+        }
+    };
+
 }

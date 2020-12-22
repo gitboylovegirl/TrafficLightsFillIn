@@ -18,7 +18,6 @@ public class WelcomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         StatusBarUtils.setTransparent(this);
-
         getHomeActivity();
     }
 
@@ -29,6 +28,7 @@ public class WelcomeActivity extends Activity {
                 Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                WelcomeActivity.this.finish();
             }
         };
         timer.schedule(task, 2000);

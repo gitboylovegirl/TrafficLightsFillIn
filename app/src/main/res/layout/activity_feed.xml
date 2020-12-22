@@ -66,18 +66,30 @@
 
                         </TextView>
 
-                        <EditText
-                            android:padding="1dp"
-                            android:id="@+id/road_name"
+                        <RelativeLayout
                             android:layout_width="130dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:background="@drawable/bg_color_f4f4f4_5dp"
-                            android:gravity="center"
-                            android:hint="请输入路口名称"
-                            android:textColor="@color/main_color"
-                            android:textSize="18sp"
-                            android:textStyle="bold"></EditText>
+                            android:layout_height="29dp">
+                            <EditText
+                                android:padding="1dp"
+                                android:id="@+id/road_name"
+                                android:hint="请输入路口名称"
+                                android:layout_width="130dp"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:gravity="center"
+                                android:background="@drawable/bg_color_f4f4f4_5dp"
+                                />
+
+                            <ImageView
+                                android:scaleType="fitXY"
+                                android:layout_marginRight="4dp"
+                                android:src="@drawable/bg_more_choose"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_width="12dp"
+                                android:layout_height="8dp">
+                            </ImageView>
+                        </RelativeLayout>
                     </LinearLayout>
 
                     <LinearLayout

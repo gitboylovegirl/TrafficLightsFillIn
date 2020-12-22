@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="50dp"
-        android:text="任务详情"
+        android:text="任务单详情"
         android:textColor="@color/white"
         android:textSize="24dp"
         android:textStyle="bold">
@@ -51,9 +51,8 @@
                 <TextView
                     android:id="@+id/number"
                     android:layout_width="126dp"
-                    android:layout_height="12dp"
+                    android:layout_height="18dp"
                     android:layout_marginTop="19dp"
-                    android:text="编号：85436549684"
                     android:textColor="#ffc6c6c6"
                     android:textSize="12sp" />
 
@@ -70,7 +69,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="70dp"
-                    android:text="清华大街"
                     android:textColor="@color/black"
                     android:textSize="20sp">
 
@@ -95,7 +93,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
-                        android:text="西城区"
                         android:textColor="#ff0e0e0e"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -125,7 +122,6 @@
                         android:id="@+id/road_position"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="四环-五环"
                         android:textColor="#ff0e0e0e"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -147,7 +143,6 @@
                         android:id="@+id/road_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="平面十字"
                         android:textColor="#ff0e0e0e"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -170,7 +165,6 @@
                         android:id="@+id/model_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="mcu_6"
                         android:textColor="#ff0e0e0e"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -193,7 +187,6 @@
                         android:id="@+id/model_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="平面十字"
                         android:textColor="#ff0e0e0e"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -225,7 +218,6 @@
 
                     <TextView
                         android:id="@+id/task_from"
-                        android:text="支队"
                         android:layout_marginLeft="5dp"
                         android:textColor="@color/black"
                         android:textSize="16sp"

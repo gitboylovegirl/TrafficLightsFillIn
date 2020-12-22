@@ -189,7 +189,7 @@ public class RecordNewActivity extends AppCompatActivity {
                 task_status.setText("未完成");
                 task_status.setTextColor(Color.parseColor("#6D7790"));
             }else if("3".equals(newRecordChannel.state)){
-                task_status.setText("已完成");
+                task_status.setText("配时表未更新");
             }else if("4".equals(newRecordChannel.state)){
                 task_status.setText("完成已上传");
             }

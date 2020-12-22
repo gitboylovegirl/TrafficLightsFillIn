@@ -539,7 +539,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 //                            } else if ("2".equals(taskDetails.state)) {
 //                                state.setText("未完成");
 //                            } else if ("3".equals(taskDetails.state)) {
-//                                state.setText("已完成");
+//                                state.setText("配时表未更新");
 //                            } else if ("4".equals(taskDetails.state)) {
 //                                state.setText("完成已上传");
 //                            }

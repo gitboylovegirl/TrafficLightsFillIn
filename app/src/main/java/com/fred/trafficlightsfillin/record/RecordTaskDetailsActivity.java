@@ -129,7 +129,7 @@ public class RecordTaskDetailsActivity extends AppCompatActivity {
     }
 
     private String intStr2TaskState(String state){
-        //任务状态 0 后台取消 1 未接单、2 未完成、3 已完成、4 完成已上传
+        //任务状态 0 后台取消 1 未接单、2 未完成、3 配时表未更新、4 完成已上传
         if("0".equals(state)){
             return "后台取消";
         }else if("1".equals(state)){
@@ -137,7 +137,7 @@ public class RecordTaskDetailsActivity extends AppCompatActivity {
         }else if("2".equals(state)){
             return "未完成";
         }else if("3".equals(state)){
-            return "已完成";
+            return "配时表未更新";
         }else if("4".equals(state)){
             return "完成已上传";
         }
