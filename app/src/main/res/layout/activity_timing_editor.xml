@@ -286,6 +286,7 @@
                     android:orientation="horizontal">
 
                     <HorizontalScrollView
+                        android:scrollbars="none"
                         android:id="@+id/scrollView_one"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -496,6 +497,8 @@
                     </LinearLayout>
 
                     <HorizontalScrollView
+                        android:scrollbars="none"
+                        android:id="@+id/scrollView_two"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 

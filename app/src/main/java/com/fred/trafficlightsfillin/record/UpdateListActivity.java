@@ -57,6 +57,13 @@ public class UpdateListActivity extends AppCompatActivity {
         initView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        page = 1;
+        initData();
+    }
+
     private void initView() {
         back.setOnClickListener(v -> {
             finish();

@@ -60,9 +60,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="49dp"
                     android:text="路口名称 "
-                    android:textStyle="bold"
                     android:textColor="#ff0e0e0e"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/road_name"
@@ -102,9 +102,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/bg_color_white"
                 android:paddingHorizontal="15dp"
-                android:layout_marginBottom="20dp"
                 android:paddingVertical="25dp">
 
                 <LinearLayout
@@ -116,9 +116,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="地理位置："
-                        android:textStyle="bold"
                         android:textColor="#ff0e0e0e"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/road_position"
@@ -138,9 +138,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="路口类型："
-                        android:textStyle="bold"
                         android:textColor="#ff0e0e0e"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/road_type"
@@ -161,9 +161,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="信号机类型："
-                        android:textStyle="bold"
                         android:textColor="#ff0e0e0e"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/model_type"
@@ -184,9 +184,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="信号机编号："
-                        android:textStyle="bold"
                         android:textColor="#ff0e0e0e"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/model_number"
@@ -198,12 +198,12 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:visibility="gone"
                 android:id="@+id/week_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/weekday"
@@ -229,24 +229,27 @@
             </LinearLayout>
 
             <LinearLayout
-                android:background="@drawable/bg_color_white"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_color_white"
+                android:orientation="vertical">
+
                 <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="28dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:orientation="horizontal">
+
                     <ImageView
-                        android:layout_marginRight="55dp"
-                        android:src="@mipmap/left"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="55dp"
+                        android:src="@mipmap/left">
 
                     </ImageView>
+
                     <TextView
                         android:id="@+id/task_status"
                         android:layout_width="wrap_content"
@@ -257,23 +260,24 @@
                         android:textStyle="bold">
 
                     </TextView>
+
                     <ImageView
-                        android:layout_marginLeft="55dp"
-                        android:src="@mipmap/right"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="55dp"
+                        android:src="@mipmap/right">
 
                     </ImageView>
                 </LinearLayout>
+
                 <TextView
-                    android:layout_marginBottom="28dp"
-                    android:layout_gravity="center_horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="28dp"
                     android:text="(可左右滑动)"
                     android:textColor="#ff7f7f7f"
-                    android:textSize="12sp"
-                    />
+                    android:textSize="12sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -282,12 +286,15 @@
                     android:orientation="horizontal">
 
                     <HorizontalScrollView
+                        android:scrollbars="none"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
                         <LinearLayout
-                            android:orientation="vertical"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
                             <LinearLayout
                                 android:id="@+id/type_one"
                                 android:layout_width="match_parent"
@@ -305,9 +312,9 @@
                                 <TextView
                                     android:layout_width="37dp"
                                     android:layout_height="20dp"
-                                    android:layout_marginRight="10dp"
-                                    android:layout_marginLeft="30dp"
                                     android:layout_marginVertical="10dp"
+                                    android:layout_marginLeft="30dp"
+                                    android:layout_marginRight="10dp"
                                     android:gravity="center"
                                     android:text="1"
                                     android:textColor="@color/black"
@@ -437,7 +444,8 @@
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/programme"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:scrollbars="none">
 
                             </androidx.recyclerview.widget.RecyclerView>
                         </LinearLayout>
@@ -490,28 +498,30 @@
                     </LinearLayout>
 
                     <HorizontalScrollView
+                        android:scrollbars="none"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
                         <LinearLayout
-                            android:orientation="vertical"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
                             <LinearLayout
-                                android:gravity="center_vertical"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
                                 <TextView
-                                    android:gravity="center"
-                                    android:textColor="@color/black"
-                                    android:text="配时方案"
                                     android:layout_width="37dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginRight="10dp"
+                                    android:layout_marginVertical="10dp"
                                     android:layout_marginLeft="30dp"
-                                    android:layout_marginVertical="10dp">
+                                    android:layout_marginRight="10dp"
+                                    android:gravity="center"
+                                    android:text="配时方案"
+                                    android:textColor="@color/black">
 
                                 </TextView>
 
@@ -649,7 +659,8 @@
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/timetable"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:scrollbars="none">
 
                             </androidx.recyclerview.widget.RecyclerView>
                         </LinearLayout>
@@ -692,9 +703,9 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/time_list"
-                    android:layout_marginBottom="20dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
@@ -714,8 +725,8 @@
                     android:layout_marginTop="20dp"
                     android:text="路口现场图展示："
                     android:textColor="#ff0e0e0e"
-                    android:textStyle="bold"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/picture_list"
@@ -741,8 +752,8 @@
                         android:layout_marginTop="10dp"
                         android:text="最后配时时间:"
                         android:textColor="#ff2a4997"
-                        android:textStyle="bold"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/last_peishi_time"
