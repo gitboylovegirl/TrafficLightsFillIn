@@ -28,6 +28,7 @@
     </TextView>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="15dp"
@@ -286,6 +287,7 @@
                     android:orientation="horizontal">
 
                     <HorizontalScrollView
+                        android:id="@+id/scrollView_two"
                         android:scrollbars="none"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -498,6 +500,7 @@
                     </LinearLayout>
 
                     <HorizontalScrollView
+                        android:id="@+id/scrollView_two"
                         android:scrollbars="none"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -769,4 +772,30 @@
 
 
     </androidx.core.widget.NestedScrollView>
+
+    <HorizontalScrollView
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        android:id="@+id/layout_hide_scrollview"
+        android:visibility="gone"
+        android:layout_marginHorizontal="15dp"
+        android:paddingHorizontal="19dp"
+        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/layout_hide_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
+    </HorizontalScrollView>
 </RelativeLayout>

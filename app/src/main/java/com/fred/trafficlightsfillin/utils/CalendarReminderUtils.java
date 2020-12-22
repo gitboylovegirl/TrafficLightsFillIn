@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -132,6 +133,7 @@ public class CalendarReminderUtils {
         values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
         Uri uri = context.getContentResolver().insert(Uri.parse(CALENDER_REMINDER_URL), values);
         if(uri == null) { //添加事件提醒失败直接返回
+            Log.e("fred","添加失败");
             return;
         }
     }

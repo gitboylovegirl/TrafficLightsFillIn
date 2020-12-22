@@ -2,16 +2,19 @@ package com.fred.trafficlightsfillin.intersection;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -77,6 +80,18 @@ public class TimingDetailsActivity extends AppCompatActivity {
     @BindView(R.id.last_peishi_time)
     TextView lastPeishiTime;
 
+    @BindView(R.id.scrollView)
+    NestedScrollView scrollView;
+    @BindView(R.id.layout_hide_tab)
+    RecyclerView layoutHideTab;
+    @BindView(R.id.layout_hide_scrollview)
+    HorizontalScrollView layoutHideScrollview;
+    @BindView(R.id.scrollView_one)
+    HorizontalScrollView scrollViewOne;
+    @BindView(R.id.scrollView_two)
+    HorizontalScrollView scrollViewTwo;
+
+
     private List<PeriodCaseListBean> weekdaysPeriodCaseList = new ArrayList<>();//工作日时间表
     private List<PeriodCaseListBean> weekendPeriodCaseList = new ArrayList<>();//周末时间表
 
@@ -88,11 +103,12 @@ public class TimingDetailsActivity extends AppCompatActivity {
 
     PictureAdapter pictureAdapter;
     TimeTableAdapter timeTableAdapter;
-    PlanCaseAdapter planCaseAdapter;
+    PlanCaseAdapter planCaseAdapter,hideplanCaseAdapter;
     TimeCaseAdapter timeCaseAdapter;
     long trafficLightId;
     List<StageResponse.StageChanel> stageChanels;//配时表数据
 
+    boolean isWeekday = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,6 +138,10 @@ public class TimingDetailsActivity extends AppCompatActivity {
         programme.setLayoutManager(new LinearLayoutManager(this));
         programme.setAdapter(planCaseAdapter);
 
+        hideplanCaseAdapter = new PlanCaseAdapter();
+        layoutHideTab.setLayoutManager(new LinearLayoutManager(this));
+        layoutHideTab.setAdapter(hideplanCaseAdapter);
+
         timeCaseAdapter=new TimeCaseAdapter();
         timetable.setLayoutManager(new LinearLayoutManager(this));
         timetable.setAdapter(timeCaseAdapter);
@@ -129,21 +149,59 @@ public class TimingDetailsActivity extends AppCompatActivity {
         timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
         planCaseAdapter.bindData(true,weekdaysPlanCaseList);
         timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
+
+
+        //监听
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                Log.e("fred", "%%%%     " + scrollY);
+                if (scrollY > 1180) {//滑动距离大于v_report_divider的底坐标
+                    layoutHideScrollview.setVisibility(View.VISIBLE);
+                } else {
+                    layoutHideScrollview.setVisibility(View.GONE);
+                }
+            });
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollViewOne.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                layoutHideScrollview.scrollTo(scrollX, scrollY);
+                scrollViewTwo.scrollTo(scrollX, scrollY);
+            });
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            layoutHideScrollview.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                scrollViewOne.scrollTo(scrollX, scrollY);
+                scrollViewTwo.scrollTo(scrollX, scrollY);
+            });
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollViewTwo.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                layoutHideScrollview.scrollTo(scrollX, scrollY);
+                scrollViewOne.scrollTo(scrollX, scrollY);
+            });
+        }
         //工作日
         weekday.setOnClickListener(view -> {
+            isWeekday = true;
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
             planCaseAdapter.bindData(true,weekdaysPlanCaseList);
             timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
+            update();
         });
         //周日
         weekend.setOnClickListener(view -> {
+            isWeekday = false;
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekendPeriodCaseList);
             planCaseAdapter.bindData(true,weekendPlanCaseList);
             timeCaseAdapter.bindData(true,weekendTimeCaseList);
+            update();
         });
     }
 
@@ -358,6 +416,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
                             }
                         }
 
+                        update();
                         timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
                         planCaseAdapter.bindData(true,weekdaysPlanCaseList);
                         timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
@@ -389,7 +448,25 @@ public class TimingDetailsActivity extends AppCompatActivity {
             no.setText(periodCaseListBean.getTimeCaseNo());
         }
     }
-
+    private void update() {
+        if (isWeekday) {
+            List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
+            for (int i = 0; i < weekdaysPlanCaseList.size(); i++) {
+                if ("1".equals(weekdaysPlanCaseList.get(i).getType())) {
+                    hideWeekdaysPlanCaseList.add(weekdaysPlanCaseList.get(i));
+                }
+            }
+            hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
+        } else {
+            List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
+            for (int i = 0; i < weekendPlanCaseList.size(); i++) {
+                if ("1".equals(weekendPlanCaseList.get(i).getType())) {
+                    hideWeekdaysPlanCaseList.add(weekendPlanCaseList.get(i));
+                }
+            }
+            hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
+        }
+    }
     /**
      * 配时方案1 adapter
      */
