@@ -114,8 +114,6 @@ public class TimingEditorActivity extends AppCompatActivity {
     RecyclerView timeList;
     @BindView(R.id.picture_list)
     RecyclerView pictureList;
-    @BindView(R.id.task_end)
-    ImageView taskEnd;
     @BindView(R.id.end_time)
     TextView endTime;
     @BindView(R.id.submit)
@@ -128,8 +126,6 @@ public class TimingEditorActivity extends AppCompatActivity {
     LinearLayout weekTitle;
     @BindView(R.id.task_status)
     TextView taskStatus;
-    @BindView(R.id.state)
-    TextView state;
     @BindView(R.id.type_one)
     LinearLayout typeOne;
     @BindView(R.id.better)

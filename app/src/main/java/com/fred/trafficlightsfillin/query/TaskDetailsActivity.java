@@ -122,8 +122,11 @@ public class TaskDetailsActivity extends AppCompatActivity {
                             taskEngineerName.setText(taskDetails.engineerName);
                             taskCar.setText(taskDetails.carNumber);
 
-
-                            time.setText(TimeUtils.time7(taskDetails.trafficLightLastUpdateTime));
+                            if(taskDetails.date == null || "".equals(taskDetails.date.trim())){
+                                time.setText("");
+                            }else{
+                                time.setText(TimeUtils.time7(taskDetails.date));
+                            }
                         }
                     }
 

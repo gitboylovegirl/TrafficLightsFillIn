@@ -3,9 +3,13 @@ package com.fred.trafficlightsfillin;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.multidex.MultiDex;
+
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.network.NetEnv;
 import com.fred.trafficlightsfillin.network.configuration.NetSettings;
+
+import cn.jpush.android.api.JPushInterface;
 
 public class SoftApplication extends Application {
 
@@ -35,5 +39,9 @@ public class SoftApplication extends Application {
         //netSettings.setCommonHeaders(() -> CommonConfig.instance().getCommonHeaders());
 
         NetEnv.getInstance().init(this, netSettings);
+        MultiDex.install(this);
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
+
     }
 }

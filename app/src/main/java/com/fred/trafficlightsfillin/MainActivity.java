@@ -1,15 +1,14 @@
 package com.fred.trafficlightsfillin;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -48,15 +47,17 @@ import com.fred.trafficlightsfillin.utils.StatusBarUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.zhihu.matisse.Matisse;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.jpush.android.api.JPushInterface;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -107,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
         //透明状态栏
         StatusBarUtils.setTransparent(this);
+        //设置极光标签和别名
+        setJiguangAlias();
 
         //Log.e("ferd  sha:  ",sHA1(this));
         initLocation();
@@ -115,7 +118,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getNewVersion();
         requestPermissions();
     }
-
+    private void setJiguangAlias(){
+        String engineerId = SharedPreferenceUtils.getInstance().getId();
+        if(engineerId != null && !"".equals(engineerId))
+            JPushInterface.setAlias(getApplicationContext(), Integer.parseInt(engineerId), engineerId);
+    }
     /**
      * 申请权限
      */
@@ -179,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         locationInfo(String.valueOf(lat), String.valueOf(lat));
                     }
                 } else {//失败
+                    locationInfo("22", "43");
                     Log.i("fred", "Distance: 定位失败 :" + aMapLocation.getErrorCode() + ", errInfo:" + aMapLocation.getErrorInfo());
                 }
             }
@@ -217,10 +225,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             SharedPreferenceUtils.getInstance().setToken("");
                         } else if (response.code == 0) {
                             if (response.getData() != null && response.getData() > 0) {
+                                Log.e("fred"," 设置 "+SharedPreferenceUtils.getInstance().getSeTime());
                                 if (SharedPreferenceUtils.getInstance().getSeTime() > 0) {
                                     long lastTime = SharedPreferenceUtils.getInstance().getCurrentTime();
                                     long currentTimeMillis = System.currentTimeMillis();
                                     long seTime = SharedPreferenceUtils.getInstance().getSeTime();
+
+                                    Log.e("fred","  time  "+currentTimeMillis+"   "+  lastTime+"   "+seTime);
                                     if (currentTimeMillis > lastTime) {
                                         long time = currentTimeMillis + (seTime * 60 * 60 * 1000);
                                         CalendarReminderUtils.addCalendarEvent(MainActivity.this, "配时中心提醒", "您有未完成的任务，请及时登陆完成", time, 1);
@@ -268,6 +279,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 刷新token
      */
     private void freshToken() {
+        if(TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getToken())){
+            return;
+        }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())

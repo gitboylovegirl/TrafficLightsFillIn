@@ -104,8 +104,11 @@ public class RecordTaskDetailsActivity extends AppCompatActivity {
                             desc.setText(taskDetails.desc);
                             better.setText(taskDetails.getCause());
                             taskState.setText(intStr2TaskState(taskDetails.state));
-
-                            time.setText(TimeUtils.time7(taskDetails.trafficLightLastUpdateTime));
+                            if(taskDetails.date == null || "".equals(taskDetails.date.trim())){
+                                time.setText("");
+                            }else{
+                                time.setText(TimeUtils.time7(taskDetails.date));
+                            }
                         }
                     }
 

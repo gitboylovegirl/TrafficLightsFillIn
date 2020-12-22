@@ -75,7 +75,7 @@
                                 android:hint="请输入路口名称"
                                 android:layout_width="130dp"
                                 android:layout_height="wrap_content"
-                                android:textSize="14sp"
+                                android:textSize="18sp"
                                 android:gravity="center"
                                 android:background="@drawable/bg_color_f4f4f4_5dp"
                                 />

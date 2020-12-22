@@ -15,13 +15,21 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
             //设置支持的SO库架构（开发者可以根据需要，选择一个或多个平台的so）
-            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "arm64-v8a", "x86_64"
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a"//, "x86", "arm64-v8a", "x86_64"
         }
+
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : "com.fred.trafficlightsfillin",
+                JPUSH_APPKEY : "4d959c6e9334187bfaf821f0", //极光开发平台上注册的包名对应的appkey.
+                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+        ]
+
     }
 
     buildTypes {
@@ -78,7 +86,9 @@ dependencies {
 
     //滑动选择
     implementation 'com.github.open-android:WheelPicker:v1.0.0'
-
     implementation 'com.kovachcode:timePickerWithSeconds:1.0.1'
+    implementation 'cn.jiguang.sdk:jpush:3.8.5'  // 此处以JPush 3.8.5 版本为例。
+    implementation 'cn.jiguang.sdk:jcore:2.5.5'  // 此处以JCore 2.5.5 版本为例。
+    implementation 'com.android.support:multidex:1.0.3'
 
 }

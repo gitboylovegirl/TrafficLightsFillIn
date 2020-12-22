@@ -48,6 +48,7 @@ public class TaskDetailsChannel extends BaseResponse implements Serializable {
         public String source;
         public String state;
         public String teamId;
+        public String date;
         public String teamName;
         public String trafficLightId;
         public String trafficLightLastUpdateTime;
@@ -265,6 +266,22 @@ public class TaskDetailsChannel extends BaseResponse implements Serializable {
 
         public void setEngineerPhone(String engineerPhone) {
             this.engineerPhone = engineerPhone;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
+
+        public String getUpdateTime() {
+            return updateTime;
+        }
+
+        public void setUpdateTime(String updateTime) {
+            this.updateTime = updateTime;
         }
     }
 }
