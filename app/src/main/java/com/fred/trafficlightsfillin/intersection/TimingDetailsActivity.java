@@ -79,7 +79,10 @@ public class TimingDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.last_peishi_time)
     TextView lastPeishiTime;
-
+    @BindView(R.id.type_one)
+    LinearLayout typeOne;
+    @BindView(R.id.scrollView_two)
+    HorizontalScrollView scrollViewTwo;
     @BindView(R.id.scrollView)
     NestedScrollView scrollView;
     @BindView(R.id.layout_hide_tab)
@@ -88,8 +91,6 @@ public class TimingDetailsActivity extends AppCompatActivity {
     HorizontalScrollView layoutHideScrollview;
     @BindView(R.id.scrollView_one)
     HorizontalScrollView scrollViewOne;
-    @BindView(R.id.scrollView_two)
-    HorizontalScrollView scrollViewTwo;
 
 
     private List<PeriodCaseListBean> weekdaysPeriodCaseList = new ArrayList<>();//工作日时间表
@@ -103,12 +104,13 @@ public class TimingDetailsActivity extends AppCompatActivity {
 
     PictureAdapter pictureAdapter;
     TimeTableAdapter timeTableAdapter;
-    PlanCaseAdapter planCaseAdapter,hideplanCaseAdapter;
+    PlanCaseAdapter planCaseAdapter, hideplanCaseAdapter;
     TimeCaseAdapter timeCaseAdapter;
     long trafficLightId;
     List<StageResponse.StageChanel> stageChanels;//配时表数据
 
     boolean isWeekday = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,7 +136,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
         timeTableAdapter = new TimeTableAdapter();
         timeList.setAdapter(timeTableAdapter);
 
-        planCaseAdapter=new PlanCaseAdapter();
+        planCaseAdapter = new PlanCaseAdapter();
         programme.setLayoutManager(new LinearLayoutManager(this));
         programme.setAdapter(planCaseAdapter);
 
@@ -142,13 +144,13 @@ public class TimingDetailsActivity extends AppCompatActivity {
         layoutHideTab.setLayoutManager(new LinearLayoutManager(this));
         layoutHideTab.setAdapter(hideplanCaseAdapter);
 
-        timeCaseAdapter=new TimeCaseAdapter();
+        timeCaseAdapter = new TimeCaseAdapter();
         timetable.setLayoutManager(new LinearLayoutManager(this));
         timetable.setAdapter(timeCaseAdapter);
 
         timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
-        planCaseAdapter.bindData(true,weekdaysPlanCaseList);
-        timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
+        planCaseAdapter.bindData(true, weekdaysPlanCaseList);
+        timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
 
 
         //监听
@@ -189,8 +191,8 @@ public class TimingDetailsActivity extends AppCompatActivity {
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
-            planCaseAdapter.bindData(true,weekdaysPlanCaseList);
-            timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
+            planCaseAdapter.bindData(true, weekdaysPlanCaseList);
+            timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
             update();
         });
         //周日
@@ -199,8 +201,8 @@ public class TimingDetailsActivity extends AppCompatActivity {
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekendPeriodCaseList);
-            planCaseAdapter.bindData(true,weekendPlanCaseList);
-            timeCaseAdapter.bindData(true,weekendTimeCaseList);
+            planCaseAdapter.bindData(true, weekendPlanCaseList);
+            timeCaseAdapter.bindData(true, weekendTimeCaseList);
             update();
         });
     }
@@ -257,7 +259,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
                             roadType.setText(response.roadPlaceType);
                             modelType.setText(response.modelType);
                             modelNumber.setText(response.modelNo);
-                            if(response.date != null && !"".equals(response.date.trim()))
+                            if (response.date != null && !"".equals(response.date.trim()))
                                 lastPeishiTime.setText(TimeUtils.time7(response.date));
                             else
                                 lastPeishiTime.setText("暂无最后配时时间");
@@ -346,8 +348,8 @@ public class TimingDetailsActivity extends AppCompatActivity {
             //ImageView delete=holder.obtainView(R.id.iv_delete);
             ImageView picture = holder.obtainView(R.id.iv_picture);
 
-            String pictureUrl =RequestApi.BASE_OFFICIAL_URL+RequestApi.DOWN_IMG + "/" + imageBean.path;
-            Log.e("pictureUrl",pictureUrl);
+            String pictureUrl = RequestApi.BASE_OFFICIAL_URL + RequestApi.DOWN_IMG + "/" + imageBean.path;
+            Log.e("pictureUrl", pictureUrl);
 
 //            //Authorization 请求头信息
 //            LazyHeaders headers=  new LazyHeaders.Builder()
@@ -418,8 +420,8 @@ public class TimingDetailsActivity extends AppCompatActivity {
 
                         update();
                         timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
-                        planCaseAdapter.bindData(true,weekdaysPlanCaseList);
-                        timeCaseAdapter.bindData(true,weekdaysTimeCaseList);
+                        planCaseAdapter.bindData(true, weekdaysPlanCaseList);
+                        timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
                     }
 
                     @Override
@@ -448,6 +450,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
             no.setText(periodCaseListBean.getTimeCaseNo());
         }
     }
+
     private void update() {
         if (isWeekday) {
             List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
@@ -467,6 +470,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
             hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
         }
     }
+
     /**
      * 配时方案1 adapter
      */
@@ -506,79 +510,79 @@ public class TimingDetailsActivity extends AppCompatActivity {
             TextView programme_nine = holder.obtainView(R.id.programme_nine);
             TextView programme_ten = holder.obtainView(R.id.programme_ten);
 
-           if ("1".equals(planCaseListBean.getType())) {
+            if ("1".equals(planCaseListBean.getType())) {
                 typeOne.setVisibility(View.GONE);
                 typeTwo.setVisibility(View.VISIBLE);
                 typeThree.setVisibility(View.GONE);
                 for (int i = 0; i < stageChanels.size(); i++) {
-                    Log.e("fred",stageChanels.get(i).image);
+                    Log.e("fred", stageChanels.get(i).image);
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT1())) {
                         //String str2=str.replace(" ", "")
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivOne.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT2())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivTwo.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT3())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivthree.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT4())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivFour.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT5())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivFive.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT6())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivSix.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT7())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivSeven.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT8())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivEight.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT9())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivNine.setImageBitmap(decodedByte);
                     }
                     if (stageChanels.get(i).no.equals(planCaseListBean.getT10())) {
                         String[] split = stageChanels.get(i).image.split(",");
-                        String base64=split[1];
+                        String base64 = split[1];
                         byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         ivTen.setImageBitmap(decodedByte);
@@ -600,17 +604,17 @@ public class TimingDetailsActivity extends AppCompatActivity {
                 programme_nine.setText(planCaseListBean.getT9());
                 programme_ten.setText(planCaseListBean.getT10());
                 //类型（1 阶段 2绿闪 3黄灯 4全红 5红黄 6 最大绿 7 最小绿
-                if(planCaseListBean.getType().equals("2")){
+                if (planCaseListBean.getType().equals("2")) {
                     titleId.setText("绿闪");
-                }else if(planCaseListBean.getType().equals("3")){
+                } else if (planCaseListBean.getType().equals("3")) {
                     titleId.setText("黄灯");
-                }else if(planCaseListBean.getType().equals("4")){
+                } else if (planCaseListBean.getType().equals("4")) {
                     titleId.setText("全红");
-                }else if(planCaseListBean.getType().equals("5")){
+                } else if (planCaseListBean.getType().equals("5")) {
                     titleId.setText("红黄");
-                }else if(planCaseListBean.getType().equals("6")){
+                } else if (planCaseListBean.getType().equals("6")) {
                     titleId.setText("最大绿");
-                }else if(planCaseListBean.getType().equals("7")){
+                } else if (planCaseListBean.getType().equals("7")) {
                     titleId.setText("最小绿");
                 }
             }
@@ -658,22 +662,22 @@ public class TimingDetailsActivity extends AppCompatActivity {
 //                typeTwo.setVisibility(View.GONE);
 //                typeThree.setVisibility(View.GONE);
 //            } else {
-                typeOne.setVisibility(View.GONE);
-                typeTwo.setVisibility(View.GONE);
-                typeThree.setVisibility(View.VISIBLE);
+            typeOne.setVisibility(View.GONE);
+            typeTwo.setVisibility(View.GONE);
+            typeThree.setVisibility(View.VISIBLE);
 
-                programme_one.setText(timeCaseListBean.getT1());
-                programme_two.setText(timeCaseListBean.getT2());
-                programme_three.setText(timeCaseListBean.getT3());
-                programme_four.setText(timeCaseListBean.getT4());
-                programme_five.setText(timeCaseListBean.getT5());
-                programme_six.setText(timeCaseListBean.getT6());
-                programme_seven.setText(timeCaseListBean.getT7());
-                programme_eight.setText(timeCaseListBean.getT8());
-                programme_nine.setText(timeCaseListBean.getT9());
-                programme_ten.setText(timeCaseListBean.getT10());
+            programme_one.setText(timeCaseListBean.getT1());
+            programme_two.setText(timeCaseListBean.getT2());
+            programme_three.setText(timeCaseListBean.getT3());
+            programme_four.setText(timeCaseListBean.getT4());
+            programme_five.setText(timeCaseListBean.getT5());
+            programme_six.setText(timeCaseListBean.getT6());
+            programme_seven.setText(timeCaseListBean.getT7());
+            programme_eight.setText(timeCaseListBean.getT8());
+            programme_nine.setText(timeCaseListBean.getT9());
+            programme_ten.setText(timeCaseListBean.getT10());
 
-                titleId.setText(timeCaseListBean.getNo());
+            titleId.setText(timeCaseListBean.getNo());
             //}
         }
     }
