@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     public void requestPermissions() {
         if(!NotificationUtil.isNotifyEnabled(MainActivity.this)){
-            NotificationUtil.open();
+            NotificationUtil.open(MainActivity.this);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (MainActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 if(!NotificationUtil.isNotifyEnabled(MainActivity.this)){
-                    NotificationUtil.open();
+                    NotificationUtil.open(MainActivity.this);
                     return;
                 }
                 List<String> timeSet = new ArrayList<>();
