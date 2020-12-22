@@ -13,6 +13,7 @@ import java.util.TimerTask;
 
 public class WelcomeActivity extends Activity {
 
+    Timer timer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,14 +24,23 @@ public class WelcomeActivity extends Activity {
     }
 
     private void getHomeActivity() {
-        Timer timer=new Timer();
+        timer=new Timer();
         TimerTask task=new TimerTask(){
             public void run(){
                 Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                finish();
             }
         };
         timer.schedule(task, 2000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (timer!=null){
+            timer.cancel();
+        }
     }
 }

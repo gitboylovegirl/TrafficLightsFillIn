@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -172,6 +173,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         locationInfo(String.valueOf(lat), String.valueOf(lat));
                     }
                 } else {//失败
+                    locationInfo("22", "43");
                     Log.i("fred", "Distance: 定位失败 :" + aMapLocation.getErrorCode() + ", errInfo:" + aMapLocation.getErrorInfo());
                 }
             }
@@ -210,10 +212,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             SharedPreferenceUtils.getInstance().setToken("");
                         } else if (response.code == 0) {
                             if (response.getData() != null && response.getData() > 0) {
+                                Log.e("fred"," 设置 "+SharedPreferenceUtils.getInstance().getSeTime());
                                 if (SharedPreferenceUtils.getInstance().getSeTime() > 0) {
                                     long lastTime = SharedPreferenceUtils.getInstance().getCurrentTime();
                                     long currentTimeMillis = System.currentTimeMillis();
                                     long seTime = SharedPreferenceUtils.getInstance().getSeTime();
+
+                                    Log.e("fred","  time  "+currentTimeMillis+"   "+  lastTime+"   "+seTime);
                                     if (currentTimeMillis > lastTime) {
                                         long time = currentTimeMillis + (seTime * 60 * 60 * 1000);
                                         CalendarReminderUtils.addCalendarEvent(MainActivity.this, "配时中心提醒", "您有未完成的任务，请及时登陆完成", time, 1);
@@ -261,6 +266,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 刷新token
      */
     private void freshToken() {
+        if(TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getToken())){
+            return;
+        }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
@@ -392,6 +400,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SharedPreferenceUtils.getInstance().setToken(null);
                 SharedPreferenceUtils.getInstance().setrefreshToken(null);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.change_password:
                 intent.setClass(MainActivity.this, ChangePasswordActivity.class);
