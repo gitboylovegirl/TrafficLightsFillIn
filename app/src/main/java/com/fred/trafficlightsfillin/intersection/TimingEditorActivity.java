@@ -20,6 +20,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -180,6 +181,8 @@ public class TimingEditorActivity extends AppCompatActivity {
     TimeCaseListBean lastWeekendTimeBean;
     boolean isShow = false;
 
+    int keyHigh=831;
+    int scrollviewHigh=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -236,6 +239,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 } else {
                     layoutHideScrollview.setVisibility(View.GONE);
                 }
+                scrollviewHigh=scrollY;
             });
         }
 
@@ -385,6 +389,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             @Override
             public void keyBoardShow(int height) {
+                keyHigh=height;
                 if (isShow) {
                     showPopupCommnet(height);
                     inputComment.requestFocus();
@@ -870,9 +875,13 @@ public class TimingEditorActivity extends AppCompatActivity {
                 MyTimePickerDialog mTimePicker = new MyTimePickerDialog(TimingEditorActivity.this, (view, hourOfDay, minute, seconds) -> {
                     String time = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds);
                     if (isWeekday) {
-                        weekdaysPeriodCaseList.get(currentPos).setStart(time);
+                        if(weekdaysPeriodCaseList.size()>currentPos){
+                            weekdaysPeriodCaseList.get(currentPos).setStart(time);
+                        }
                     } else {
-                        weekendPeriodCaseList.get(currentPos).setStart(time);
+                        if( weekendPeriodCaseList.size()>currentPos){
+                            weekendPeriodCaseList.get(currentPos).setStart(time);
+                        }
                     }
                     lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
                     lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
@@ -919,6 +928,20 @@ public class TimingEditorActivity extends AppCompatActivity {
         // 设置点击窗口外边窗口消失
         popupWindow.setOutsideTouchable(true);
 
+        int[] location = new int[2];
+        currentTextView.getLocationOnScreen(location);
+        int x = location[0];
+        int y = location[1];
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
+        int heightPixels = outMetrics.heightPixels;//屏幕高度
+
+        //距离下边界的高度
+        int  bottom= heightPixels - y;
+        if(keyHigh>bottom){
+            //向上滑动
+            scrollView.scrollTo(x,scrollviewHigh+(keyHigh-bottom)+150);
+        }
         //输入变化监听
         inputComment.addTextChangedListener(new TextWatcher() {
             @Override
@@ -935,6 +958,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 currentTextView.setText(editable.toString().trim());
                 currentTextView.setTextColor(Color.parseColor("#ff2d51"));
+                currentTextView.setBackgroundResource(R.color.bg_color);
                 setTaskState();
                 for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
                     Log.e("fred  数据4", i + "   " + weekdaysTimeCaseList.get(i).getT1());

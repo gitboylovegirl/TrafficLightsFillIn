@@ -93,33 +93,49 @@ public class NotificationUtil {
     /**
      * 打开通知权限
      */
-    public static void open(Activity activity){
-        Intent localIntent = new Intent();
-        //直接跳转到应用通知设置的代码：
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//8.0及以上
+    public static void openPermissionSetting(Context context) {
+        try {
+            Intent localIntent = new Intent();
             localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-            localIntent.setData(Uri.fromParts("package", activity.getPackageName(), null));
-        } else if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {//5.0以上到8.0以下
-            localIntent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-            localIntent.putExtra("app_package", activity.getPackageName());
-            localIntent.putExtra("app_uid", activity.getApplicationInfo().uid);
-        } else if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {//4.4
-            localIntent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            localIntent.addCategory(Intent.CATEGORY_DEFAULT);
-            localIntent.setData(Uri.parse("package:" + activity.getPackageName()));
-        } else {
+            //直接跳转到应用通知设置的代码：
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                localIntent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                localIntent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+                context.startActivity(localIntent);
+                return;
+            }
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                localIntent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                localIntent.putExtra("app_package", context.getPackageName());
+                localIntent.putExtra("app_uid", context.getApplicationInfo().uid);
+                context.startActivity(localIntent);
+                return;
+            }
+            if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                localIntent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                localIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                localIntent.setData(Uri.parse("package:" + context.getPackageName()));
+                context.startActivity(localIntent);
+                return;
+            }
+
             //4.4以下没有从app跳转到应用通知设置页面的Action，可考虑跳转到应用详情页面,
-            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
             if (Build.VERSION.SDK_INT >= 9) {
                 localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-                localIntent.setData(Uri.fromParts("package", activity.getPackageName(), null));
-            } else if (Build.VERSION.SDK_INT <= 8) {
-                localIntent.setAction(Intent.ACTION_VIEW);
-                localIntent.setClassName("com.android.settings", "com.android.setting.InstalledAppDetails");
-                localIntent.putExtra("com.android.settings.ApplicationPkgName", activity.getPackageName());
+                localIntent.setData(Uri.fromParts("package", context.getPackageName(), null));
+                context.startActivity(localIntent);
+                return;
             }
+
+            localIntent.setAction(Intent.ACTION_VIEW);
+            localIntent.setClassName("com.android.settings", "com.android.setting.InstalledAppDetails");
+            localIntent.putExtra("com.android.settings.ApplicationPkgName", context.getPackageName());
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(" cxx   pushPermission 有问题");
         }
-        activity.startActivity(localIntent);
     }
 }

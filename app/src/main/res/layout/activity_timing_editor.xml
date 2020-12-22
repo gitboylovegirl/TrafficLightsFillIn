@@ -667,12 +667,12 @@
                 </LinearLayout>
 
                 <TextView
-                    android:layout_marginLeft="25dp"
+                    android:background="@mipmap/add"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="35dp"
                     android:id="@+id/timetable_add"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="+"
                     android:textColor="@color/black">
 
                 </TextView>
@@ -717,12 +717,12 @@
                 </androidx.recyclerview.widget.RecyclerView>
 
                 <TextView
+                    android:layout_marginBottom="10dp"
+                    android:background="@mipmap/add"
                     android:layout_marginLeft="60dp"
                     android:id="@+id/time_list_add"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="+"
                     android:textColor="@color/black">
 
                 </TextView>

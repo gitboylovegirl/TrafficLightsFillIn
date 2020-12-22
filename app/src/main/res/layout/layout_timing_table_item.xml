@@ -282,11 +282,11 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:orientation="horizontal"
-            android:layout_width="57dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:id="@+id/tv_delete"
                 android:textColor="@color/black"
                 android:background="@mipmap/delete_bg"
@@ -296,7 +296,7 @@
             </ImageView>
 
             <TextView
-                android:layout_marginLeft="7dp"
+                android:layout_marginLeft="15dp"
                 android:gravity="center"
                 android:id="@+id/title_id"
                 android:layout_gravity="center_vertical"

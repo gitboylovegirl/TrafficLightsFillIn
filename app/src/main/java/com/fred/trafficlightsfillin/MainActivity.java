@@ -129,7 +129,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     public void requestPermissions() {
         if(!NotificationUtil.isNotifyEnabled(MainActivity.this)){
-            NotificationUtil.open(MainActivity.this);
+
+            DialogUtils.showCurrencyDialog(MainActivity.this, "开启通知，才能收到任务通知。", new DialogUtils.OnButtonClickListener() {
+                @Override
+                public void onPositiveButtonClick() {
+                    NotificationUtil.openPermissionSetting(MainActivity.this);
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+
+                }
+            });
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (MainActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
@@ -369,10 +385,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
 
-                if(!NotificationUtil.isNotifyEnabled(MainActivity.this)){
-                    NotificationUtil.open(MainActivity.this);
-                    return;
-                }
                 List<String> timeSet = new ArrayList<>();
                 for (int i = 1; i < 25; i++) {
                     timeSet.add(i + "小时候后");
