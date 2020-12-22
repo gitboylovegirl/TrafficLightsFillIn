@@ -42,6 +42,7 @@ import com.fred.trafficlightsfillin.record.UpdateListActivity;
 import com.fred.trafficlightsfillin.utils.CalendarReminderUtils;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.LocationUtils;
+import com.fred.trafficlightsfillin.utils.NotificationUtil;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
@@ -127,6 +128,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 申请权限
      */
     public void requestPermissions() {
+        if(!NotificationUtil.isNotifyEnabled(MainActivity.this)){
+            NotificationUtil.open();
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (MainActivity.this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
                 //showToast("请同意读写权限，否则无法展示礼物");
@@ -235,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     if (currentTimeMillis > lastTime) {
                                         long time = currentTimeMillis + (seTime * 60 * 60 * 1000);
                                         CalendarReminderUtils.addCalendarEvent(MainActivity.this, "配时中心提醒", "您有未完成的任务，请及时登陆完成", time, 1);
+                                        SharedPreferenceUtils.getInstance().setCurrentTime(time);
                                     }
 
                                 }
@@ -364,6 +369,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
 
+                if(!NotificationUtil.isNotifyEnabled(MainActivity.this)){
+                    NotificationUtil.open();
+                    return;
+                }
                 List<String> timeSet = new ArrayList<>();
                 for (int i = 1; i < 25; i++) {
                     timeSet.add(i + "小时候后");

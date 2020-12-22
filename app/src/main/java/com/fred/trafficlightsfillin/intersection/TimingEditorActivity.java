@@ -267,6 +267,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
             planCaseAdapter.bindData(true, weekdaysPlanCaseList);
             timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
+            update();
         });
         //周日
         weekend.setOnClickListener(view -> {
@@ -276,6 +277,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             timeTableAdapter.bindData(true, weekendPeriodCaseList);
             planCaseAdapter.bindData(true, weekendPlanCaseList);
             timeCaseAdapter.bindData(true, weekendTimeCaseList);
+            update();
         });
 
         /**
