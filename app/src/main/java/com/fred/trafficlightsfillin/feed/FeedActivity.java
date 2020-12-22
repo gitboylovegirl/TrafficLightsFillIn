@@ -44,6 +44,7 @@ import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.query.QueryMainActivity;
+import com.fred.trafficlightsfillin.query.TaskUpdateActivity;
 import com.fred.trafficlightsfillin.query.bean.RoadResponse;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.GetImagePath;
@@ -251,10 +252,15 @@ public class FeedActivity extends AppCompatActivity {
      * 上报
      */
     private void feedSubmit() {
+        String content = tvFeed.getText() == null ? "" : tvFeed.getText().toString().trim();
+        if("".equals(content) || content.length() < 20){
+            ToastUtil.showMsg(FeedActivity.this, "反馈内容描述必须大于20个字！");
+            return;
+        }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.FEED_ADD))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("desc",tvFeed.getText().toString().trim())
+                .addParam("desc",content)
                 .addParam("trafficLightId", trafficLightId+"")
                 .build()
                 .postAsync(new ICallback<BaseResponse>() {

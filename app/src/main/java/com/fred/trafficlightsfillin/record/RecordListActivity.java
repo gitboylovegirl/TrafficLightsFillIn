@@ -89,7 +89,7 @@ public class RecordListActivity extends AppCompatActivity {
             }else if("2".equals(list.get(index).state)){
                 //task_status.setText("未完成");
             }else if("3".equals(list.get(index).state)){
-                //task_status.setText("已完成");
+                //task_status.setText("配时表未更新");
                 Intent intent=new Intent(RecordListActivity.this,TimingEditorActivity.class);
                 intent.putExtra("id",list.get(index).id);
                 intent.putExtra("trafficLightId",list.get(index).trafficLightId);
@@ -160,7 +160,7 @@ public class RecordListActivity extends AppCompatActivity {
             task_from.setText("来源：" + newRecordChannel.source);
             road_name.setText(newRecordChannel.roadPlace);
             //task_status.setText("未接单");
-            //任务状态 0 后台取消 1 未接单、2 未完成、3 已完成、4 完成已上传
+            //任务状态 0 后台取消 1 未接单、2 未完成、3 配时表未更新、4 完成已上传
             if("0".equals(newRecordChannel.state)){
                 task_status.setText("后台取消");
             }else if("1".equals(newRecordChannel.state)){
@@ -170,7 +170,7 @@ public class RecordListActivity extends AppCompatActivity {
                 task_status.setText("未完成");
                 task_status.setTextColor(Color.parseColor("#7BA9F9"));
             }else if("3".equals(newRecordChannel.state)){
-                task_status.setText("已完成");
+                task_status.setText("配时表未更新");
                 task_status.setTextColor(Color.parseColor("#FF8631"));
             }else if("4".equals(newRecordChannel.state)){
                 task_status.setText("完成已上传");

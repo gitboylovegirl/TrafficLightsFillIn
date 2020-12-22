@@ -248,6 +248,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                         Log.e("fred  新数据：", response.toString());
                         if (response.data != null) {
                             taskDetails = response.data;
+                            number.setText("编号："+taskDetails.trafficLightNo);
                             roadPosition.setText(taskDetails.location);
                             roadType.setText(taskDetails.roadPlaceType);
                             roadName.setText(taskDetails.roadPlace);

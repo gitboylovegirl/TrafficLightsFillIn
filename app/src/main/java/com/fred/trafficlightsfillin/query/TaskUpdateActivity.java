@@ -119,6 +119,7 @@ public class TaskUpdateActivity extends AppCompatActivity {
                     public void onSuccess(TaskDetailsChannel response) {
                         if (response.data != null) {
                             TaskDetailsChannel.TaskDetails taskDetails = response.data;
+                            number.setText("编号："+taskDetails.trafficLightNo);
                             roadName.setText(taskDetails.roadPlace);
                             modelNumber.setText(taskDetails.modelNo);
                             modelType.setText(taskDetails.modelType);
@@ -170,6 +171,11 @@ public class TaskUpdateActivity extends AppCompatActivity {
      * 完成
      */
     private void changeState() {
+        String cause = inputBetter.getText() == null ? "" : inputBetter.getText().toString().trim();
+        if("".equals(cause) || cause.length() < 20){
+            ToastUtil.showMsg(TaskUpdateActivity.this, "配时优化调整内容描述必须大于10个字！");
+            return;
+        }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_STATE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())

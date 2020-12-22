@@ -3,17 +3,20 @@ package com.fred.trafficlightsfillin;
 import android.Manifest;
 import android.app.AppOpsManager;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,13 +49,16 @@ import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.zhihu.matisse.Matisse;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.jpush.android.api.JPushInterface;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -103,6 +109,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
         //透明状态栏
         StatusBarUtils.setTransparent(this);
+        //设置极光标签和别名
+        setJiguangAlias();
 
         //Log.e("ferd  sha:  ",sHA1(this));
         initLocation();
@@ -111,7 +119,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getNewVersion();
         requestPermissions();
     }
-
+    private void setJiguangAlias(){
+        String engineerId = SharedPreferenceUtils.getInstance().getId();
+        if(engineerId != null && !"".equals(engineerId))
+            JPushInterface.setAlias(getApplicationContext(), Integer.parseInt(engineerId), engineerId);
+    }
     /**
      * 申请权限
      */
@@ -157,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startLocation() {
+
         //检查权限
         //声明AMapLocationClient类对象
         AMapLocationClient mLocationClient = new AMapLocationClient(MainActivity.this.getApplicationContext());
@@ -429,4 +442,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
+    private static boolean isExit = false;
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            exit();
+            return false;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
+
+    private void exit(){
+        if(!isExit){
+            isExit=true;
+            Toast.makeText(getApplicationContext(),"再按一次退出",Toast.LENGTH_SHORT).show();
+                    //利用handler延迟发送更改状态信息
+                    handler.sendEmptyMessageDelayed(0,2000);
+        }else{
+            finish();
+            System.exit(0);
+        }
+    }
+
+    Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            super.handleMessage(msg);
+            isExit=false;
+        }
+    };
+
 }

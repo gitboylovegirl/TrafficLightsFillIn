@@ -472,15 +472,15 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
      * 查任务
      */
     private void initData() {
-        if(TextUtils.isEmpty(search.getText().toString().trim())){
+        /*if(TextUtils.isEmpty(search.getText().toString().trim())){
             ToastUtil.showMsg(QueryMainActivity.this,"请先选择路口");
             return;
-        }
+        }*/
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", String.valueOf(page))
-                .addParam("pageSize", "50")
+                .addParam("pageSize", "20")
                 .addParam("roadPlace",search.getText().toString().trim())
                 .addParam("teamName", team.getText().toString().trim())
                 .addParam("source", from.getText().toString().trim())
@@ -575,7 +575,19 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
             time.setText(TimeUtils.time7(String.valueOf(newRecordChannel.createTime)));
             task_from.setText("来源：" + newRecordChannel.source);
             road_name.setText(newRecordChannel.roadPlace);
-            task_status.setText("未接单");
+            if("0".equals(newRecordChannel.state)){
+                task_status.setText("后台取消");
+            }else if("1".equals(newRecordChannel.state)){
+                task_status.setText("未接单");
+                task_status.setTextColor(Color.parseColor("#E3BEAC"));
+            }else if("2".equals(newRecordChannel.state)){
+                task_status.setText("未完成");
+                task_status.setTextColor(Color.parseColor("#6D7790"));
+            }else if("3".equals(newRecordChannel.state)){
+                task_status.setText("配时表未更新");
+            }else if("4".equals(newRecordChannel.state)){
+                task_status.setText("完成已上传");
+            }
             task_status.setTextColor(Color.parseColor("#FF8631"));
         }
     }

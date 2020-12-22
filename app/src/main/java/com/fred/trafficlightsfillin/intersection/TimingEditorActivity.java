@@ -114,8 +114,6 @@ public class TimingEditorActivity extends AppCompatActivity {
     RecyclerView timeList;
     @BindView(R.id.picture_list)
     RecyclerView pictureList;
-    @BindView(R.id.task_end)
-    ImageView taskEnd;
     @BindView(R.id.end_time)
     TextView endTime;
     @BindView(R.id.submit)
@@ -128,8 +126,6 @@ public class TimingEditorActivity extends AppCompatActivity {
     LinearLayout weekTitle;
     @BindView(R.id.task_status)
     TextView taskStatus;
-    @BindView(R.id.state)
-    TextView state;
     @BindView(R.id.type_one)
     LinearLayout typeOne;
     @BindView(R.id.better)
@@ -541,7 +537,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 //                            } else if ("2".equals(taskDetails.state)) {
 //                                state.setText("未完成");
 //                            } else if ("3".equals(taskDetails.state)) {
-//                                state.setText("已完成");
+//                                state.setText("配时表未更新");
 //                            } else if ("4".equals(taskDetails.state)) {
 //                                state.setText("完成已上传");
 //                            }

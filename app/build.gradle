@@ -86,12 +86,9 @@ dependencies {
 
     //滑动选择
     implementation 'com.github.open-android:WheelPicker:v1.0.0'
-
     implementation 'com.kovachcode:timePickerWithSeconds:1.0.1'
-
     implementation 'cn.jiguang.sdk:jpush:3.8.5'  // 此处以JPush 3.8.5 版本为例。
     implementation 'cn.jiguang.sdk:jcore:2.5.5'  // 此处以JCore 2.5.5 版本为例。
-
     implementation 'com.android.support:multidex:1.0.3'
 
 }
