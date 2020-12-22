@@ -322,7 +322,7 @@
 
 
                     <TextView
-                        android:text="配时时间:"
+                        android:text="完成时间:"
                         android:textColor="#A0A5B2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
