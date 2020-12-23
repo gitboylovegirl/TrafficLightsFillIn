@@ -148,7 +148,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 
     private View popuwindowView;
     private PopupWindow popupWindow;
-    private TextView currentTextView;
+    private EditText currentEditView;
     private int currentType;
     private int currentPos;
     private int currentChoosePos;
@@ -843,7 +843,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable PeriodCaseListBean periodCaseListBean, int index) {
             TextView startTime = holder.obtainView(R.id.start_time);
-            TextView no = holder.obtainView(R.id.number);
+            EditText no = holder.obtainView(R.id.number);
             ImageView timetable_delete = holder.obtainView(R.id.timetable_delete);
             timetable_delete.setVisibility(View.VISIBLE);
 
@@ -864,14 +864,27 @@ public class TimingEditorActivity extends AppCompatActivity {
             });
 
             no.setOnClickListener(v -> {
-                currentTextView = no;
+                currentEditView = no;
                 currentType = 1;
                 currentPos = index;
                 currentChoosePos = 2;
-                showPopupCommnet(800);
+                //showPopupCommnet(800);
             });
 
             startTime.setOnClickListener(v -> {
+                TextView startTimeTextView = (TextView) v;
+                String startTimeStr = startTimeTextView.getText() == null ? "" : startTimeTextView.getText().toString().trim();
+                String[] arr = startTimeStr.split(":");
+                int hour = 0;
+                int min = 0;
+                int sec = 0;
+                if(arr.length == 3){
+                    try{
+                        hour = Integer.parseInt(arr[0]);
+                        min = Integer.parseInt(arr[1]);
+                        sec = Integer.parseInt(arr[2]);
+                    }catch (Exception e){}
+                }
                 MyTimePickerDialog mTimePicker = new MyTimePickerDialog(TimingEditorActivity.this, (view, hourOfDay, minute, seconds) -> {
                     String time = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds);
                     if (isWeekday) {
@@ -887,7 +900,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
                     startTime.setText(time);
                     startTime.setTextColor(Color.parseColor("#ff2d51"));
-                }, 0, 0, 0, true);
+                }, hour, min, sec, true);
                 mTimePicker.show();
             });
         }
@@ -929,7 +942,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         popupWindow.setOutsideTouchable(true);
 
         int[] location = new int[2];
-        currentTextView.getLocationOnScreen(location);
+        currentEditView.getLocationOnScreen(location);
         int x = location[0];
         int y = location[1];
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -956,9 +969,10 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                currentTextView.setText(editable.toString().trim());
-                currentTextView.setTextColor(Color.parseColor("#ff2d51"));
-                currentTextView.setBackgroundResource(R.color.bg_color);
+                currentEditView.setText(editable.toString().trim());
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                currentEditView.setBackgroundColor(Color.parseColor("#EFEFEF"));
+
                 setTaskState();
                 for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
                     Log.e("fred  数据4", i + "   " + weekdaysTimeCaseList.get(i).getT1());
@@ -1145,95 +1159,137 @@ public class TimingEditorActivity extends AppCompatActivity {
             ImageView ivTen = holder.obtainView(R.id.iv_ten);
 
             TextView titleId = holder.obtainView(R.id.title_id);
-            TextView programme_one = holder.obtainView(R.id.programme_one);
-            TextView programme_two = holder.obtainView(R.id.programme_two);
-            TextView programme_three = holder.obtainView(R.id.programme_three);
-            TextView programme_four = holder.obtainView(R.id.programme_four);
-            TextView programme_five = holder.obtainView(R.id.programme_five);
-            TextView programme_six = holder.obtainView(R.id.programme_six);
-            TextView programme_seven = holder.obtainView(R.id.programme_seven);
-            TextView programme_eight = holder.obtainView(R.id.programme_eight);
-            TextView programme_nine = holder.obtainView(R.id.programme_nine);
-            TextView programme_ten = holder.obtainView(R.id.programme_ten);
+            titleId.setVisibility(View.VISIBLE);
+            EditText timeCaseNo = holder.obtainView(R.id.time_case_no);
+            timeCaseNo.setVisibility(View.GONE);
+            EditText programme_one = holder.obtainView(R.id.programme_one);
+            programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_two = holder.obtainView(R.id.programme_two);
+            programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_three = holder.obtainView(R.id.programme_three);
+            programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_four = holder.obtainView(R.id.programme_four);
+            programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_five = holder.obtainView(R.id.programme_five);
+            programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_six = holder.obtainView(R.id.programme_six);
+            programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_seven = holder.obtainView(R.id.programme_seven);
+            programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_eight = holder.obtainView(R.id.programme_eight);
+            programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_nine = holder.obtainView(R.id.programme_nine);
+            programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_ten = holder.obtainView(R.id.programme_ten);
+            programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
 
             programme_one.setOnClickListener(v -> {
-                currentTextView = programme_one;
+                currentEditView = programme_one;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 1;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_two.setOnClickListener(v -> {
-                currentTextView = programme_two;
+                currentEditView = programme_two;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 2;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_three.setOnClickListener(v -> {
-                currentTextView = programme_three;
+                currentEditView = programme_three;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 3;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_four.setOnClickListener(v -> {
-                currentTextView = programme_four;
+                currentEditView = programme_four;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 4;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_five.setOnClickListener(v -> {
-                currentTextView = programme_five;
+                currentEditView = programme_five;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 5;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_six.setOnClickListener(v -> {
-                currentTextView = programme_six;
+                currentEditView = programme_six;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 6;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_seven.setOnClickListener(v -> {
-                currentTextView = programme_seven;
+                currentEditView = programme_seven;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 7;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_eight.setOnClickListener(v -> {
-                currentTextView = programme_eight;
+                currentEditView = programme_eight;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 8;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_nine.setOnClickListener(v -> {
-                currentTextView = programme_nine;
+                currentEditView = programme_nine;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 9;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_ten.setOnClickListener(v -> {
-                currentTextView = programme_ten;
+                currentEditView = programme_ten;
                 currentType = 2;
                 currentPos = index;
                 currentChoosePos = 10;
-                showPopupCommnet(800);
+
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             if ("1".equals(planCaseListBean.getType())) {
@@ -1662,16 +1718,30 @@ public class TimingEditorActivity extends AppCompatActivity {
             ImageView ivTen = holder.obtainView(R.id.iv_ten);
 
             TextView titleId = holder.obtainView(R.id.title_id);
-            TextView programme_one = holder.obtainView(R.id.programme_one);
-            TextView programme_two = holder.obtainView(R.id.programme_two);
-            TextView programme_three = holder.obtainView(R.id.programme_three);
-            TextView programme_four = holder.obtainView(R.id.programme_four);
-            TextView programme_five = holder.obtainView(R.id.programme_five);
-            TextView programme_six = holder.obtainView(R.id.programme_six);
-            TextView programme_seven = holder.obtainView(R.id.programme_seven);
-            TextView programme_eight = holder.obtainView(R.id.programme_eight);
-            TextView programme_nine = holder.obtainView(R.id.programme_nine);
-            TextView programme_ten = holder.obtainView(R.id.programme_ten);
+            titleId.setVisibility(View.GONE);
+            EditText timeCaseNo = holder.obtainView(R.id.time_case_no);
+            timeCaseNo.setVisibility(View.VISIBLE);
+            timeCaseNo.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_one = holder.obtainView(R.id.programme_one);
+            programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_two = holder.obtainView(R.id.programme_two);
+            programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_three = holder.obtainView(R.id.programme_three);
+            programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_four = holder.obtainView(R.id.programme_four);
+            programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_five = holder.obtainView(R.id.programme_five);
+            programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_six = holder.obtainView(R.id.programme_six);
+            programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_seven = holder.obtainView(R.id.programme_seven);
+            programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_eight = holder.obtainView(R.id.programme_eight);
+            programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_nine = holder.obtainView(R.id.programme_nine);
+            programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            EditText programme_ten = holder.obtainView(R.id.programme_ten);
+            programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
 
             ImageView tvDelete = holder.obtainView(R.id.tv_delete);
             tvDelete.setVisibility(View.VISIBLE);
@@ -1696,94 +1766,116 @@ public class TimingEditorActivity extends AppCompatActivity {
             programme_nine.setText(timeCaseListBean.getT9());
             programme_ten.setText(timeCaseListBean.getT10());
 
-            titleId.setText(timeCaseListBean.getNo());
+            timeCaseNo.setText(timeCaseListBean.getNo());
 
-            titleId.setOnClickListener(v -> {
-                currentTextView = titleId;
+            timeCaseNo.setOnClickListener(v -> {
+                currentEditView = timeCaseNo;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 0;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_one.setOnClickListener(v -> {
-                currentTextView = programme_one;
+                currentEditView = programme_one;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 1;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_two.setOnClickListener(v -> {
-                currentTextView = programme_two;
+                currentEditView = programme_two;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 2;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_three.setOnClickListener(v -> {
-                currentTextView = programme_three;
+                currentEditView = programme_three;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 3;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_four.setOnClickListener(v -> {
-                currentTextView = programme_four;
+                currentEditView = programme_four;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 4;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_five.setOnClickListener(v -> {
-                currentTextView = programme_five;
+                currentEditView = programme_five;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 5;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_six.setOnClickListener(v -> {
-                currentTextView = programme_six;
+                currentEditView = programme_six;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 6;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_seven.setOnClickListener(v -> {
-                currentTextView = programme_seven;
+                currentEditView = programme_seven;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 7;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_eight.setOnClickListener(v -> {
-                currentTextView = programme_eight;
+                currentEditView = programme_eight;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 8;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_nine.setOnClickListener(v -> {
-                currentTextView = programme_nine;
+                currentEditView = programme_nine;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 9;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             programme_ten.setOnClickListener(v -> {
-                currentTextView = programme_ten;
+                currentEditView = programme_ten;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 10;
-                showPopupCommnet(800);
+                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+                //showPopupCommnet(800);
             });
 
             //删除
@@ -1804,5 +1896,20 @@ public class TimingEditorActivity extends AppCompatActivity {
 
     private void setTaskState() {
         taskStatus.setText("调整后");
+    }
+
+    class EditViewOnFocusChangeListener implements View.OnFocusChangeListener{
+
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            if (b) {
+                view.setBackgroundResource(R.color.select_bg_color);
+            }else{
+                if(view.getId() != R.id.time_case_no)
+                    view.setBackgroundColor(Color.parseColor("#EFEFEF"));
+                else
+                    view.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            }
+        }
     }
 }

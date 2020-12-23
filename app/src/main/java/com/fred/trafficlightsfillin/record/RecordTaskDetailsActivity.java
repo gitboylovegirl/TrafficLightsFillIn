@@ -104,10 +104,10 @@ public class RecordTaskDetailsActivity extends AppCompatActivity {
                             desc.setText(taskDetails.desc);
                             better.setText(taskDetails.getCause());
                             taskState.setText(intStr2TaskState(taskDetails.state));
-                            if(taskDetails.date == null || "".equals(taskDetails.date.trim())){
+                            if(taskDetails.updateTime == null || "".equals(taskDetails.updateTime.trim())){
                                 time.setText("");
                             }else{
-                                time.setText(TimeUtils.time7(taskDetails.date));
+                                time.setText(TimeUtils.time7(taskDetails.updateTime));
                             }
                         }
                     }

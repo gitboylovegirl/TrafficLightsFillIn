@@ -172,7 +172,7 @@ public class TaskUpdateActivity extends AppCompatActivity {
      */
     private void changeState() {
         String cause = inputBetter.getText() == null ? "" : inputBetter.getText().toString().trim();
-        if("".equals(cause) || cause.length() < 20){
+        if("".equals(cause) || cause.length() < 10){
             ToastUtil.showMsg(TaskUpdateActivity.this, "配时优化调整内容描述必须大于10个字！");
             return;
         }

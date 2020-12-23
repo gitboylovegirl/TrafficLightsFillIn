@@ -335,10 +335,10 @@
                     android:layout_marginTop="15dp"
                     android:paddingVertical="30dp"
                     android:paddingHorizontal="25dp"
-                    android:background="#A0A5B2"
+                    android:background="#F6F6F6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#ffffffff"
+                    android:textColor="#2A4997"
                     android:textSize="13sp"
                     />
 
@@ -361,6 +361,7 @@
                     android:background="#2A4997"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
                     android:textColor="#ffffffff"
                     android:textSize="13sp"
                     />
@@ -403,7 +404,7 @@
 
 
                     <TextView
-                        android:text="配时时间:"
+                        android:text="完成时间:"
                         android:textColor="#A0A5B2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">

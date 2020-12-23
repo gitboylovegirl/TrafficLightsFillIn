@@ -14,8 +14,8 @@
         <ImageView
             android:layout_marginRight="3dp"
             android:id="@+id/timetable_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="15dp"
+            android:layout_height="27dp"
             android:src="@mipmap/delete_bg"
             android:textColor="@color/black"
             android:visibility="invisible">
@@ -25,23 +25,24 @@
         <TextView
             android:id="@+id/start_time"
             android:layout_width="65dp"
-            android:layout_height="wrap_content"
+            android:layout_height="28dp"
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="14sp">
 
         </TextView>
 
-        <TextView
+        <EditText
             android:id="@+id/number"
             android:layout_width="65dp"
+            android:inputType="number"
             android:layout_height="wrap_content"
             android:layout_marginLeft="82dp"
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="14sp">
 
-        </TextView>
+        </EditText>
     </LinearLayout>
 
 </RelativeLayout>

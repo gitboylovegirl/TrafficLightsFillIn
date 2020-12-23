@@ -671,8 +671,8 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="35dp"
                     android:id="@+id/timetable_add"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="15dp"
+                    android:layout_height="27dp"
                     android:textColor="@color/black">
 
                 </TextView>
@@ -721,8 +721,8 @@
                     android:background="@mipmap/add"
                     android:layout_marginLeft="60dp"
                     android:id="@+id/time_list_add"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="15dp"
+                    android:layout_height="27dp"
                     android:textColor="@color/black">
 
                 </TextView>

@@ -120,9 +120,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         requestPermissions();
     }
     private void setJiguangAlias(){
+        String phone = SharedPreferenceUtils.getInstance().getPhone();
         String engineerId = SharedPreferenceUtils.getInstance().getId();
-        if(engineerId != null && !"".equals(engineerId))
-            JPushInterface.setAlias(getApplicationContext(), Integer.parseInt(engineerId), engineerId);
+        //Log.e("fred", "Phone:"+phone+";;EngineerId:"+engineerId);
+        if(phone != null && !"".equals(phone) && engineerId != null && !"".equals(engineerId)){
+            JPushInterface.setAlias(getApplicationContext(), Integer.parseInt(engineerId), phone);
+            //Log.e("fred", "JPushInterface.setAlias:::::Phone:"+phone+";;EngineerId:"+engineerId);
+        }
     }
     /**
      * 申请权限

@@ -259,6 +259,7 @@
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginTop="10dp"
                 android:id="@+id/describe"
+                android:textColor="#FF3C00"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 

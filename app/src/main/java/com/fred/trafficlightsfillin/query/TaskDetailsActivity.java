@@ -122,10 +122,10 @@ public class TaskDetailsActivity extends AppCompatActivity {
                             taskEngineerName.setText(taskDetails.engineerName);
                             taskCar.setText(taskDetails.carNumber);
 
-                            if(taskDetails.date == null || "".equals(taskDetails.date.trim())){
+                            if(taskDetails.updateTime == null || "".equals(taskDetails.updateTime.trim())){
                                 time.setText("");
                             }else{
-                                time.setText(TimeUtils.time7(taskDetails.date));
+                                time.setText(TimeUtils.time7(taskDetails.updateTime));
                             }
                         }
                     }

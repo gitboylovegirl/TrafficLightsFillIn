@@ -254,10 +254,10 @@
                     android:layout_marginTop="15dp"
                     android:paddingVertical="30dp"
                     android:paddingHorizontal="25dp"
-                    android:background="#A0A5B2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#ffffffff"
+                    android:background="#F6F6F6"
+                    android:textColor="#FF3C00"
                     android:textSize="13sp"
                     />
 
@@ -277,7 +277,8 @@
                     android:layout_marginTop="15dp"
                     android:paddingVertical="30dp"
                     android:paddingHorizontal="25dp"
-                    android:background="#A0A5B2"
+                    android:background="#2A4997"
+                    android:textStyle="bold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#ffffffff"
