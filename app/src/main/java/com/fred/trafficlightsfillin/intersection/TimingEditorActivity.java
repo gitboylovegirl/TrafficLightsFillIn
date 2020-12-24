@@ -74,9 +74,7 @@ import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -1253,52 +1251,52 @@ public class TimingEditorActivity extends AppCompatActivity {
                 programme_one.setText(planCaseListBean.getT1());
                 if(!editT1){
                     programme_one.setEnabled(false);
-                    programme_one.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_one.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_two.setText(planCaseListBean.getT2());
                 if(!editT2){
                     programme_two.setEnabled(false);
-                    programme_two.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_two.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_three.setText(planCaseListBean.getT3());
                 if(!editT3){
                     programme_three.setEnabled(false);
-                    programme_three.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_three.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_four.setText(planCaseListBean.getT4());
                 if(!editT4){
                     programme_four.setEnabled(false);
-                    programme_four.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_four.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_five.setText(planCaseListBean.getT5());
                 if(!editT5){
                     programme_five.setEnabled(false);
-                    programme_five.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_five.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_six.setText(planCaseListBean.getT6());
                 if(!editT6){
                     programme_six.setEnabled(false);
-                    programme_six.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_six.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_seven.setText(planCaseListBean.getT7());
                 if(!editT7){
                     programme_seven.setEnabled(false);
-                    programme_seven.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_seven.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_eight.setText(planCaseListBean.getT8());
                 if(!editT8){
                     programme_eight.setEnabled(false);
-                    programme_eight.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_eight.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_nine.setText(planCaseListBean.getT9());
                 if(!editT9){
                     programme_nine.setEnabled(false);
-                    programme_nine.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_nine.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 programme_ten.setText(planCaseListBean.getT10());
                 if(!editT10){
                     programme_ten.setEnabled(false);
-                    programme_ten.setTextColor(Color.parseColor("##6C6C6C"));
+                    programme_ten.setTextColor(Color.parseColor("#6C6C6C"));
                 }
                 //类型（1 阶段 2绿闪 3黄灯 4全红 5红黄 6 最大绿 7 最小绿
                 if (planCaseListBean.getType().equals("2")) {
@@ -1444,52 +1442,52 @@ public class TimingEditorActivity extends AppCompatActivity {
             programme_one.setText(timeCaseListBean.getT1());
             if(!editT1){
                 programme_one.setEnabled(false);
-                programme_one.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_one.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_two.setText(timeCaseListBean.getT2());
             if(!editT2){
                 programme_two.setEnabled(false);
-                programme_two.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_two.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_three.setText(timeCaseListBean.getT3());
             if(!editT3){
                 programme_three.setEnabled(false);
-                programme_three.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_three.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_four.setText(timeCaseListBean.getT4());
             if(!editT4){
                 programme_four.setEnabled(false);
-                programme_four.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_four.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_five.setText(timeCaseListBean.getT5());
             if(!editT5){
                 programme_five.setEnabled(false);
-                programme_five.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_five.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_six.setText(timeCaseListBean.getT6());
             if(!editT6){
                 programme_six.setEnabled(false);
-                programme_six.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_six.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_seven.setText(timeCaseListBean.getT7());
             if(!editT7){
                 programme_seven.setEnabled(false);
-                programme_seven.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_seven.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_eight.setText(timeCaseListBean.getT8());
             if(!editT8){
                 programme_eight.setEnabled(false);
-                programme_eight.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_eight.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_nine.setText(timeCaseListBean.getT9());
             if(!editT9){
                 programme_nine.setEnabled(false);
-                programme_nine.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_nine.setTextColor(Color.parseColor("#6C6C6C"));
             }
             programme_ten.setText(timeCaseListBean.getT10());
             if(!editT10){
                 programme_ten.setEnabled(false);
-                programme_ten.setTextColor(Color.parseColor("##6C6C6C"));
+                programme_ten.setTextColor(Color.parseColor("#6C6C6C"));
             }
 
             timeCaseNo.setText(timeCaseListBean.getNo());
