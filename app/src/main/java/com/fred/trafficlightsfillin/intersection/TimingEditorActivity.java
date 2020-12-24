@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -19,7 +18,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -55,7 +53,6 @@ import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.intersection.bean.PeriodCaseListBean;
 import com.fred.trafficlightsfillin.intersection.bean.PlanCaseListBean;
-import com.fred.trafficlightsfillin.intersection.bean.StageResponse;
 import com.fred.trafficlightsfillin.intersection.bean.SubmitBean;
 import com.fred.trafficlightsfillin.intersection.bean.TaskResultResponse;
 import com.fred.trafficlightsfillin.intersection.bean.TimeCaseListBean;
@@ -68,6 +65,7 @@ import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.GetImagePath;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.SoftKeyBoardListener;
+import com.fred.trafficlightsfillin.utils.StageDataUtil;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.google.gson.Gson;
@@ -76,7 +74,9 @@ import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -150,40 +150,46 @@ public class TimingEditorActivity extends AppCompatActivity {
     private View popuwindowView;
     private PopupWindow popupWindow;
     private EditText currentEditView;
-    private int currentType;
-    private int currentPos;
-    private int currentChoosePos;
+
     EditText inputComment;
 
-    private List<PeriodCaseListBean> weekdaysPeriodCaseList = new ArrayList<>();//工作日时间表
-    private List<PeriodCaseListBean> weekendPeriodCaseList = new ArrayList<>();//周末时间表
+    private List<PeriodCaseListBean> weekdaysPeriodCaseDataList = new ArrayList<>();//工作日时间表
+    private List<PeriodCaseListBean> noWeekDaysPeriodCaseDataList = new ArrayList<>();//周末时间表
 
-    private List<PlanCaseListBean> weekdaysPlanCaseList = new ArrayList<>();//工作日配时表1
-    private List<PlanCaseListBean> weekendPlanCaseList = new ArrayList<>();//周末配时表1
 
-    private List<TimeCaseListBean> weekdaysTimeCaseList = new ArrayList<>();//工作日配时表1
-    private List<TimeCaseListBean> weekendTimeCaseList = new ArrayList<>();//周末配时表1
+    private List<PlanCaseListBean> weekdaysPlanCaseDataList = new ArrayList<>();//工作日配时表1
+    private List<PlanCaseListBean> noWeekdaysPlanCaseDataList = new ArrayList<>();//周末配时表1
+    private List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
+
+    private List<TimeCaseListBean> weekdaysTimeCaseDataList = new ArrayList<>();//工作日配时表1
+    private List<TimeCaseListBean> noWeekdaysTimeCaseDataList = new ArrayList<>();//周末配时表1
 
     PictureAdapter pictureAdapter;
     TimeTableAdapter timeTableAdapter;
     String trafficLightId;
     String id;
-    List<StageResponse.StageChanel> stageChanels;//配时表数据
     List<ImageResponse.ImageBean> imageBeans = new ArrayList<>();
-    PlanCaseAdapter planCaseAdapter, hideplanCaseAdapter;
-    TimeCaseAdapter timeCaseAdapter;
+    PlanCaseAdapter planCaseDataAdapter, hidePlanCaseDataAdapter;
+    TimeCaseAdapter timeCaseDataAdapter;
 
+    boolean hasNoWeekDay = false;//是否区分工作日
     boolean isWeekday = true;
-
-    PeriodCaseListBean lastWeekdayPeriodBean;
-    PeriodCaseListBean lastWeekendPeriodBean;
-
-    TimeCaseListBean lastWeekdaysTimeBean;
-    TimeCaseListBean lastWeekendTimeBean;
     boolean isShow = false;
 
     int keyHigh=831;
     int scrollviewHigh=0;
+
+    private boolean editT1 = true;
+    private boolean editT2 = true;
+    private boolean editT3 = true;
+    private boolean editT4 = true;
+    private boolean editT5 = true;
+    private boolean editT6 = true;
+    private boolean editT7 = true;
+    private boolean editT8 = true;
+    private boolean editT9 = true;
+    private boolean editT10 = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,7 +199,11 @@ public class TimingEditorActivity extends AppCompatActivity {
         trafficLightId = getIntent().getStringExtra("trafficLightId");
         id = getIntent().getStringExtra("id");
         initView();
-        initStage();
+
+        initTrafficlighInfo();
+        initTaskInfo();
+        initPictrue();
+        initTrafficlighPeishi();
     }
 
     /**
@@ -219,17 +229,17 @@ public class TimingEditorActivity extends AppCompatActivity {
         timeTableAdapter = new TimeTableAdapter();
         timeList.setAdapter(timeTableAdapter);
 
-        planCaseAdapter = new PlanCaseAdapter();
+        planCaseDataAdapter = new PlanCaseAdapter();
         programme.setLayoutManager(new LinearLayoutManager(this));
-        programme.setAdapter(planCaseAdapter);
+        programme.setAdapter(planCaseDataAdapter);
 
-        hideplanCaseAdapter = new PlanCaseAdapter();
+        hidePlanCaseDataAdapter = new PlanCaseAdapter();
         layoutHideTab.setLayoutManager(new LinearLayoutManager(this));
-        layoutHideTab.setAdapter(hideplanCaseAdapter);
+        layoutHideTab.setAdapter(hidePlanCaseDataAdapter);
 
-        timeCaseAdapter = new TimeCaseAdapter();
+        timeCaseDataAdapter = new TimeCaseAdapter();
         timetable.setLayoutManager(new LinearLayoutManager(this));
-        timetable.setAdapter(timeCaseAdapter);
+        timetable.setAdapter(timeCaseDataAdapter);
 
         //监听
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -264,25 +274,23 @@ public class TimingEditorActivity extends AppCompatActivity {
                 scrollViewOne.scrollTo(scrollX, scrollY);
             });
         }
-        //工作日
+        //工作日/不区分工作日
         weekday.setOnClickListener(view -> {
             isWeekday = true;
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
-            timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
-            planCaseAdapter.bindData(true, weekdaysPlanCaseList);
-            timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
-            update();
+            timeTableAdapter.bindData(true, weekdaysPeriodCaseDataList);
+            planCaseDataAdapter.bindData(true, weekdaysPlanCaseDataList);
+            timeCaseDataAdapter.bindData(true, weekdaysTimeCaseDataList);
         });
         //周日
         weekend.setOnClickListener(view -> {
             isWeekday = false;
             weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
-            timeTableAdapter.bindData(true, weekendPeriodCaseList);
-            planCaseAdapter.bindData(true, weekendPlanCaseList);
-            timeCaseAdapter.bindData(true, weekendTimeCaseList);
-            update();
+            timeTableAdapter.bindData(true, noWeekDaysPeriodCaseDataList);
+            planCaseDataAdapter.bindData(true, noWeekdaysPlanCaseDataList);
+            timeCaseDataAdapter.bindData(true, noWeekdaysTimeCaseDataList);
         });
 
         /**
@@ -295,19 +303,25 @@ public class TimingEditorActivity extends AppCompatActivity {
             submitBean.setTaskId(Integer.parseInt(id));
 
             List<PeriodCaseListBean> periodCaseList = new ArrayList<>();
-            periodCaseList.addAll(weekdaysPeriodCaseList);
-            periodCaseList.addAll(weekendPeriodCaseList);
+            if(weekdaysPeriodCaseDataList != null && weekdaysPeriodCaseDataList.size() > 0)
+                periodCaseList.addAll(weekdaysPeriodCaseDataList);
+            if(noWeekDaysPeriodCaseDataList != null && noWeekDaysPeriodCaseDataList.size() > 0)
+                periodCaseList.addAll(noWeekDaysPeriodCaseDataList);
             submitBean.setPeriodCaseList(periodCaseList);
 
 
             List<PlanCaseListBean> planCaseList = new ArrayList<>();
-            planCaseList.addAll(weekdaysPlanCaseList);
-            planCaseList.addAll(weekendPlanCaseList);
+            if(weekdaysPlanCaseDataList != null && weekdaysPlanCaseDataList.size() > 0)
+                planCaseList.addAll(weekdaysPlanCaseDataList);
+            if(noWeekdaysPlanCaseDataList != null && noWeekdaysPlanCaseDataList.size() > 0)
+                planCaseList.addAll(noWeekdaysPlanCaseDataList);
             submitBean.setPlanCaseList(planCaseList);
 
             List<TimeCaseListBean> timeCaseList = new ArrayList<>();
-            timeCaseList.addAll(weekdaysTimeCaseList);
-            timeCaseList.addAll(weekendTimeCaseList);
+            if(weekdaysTimeCaseDataList != null && weekdaysTimeCaseDataList.size() > 0)
+                timeCaseList.addAll(weekdaysTimeCaseDataList);
+            if(noWeekdaysTimeCaseDataList != null && noWeekdaysTimeCaseDataList.size() > 0)
+                timeCaseList.addAll(noWeekdaysTimeCaseDataList);
             submitBean.setTimeCaseList(timeCaseList);
 
             Gson gson = new Gson();
@@ -349,19 +363,34 @@ public class TimingEditorActivity extends AppCompatActivity {
 
         //时间表新增
         timeListAdd.setOnClickListener(v -> {
+            Gson gson = new Gson();
+            List<PeriodCaseListBean> addPeriodCaseList = new ArrayList<>();
             if (isWeekday) {
-                List<PeriodCaseListBean> addPeriodCaseList = new ArrayList<>();
-                addPeriodCaseList.add(lastWeekdayPeriodBean);
+                PeriodCaseListBean newBean = weekdaysPeriodCaseDataList != null && weekdaysPeriodCaseDataList.size() > 0 ? weekdaysPeriodCaseDataList.get(weekdaysPeriodCaseDataList.size() -1) : new PeriodCaseListBean();
+                if(newBean == null){
+                    newBean = new PeriodCaseListBean();
+                    if(hasNoWeekDay)
+                        newBean.setWorkday("1");//工作日
+                    else
+                        newBean.setWorkday("-1");//不区分工作日
+                }else{
+                    newBean = gson.fromJson(gson.toJson(newBean), PeriodCaseListBean.class);
+                }
+                addPeriodCaseList.add(newBean);
                 timeTableAdapter.bindData(false, addPeriodCaseList);
-                weekdaysPeriodCaseList.addAll(addPeriodCaseList);
+                weekdaysPeriodCaseDataList.addAll(addPeriodCaseList);
             } else {
-                List<PeriodCaseListBean> addPeriodCaseList = new ArrayList<>();
-                addPeriodCaseList.add(lastWeekendPeriodBean);
+                PeriodCaseListBean newBean = noWeekDaysPeriodCaseDataList != null && noWeekDaysPeriodCaseDataList.size() > 0 ? noWeekDaysPeriodCaseDataList.get(noWeekDaysPeriodCaseDataList.size() -1) : new PeriodCaseListBean();
+                if(newBean == null){
+                    newBean = new PeriodCaseListBean();
+                    newBean.setWorkday("0");//周六日
+                }else{
+                    newBean = gson.fromJson(gson.toJson(newBean), PeriodCaseListBean.class);
+                }
+                addPeriodCaseList.add(newBean);
                 timeTableAdapter.bindData(false, addPeriodCaseList);
-                weekendPeriodCaseList.addAll(addPeriodCaseList);
+                noWeekDaysPeriodCaseDataList.addAll(addPeriodCaseList);
             }
-            lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
-            lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
             setTaskState();
 
         });
@@ -370,26 +399,35 @@ public class TimingEditorActivity extends AppCompatActivity {
          * 配时表新增
          */
         timetableAdd.setOnClickListener(v -> {
-//            for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-//                Log.e("fred  数据1",i+"   "+weekdaysTimeCaseList.get(i).getT1());
-//            }
+            Gson gson = new Gson();
+            List<TimeCaseListBean> addTimeCaseList = new ArrayList<>();
             if (isWeekday) {
-                List<TimeCaseListBean> addTimeCaseList = new ArrayList<>();//周末配时表1
-                addTimeCaseList.add(lastWeekdaysTimeBean);
-                timeCaseAdapter.bindData(false, addTimeCaseList);
-                weekdaysTimeCaseList.addAll(addTimeCaseList);
+                TimeCaseListBean newBean = weekdaysTimeCaseDataList != null && weekdaysTimeCaseDataList.size() > 0 ? weekdaysTimeCaseDataList.get(weekdaysTimeCaseDataList.size() -1) : new TimeCaseListBean();
+                if(newBean == null){
+                    newBean = new TimeCaseListBean();
+                    if(hasNoWeekDay)
+                        newBean.setWorkday("1");//工作日
+                    else
+                        newBean.setWorkday("-1");//不区分工作日
+                }else{
+                    newBean = gson.fromJson(gson.toJson(newBean), TimeCaseListBean.class);
+                }
+                addTimeCaseList.add(newBean);
+                timeCaseDataAdapter.bindData(false, addTimeCaseList);
+                weekdaysTimeCaseDataList.addAll(addTimeCaseList);
             } else {
-                List<TimeCaseListBean> addTimeCaseList = new ArrayList<>();//周末配时表1
-                addTimeCaseList.add(lastWeekendTimeBean);
-                timeCaseAdapter.bindData(false, addTimeCaseList);
-                weekendTimeCaseList.addAll(addTimeCaseList);
+                TimeCaseListBean newBean = noWeekdaysTimeCaseDataList != null && noWeekdaysTimeCaseDataList.size() > 0 ? noWeekdaysTimeCaseDataList.get(noWeekdaysTimeCaseDataList.size() -1) : new TimeCaseListBean();
+                if(newBean == null){
+                    newBean = new TimeCaseListBean();
+                    newBean.setWorkday("0");//周六日
+                }else{
+                    newBean = gson.fromJson(gson.toJson(newBean), TimeCaseListBean.class);
+                }
+                addTimeCaseList.add(newBean);
+                timeCaseDataAdapter.bindData(false, addTimeCaseList);
+                noWeekdaysTimeCaseDataList.addAll(addTimeCaseList);
             }
-            lastWeekdaysTimeBean = weekdaysTimeCaseList.get(weekdaysTimeCaseList.size() - 1);
-            lastWeekendTimeBean = weekdaysTimeCaseList.get(weekendTimeCaseList.size() - 1);
             setTaskState();
-            for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-                Log.e("fred  数据2", i + "   " + weekdaysTimeCaseList.get(i).getT1());
-            }
         });
 
         endTime.setText(TimeUtils.time10(String.valueOf(System.currentTimeMillis())));
@@ -432,38 +470,6 @@ public class TimingEditorActivity extends AppCompatActivity {
                             finish();
                         }
                         ToastUtil.showMsg(TimingEditorActivity.this, response.msg);
-                    }
-
-                    @Override
-                    public void onFail(int errorCode, String errorMsg) {
-                    }
-                });
-    }
-
-    /**
-     * 获取次序表数据
-     */
-    private void initStage() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.STAGE_LIST))
-                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("pageSize", "100")
-                .addParam("pageNum", "1")
-                .build()
-                .postAsync(new ICallback<StageResponse>() {
-                    @Override
-                    public void onSuccess(StageResponse response) {
-                        if (response.code == 0) {
-                            stageChanels = response.data;
-//                            String base64 = ""
-//                            byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-//                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//                            imageView.setImageBitmap(decodedByte);
-                            initTrafficlighInfo();
-                            initTaskInfo();
-                            initPictrue();
-                            initTrafficlighPeishi();
-                        }
                     }
 
                     @Override
@@ -758,7 +764,7 @@ public class TimingEditorActivity extends AppCompatActivity {
      * 获取详细配时信息
      */
     private void initTrafficlighPeishi() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/61"))
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/" + trafficLightId))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
@@ -773,35 +779,45 @@ public class TimingEditorActivity extends AppCompatActivity {
                         List<PlanCaseListBean> planCaseList = data.getPlanCaseList();
                         List<TimeCaseListBean> timeCaseList = data.getTimeCaseList();
 
-                        for (int i = 0; i < periodCaseList.size(); i++) {
-                            if ("0".equals(periodCaseList.get(i).getWorkday())) {//周末
-                                weekendPeriodCaseList.add(periodCaseList.get(i));
+
+                        for (PlanCaseListBean planCaseListBean : planCaseList
+                             ) {
+                            if ("0".equals(planCaseListBean.getWorkday())) {//周末
+                                if(!hasNoWeekDay && !"1".equals(planCaseListBean.getType()))
+                                    hasNoWeekDay = true;//标记有区分工作
+                                noWeekdaysPlanCaseDataList.add(planCaseListBean);
                             } else {
-                                weekdaysPeriodCaseList.add(periodCaseList.get(i));
+                                weekdaysPlanCaseDataList.add(planCaseListBean);
+                                if ("1".equals(planCaseListBean.getType())) {
+                                    hideWeekdaysPlanCaseList.add(planCaseListBean);
+                                }
                             }
                         }
 
-                        if (weekendPeriodCaseList == null || weekendPeriodCaseList.size() == 0) {
+                        for (TimeCaseListBean timeCaseListBean : timeCaseList
+                        ) {
+                            if (hasNoWeekDay && "0".equals(timeCaseListBean.getWorkday())) {//周末
+                                noWeekdaysTimeCaseDataList.add(timeCaseListBean);
+                            } else {
+                                weekdaysTimeCaseDataList.add(timeCaseListBean);
+                            }
+                        }
+
+                        for (PeriodCaseListBean periodCaseListBean : periodCaseList
+                        ) {
+                            if (hasNoWeekDay && "0".equals(periodCaseListBean.getWorkday())) {//周末
+                                noWeekDaysPeriodCaseDataList.add(periodCaseListBean);
+                            } else {
+                                weekdaysPeriodCaseDataList.add(periodCaseListBean);
+                            }
+                        }
+
+                        if (!hasNoWeekDay) {
                             weekTitle.setVisibility(View.GONE);
                         } else {
                             weekTitle.setVisibility(View.VISIBLE);
                         }
 
-                        for (int i = 0; i < planCaseList.size(); i++) {
-                            if ("0".equals(planCaseList.get(i).getWorkday())) {//周末
-                                weekendPlanCaseList.add(planCaseList.get(i));
-                            } else {
-                                weekdaysPlanCaseList.add(planCaseList.get(i));
-                            }
-                        }
-
-                        for (int i = 0; i < timeCaseList.size(); i++) {
-                            if ("0".equals(timeCaseList.get(i).getWorkday())) {//周末
-                                weekendTimeCaseList.add(timeCaseList.get(i));
-                            } else {
-                                weekdaysTimeCaseList.add(timeCaseList.get(i));
-                            }
-                        }
 
                         // Log.e("fred", weekdaysPeriodCaseList.size() + "  数量**");
 
@@ -809,30 +825,18 @@ public class TimingEditorActivity extends AppCompatActivity {
                             timeTableAdapter = new TimeTableAdapter();
                         }
 
-                        if (planCaseAdapter == null) {
-                            planCaseAdapter = new PlanCaseAdapter();
+                        if (planCaseDataAdapter == null) {
+                            planCaseDataAdapter = new PlanCaseAdapter();
                         }
 
-                        if (timeCaseAdapter == null) {
-                            timeCaseAdapter = new TimeCaseAdapter();
+                        if (timeCaseDataAdapter == null) {
+                            timeCaseDataAdapter = new TimeCaseAdapter();
                         }
 
-                        timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
-                        planCaseAdapter.bindData(true, weekdaysPlanCaseList);
-                        timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
-
-                        List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
-                        for (int i = 0; i < weekdaysPlanCaseList.size(); i++) {
-                            if ("1".equals(weekdaysPlanCaseList.get(i).getType())) {
-                                hideWeekdaysPlanCaseList.add(weekdaysPlanCaseList.get(i));
-                            }
-                        }
-                        hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
-
-                        lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
-                        lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
-                        lastWeekdaysTimeBean = weekdaysTimeCaseList.get(weekdaysTimeCaseList.size() - 1);
-                        lastWeekendTimeBean = weekdaysTimeCaseList.get(weekendTimeCaseList.size() - 1);
+                        hidePlanCaseDataAdapter.bindData(true, hideWeekdaysPlanCaseList);
+                        timeTableAdapter.bindData(true, weekdaysPeriodCaseDataList);
+                        planCaseDataAdapter.bindData(true, weekdaysPlanCaseDataList);
+                        timeCaseDataAdapter.bindData(true, weekdaysTimeCaseDataList);
                     }
 
                     @Override
@@ -858,27 +862,28 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             startTime.setText(periodCaseListBean.getStart());
             no.setText(periodCaseListBean.getTimeCaseNo());
+            no.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack(){
+
+                @Override
+                public void setValue(String value) {
+                    periodCaseListBean.setTimeCaseNo(value);
+                }
+            }));
+
+            //no.addTextChangedListener(new MyTextWatcher());
 
             timetable_delete.setOnClickListener(v -> {
-                lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
-                lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
                 if (isWeekday) {
-                    weekdaysPeriodCaseList.remove(index);
-                    timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
+                    weekdaysPeriodCaseDataList.remove(index);
+                    timeTableAdapter.bindData(true, weekdaysPeriodCaseDataList);
                 } else {
-                    weekendPeriodCaseList.remove(index);
-                    timeTableAdapter.bindData(true, weekendPeriodCaseList);
+                    noWeekDaysPeriodCaseDataList.remove(index);
+                    timeTableAdapter.bindData(true, noWeekDaysPeriodCaseDataList);
                 }
                 setTaskState();
             });
 
-            no.setOnClickListener(v -> {
-                currentEditView = no;
-                currentType = 1;
-                currentPos = index;
-                currentChoosePos = 2;
-                //showPopupCommnet(800);
-            });
+            //no.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 0));
 
             startTime.setOnClickListener(v -> {
                 TextView startTimeTextView = (TextView) v;
@@ -896,17 +901,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 }
                 MyTimePickerDialog mTimePicker = new MyTimePickerDialog(TimingEditorActivity.this, (view, hourOfDay, minute, seconds) -> {
                     String time = String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute) + ":" + String.format("%02d", seconds);
-                    if (isWeekday) {
-                        if(weekdaysPeriodCaseList.size()>currentPos){
-                            weekdaysPeriodCaseList.get(currentPos).setStart(time);
-                        }
-                    } else {
-                        if( weekendPeriodCaseList.size()>currentPos){
-                            weekendPeriodCaseList.get(currentPos).setStart(time);
-                        }
-                    }
-                    lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
-                    lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
+                    periodCaseListBean.setStart(time);
                     startTime.setText(time);
                     startTime.setTextColor(Color.parseColor("#ff2d51"));
                 }, hour, min, sec, true);
@@ -983,9 +978,6 @@ public class TimingEditorActivity extends AppCompatActivity {
                 currentEditView.setBackgroundColor(Color.parseColor("#EFEFEF"));
 
                 setTaskState();
-                for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-                    Log.e("fred  数据4", i + "   " + weekdaysTimeCaseList.get(i).getT1());
-                }
             }
         });
 
@@ -1040,518 +1032,218 @@ public class TimingEditorActivity extends AppCompatActivity {
             LinearLayout typeTwo = holder.obtainView(R.id.type_two);
             LinearLayout typeThree = holder.obtainView(R.id.type_three);
 
-            ImageView ivOne = holder.obtainView(R.id.iv_one);
-            ImageView ivTwo = holder.obtainView(R.id.iv_two);
-            ImageView ivthree = holder.obtainView(R.id.iv_three);
-            ImageView ivFour = holder.obtainView(R.id.iv_four);
-            ImageView ivFive = holder.obtainView(R.id.iv_five);
-            ImageView ivSix = holder.obtainView(R.id.iv_six);
-            ImageView ivSeven = holder.obtainView(R.id.iv_seven);
-            ImageView ivEight = holder.obtainView(R.id.iv_eight);
-            ImageView ivNine = holder.obtainView(R.id.iv_nine);
-            ImageView ivTen = holder.obtainView(R.id.iv_ten);
-
             TextView titleId = holder.obtainView(R.id.title_id);
             titleId.setVisibility(View.VISIBLE);
             EditText timeCaseNo = holder.obtainView(R.id.time_case_no);
             timeCaseNo.setVisibility(View.GONE);
             EditText programme_one = holder.obtainView(R.id.programme_one);
-            programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_one.addTextChangedListener(new MyTextWatcher());
+            programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT1(value);
+                }
+            }));
+            //programme_one.addTextChangedListener(new MyTextWatcher());
+            //programme_one.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 1));
 
             EditText programme_two = holder.obtainView(R.id.programme_two);
-            programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_two.addTextChangedListener(new MyTextWatcher());
+            programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT2(value);
+                }
+            }));
+            //programme_two.addTextChangedListener(new MyTextWatcher());
+            //programme_two.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 2));
 
             EditText programme_three = holder.obtainView(R.id.programme_three);
-            programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_three.addTextChangedListener(new MyTextWatcher());
+            programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT3(value);
+                }
+            }));
+            //programme_three.addTextChangedListener(new MyTextWatcher());
+            //programme_three.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 3));
 
             EditText programme_four = holder.obtainView(R.id.programme_four);
-            programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_four.addTextChangedListener(new MyTextWatcher());
+            programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT4(value);
+                }
+            }));
+            //programme_four.addTextChangedListener(new MyTextWatcher());
+            //programme_four.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 4));
 
             EditText programme_five = holder.obtainView(R.id.programme_five);
-            programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_five.addTextChangedListener(new MyTextWatcher());
+            programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT5(value);
+                }
+            }));
+            //programme_five.addTextChangedListener(new MyTextWatcher());
+            //programme_five.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 5));
 
             EditText programme_six = holder.obtainView(R.id.programme_six);
-            programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_six.addTextChangedListener(new MyTextWatcher());
+            programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT6(value);
+                }
+            }));
+            //programme_six.addTextChangedListener(new MyTextWatcher());
+            //programme_six.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 6));
 
             EditText programme_seven = holder.obtainView(R.id.programme_seven);
-            programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_seven.addTextChangedListener(new MyTextWatcher());
+            programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT7(value);
+                }
+            }));
+            //programme_seven.addTextChangedListener(new MyTextWatcher());
+            //programme_seven.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 7));
 
             EditText programme_eight = holder.obtainView(R.id.programme_eight);
-            programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_eight.addTextChangedListener(new MyTextWatcher());
+            programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT8(value);
+                }
+            }));
+            //programme_eight.addTextChangedListener(new MyTextWatcher());
+            //programme_eight.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 8));
 
             EditText programme_nine = holder.obtainView(R.id.programme_nine);
-            programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_nine.addTextChangedListener(new MyTextWatcher());
+            programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    planCaseListBean.setT9(value);
+                }
+            }));
+            //programme_nine.addTextChangedListener(new MyTextWatcher());
+            //programme_nine.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 9));
 
             EditText programme_ten = holder.obtainView(R.id.programme_ten);
-            programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_ten.addTextChangedListener(new MyTextWatcher());
-
-            programme_one.setOnTouchListener(new View.OnTouchListener() {
+            programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_one;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 1;
-                    return false;
+                public void setValue(String value) {
+                    planCaseListBean.setT10(value);
                 }
-            });
-
-            programme_two.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_two;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 2;
-                    return false;
-                }
-            });
-
-            programme_three.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_three;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 3;
-                    return false;
-                }
-            });
-
-            programme_four.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_four;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 4;
-                    return false;
-                }
-            });
-
-            programme_five.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_five;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 5;
-                    return false;
-                }
-            });
-
-            programme_six.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_six;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 6;
-                    return false;
-                }
-            });
-
-            programme_seven.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_seven;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 7;
-                    return false;
-                }
-            });
-
-            programme_eight.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_eight;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 8;
-                    return false;
-                }
-            });
-
-            programme_nine.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_nine;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 9;
-                    return false;
-                }
-            });
-
-            programme_ten.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_ten;
-                    currentType = 2;
-                    currentPos = index;
-                    currentChoosePos = 10;
-                    return false;
-                }
-            });
+            }));
+            //programme_ten.addTextChangedListener(new MyTextWatcher());
+            //programme_ten.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 10));
 
             if ("1".equals(planCaseListBean.getType())) {
                 typeOne.setVisibility(View.GONE);
                 typeTwo.setVisibility(View.VISIBLE);
                 typeThree.setVisibility(View.GONE);
 
-                for (int i = 0; i < stageChanels.size(); i++) {
-                    //Log.e("fred", stageChanels.get(i).image);
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT1())) {
-                        //String str2=str.replace(" ", "")
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivOne.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT2())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivTwo.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT3())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivthree.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT4())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivFour.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT5())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivFive.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT6())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivSix.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT7())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivSeven.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT8())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivEight.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT9())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivNine.setImageBitmap(decodedByte);
-                    }
-                    if (stageChanels.get(i).no.equals(planCaseListBean.getT10())) {
-                        String[] split = stageChanels.get(i).image.split(",");
-                        String base64 = split[1];
-                        byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        ivTen.setImageBitmap(decodedByte);
-                    }
+                ImageView ivOne = holder.obtainView(R.id.iv_one);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT1()) != null){
+                    editT1 = true;
+                    ivOne.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT1()));
+                }else{
+                    editT1 = false;
+                }
+                ImageView ivTwo = holder.obtainView(R.id.iv_two);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT2()) != null){
+                    editT2 = true;
+                    ivTwo.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT2()));
+                }else{
+                    editT2 = false;
+                }
+                ImageView ivthree = holder.obtainView(R.id.iv_three);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT3()) != null){
+                    editT3 = true;
+                    ivthree.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT3()));
+                }else{
+                    editT3 = false;
+                }
+                ImageView ivFour = holder.obtainView(R.id.iv_four);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT4()) != null){
+                    editT4 = true;
+                    ivFour.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT4()));
+                }else{
+                    editT4 = false;
+                }
+                ImageView ivFive = holder.obtainView(R.id.iv_five);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT5()) != null){
+                    editT5 = true;
+                    ivFive.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT5()));
+                }else{
+                    editT5 = false;
+                }
+                ImageView ivSix = holder.obtainView(R.id.iv_six);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT6()) != null){
+                    editT6 = true;
+                    ivSix.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT6()));
+                }else{
+                    editT6 = false;
+                }
+                ImageView ivSeven = holder.obtainView(R.id.iv_seven);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT7()) != null){
+                    editT7 = true;
+                    ivSeven.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT7()));
+                }else{
+                    editT7 = false;
+                }
+                ImageView ivEight = holder.obtainView(R.id.iv_eight);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT8()) != null){
+                    editT8 = true;
+                    ivEight.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT8()));
+                }else{
+                    editT8 = false;
+                }
+                ImageView ivNine = holder.obtainView(R.id.iv_nine);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT9()) != null){
+                    editT9 = true;
+                    ivNine.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT9()));
+                }else{
+                    editT9 = false;
+                }
+                ImageView ivTen = holder.obtainView(R.id.iv_ten);
+                if(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT10()) != null){
+                    editT10 = true;
+                    ivTen.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT10()));
+                }else{
+                    editT10 = false;
                 }
 
+
                 ivOne.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT1(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT1(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 1));
                 });
                 ivTwo.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT2(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT2(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 2));
                 });
-
                 ivthree.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT3(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT3(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 3));
                 });
-
                 ivFour.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT4(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT4(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 4));
                 });
-
                 ivFive.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT5(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT5(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 5));
                 });
-
                 ivSix.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT6(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT6(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 6));
                 });
-
                 ivSeven.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT7(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT7(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 7));
                 });
-
                 ivEight.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT8(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT8(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 8));
                 });
-
                 ivNine.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT9(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT9(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 9));
                 });
-
                 ivTen.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, stageChanels, new DialogUtils.OnButtonClickListener() {
-                        @Override
-                        public void onPositiveButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onNegativeButtonClick() {
-
-                        }
-
-                        @Override
-                        public void onChoiceItem(String str, int pos) {
-                            if (isWeekday) {
-                                weekdaysPlanCaseList.get(index).setT10(str);
-                            } else {
-                                weekendPlanCaseList.get(index).setT10(str);
-                            }
-                            planCaseAdapter.notifyDataSetChanged();
-                            setTaskState();
-                            update();
-                        }
-                    });
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 10));
                 });
+
 
             } else {
                 typeOne.setVisibility(View.GONE);
@@ -1559,15 +1251,55 @@ public class TimingEditorActivity extends AppCompatActivity {
                 typeThree.setVisibility(View.VISIBLE);
 
                 programme_one.setText(planCaseListBean.getT1());
+                if(!editT1){
+                    programme_one.setEnabled(false);
+                    programme_one.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_two.setText(planCaseListBean.getT2());
+                if(!editT2){
+                    programme_two.setEnabled(false);
+                    programme_two.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_three.setText(planCaseListBean.getT3());
+                if(!editT3){
+                    programme_three.setEnabled(false);
+                    programme_three.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_four.setText(planCaseListBean.getT4());
+                if(!editT4){
+                    programme_four.setEnabled(false);
+                    programme_four.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_five.setText(planCaseListBean.getT5());
+                if(!editT5){
+                    programme_five.setEnabled(false);
+                    programme_five.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_six.setText(planCaseListBean.getT6());
+                if(!editT6){
+                    programme_six.setEnabled(false);
+                    programme_six.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_seven.setText(planCaseListBean.getT7());
+                if(!editT7){
+                    programme_seven.setEnabled(false);
+                    programme_seven.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_eight.setText(planCaseListBean.getT8());
+                if(!editT8){
+                    programme_eight.setEnabled(false);
+                    programme_eight.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_nine.setText(planCaseListBean.getT9());
+                if(!editT9){
+                    programme_nine.setEnabled(false);
+                    programme_nine.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 programme_ten.setText(planCaseListBean.getT10());
+                if(!editT10){
+                    programme_ten.setEnabled(false);
+                    programme_ten.setTextColor(Color.parseColor("##6C6C6C"));
+                }
                 //类型（1 阶段 2绿闪 3黄灯 4全红 5红黄 6 最大绿 7 最小绿
                 if (planCaseListBean.getType().equals("2")) {
                     titleId.setText("绿闪");
@@ -1586,26 +1318,6 @@ public class TimingEditorActivity extends AppCompatActivity {
         }
     }
 
-    private void update() {
-        if (isWeekday) {
-            List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
-            for (int i = 0; i < weekdaysPlanCaseList.size(); i++) {
-                if ("1".equals(weekdaysPlanCaseList.get(i).getType())) {
-                    hideWeekdaysPlanCaseList.add(weekdaysPlanCaseList.get(i));
-                }
-            }
-            hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
-        } else {
-            List<PlanCaseListBean> hideWeekdaysPlanCaseList = new ArrayList<>();
-            for (int i = 0; i < weekendPlanCaseList.size(); i++) {
-                if ("1".equals(weekendPlanCaseList.get(i).getType())) {
-                    hideWeekdaysPlanCaseList.add(weekendPlanCaseList.get(i));
-                }
-            }
-            hideplanCaseAdapter.bindData(true, hideWeekdaysPlanCaseList);
-        }
-    }
-
     class TimeCaseAdapter extends BaseRecyclerAdapter<TimeCaseListBean> {
 
         @Override
@@ -1619,228 +1331,189 @@ public class TimingEditorActivity extends AppCompatActivity {
             LinearLayout typeOne = holder.obtainView(R.id.type_one);
             LinearLayout typeTwo = holder.obtainView(R.id.type_two);
             LinearLayout typeThree = holder.obtainView(R.id.type_three);
-
-            ImageView ivOne = holder.obtainView(R.id.iv_one);
-            ImageView ivTwo = holder.obtainView(R.id.iv_two);
-            ImageView ivthree = holder.obtainView(R.id.iv_three);
-            ImageView ivFour = holder.obtainView(R.id.iv_four);
-            ImageView ivFive = holder.obtainView(R.id.iv_five);
-            ImageView ivSix = holder.obtainView(R.id.iv_six);
-            ImageView ivSeven = holder.obtainView(R.id.iv_seven);
-            ImageView ivEight = holder.obtainView(R.id.iv_eight);
-            ImageView ivNine = holder.obtainView(R.id.iv_nine);
-            ImageView ivTen = holder.obtainView(R.id.iv_ten);
+            typeOne.setVisibility(View.GONE);
+            typeTwo.setVisibility(View.GONE);
+            typeThree.setVisibility(View.VISIBLE);
 
             TextView titleId = holder.obtainView(R.id.title_id);
             titleId.setVisibility(View.GONE);
 
             EditText timeCaseNo = holder.obtainView(R.id.time_case_no);
             timeCaseNo.setVisibility(View.VISIBLE);
-            timeCaseNo.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            timeCaseNo.addTextChangedListener(new MyTextWatcher());
+            timeCaseNo.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setNo(value);
+                }
+            }));
+            //timeCaseNo.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_one = holder.obtainView(R.id.programme_one);
-            programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_one.addTextChangedListener(new MyTextWatcher());
+            programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT1(value);
+                }
+            }));
+            //programme_one.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_two = holder.obtainView(R.id.programme_two);
-            programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_two.addTextChangedListener(new MyTextWatcher());
+            programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT2(value);
+                }
+            }));
+            //programme_two.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_three = holder.obtainView(R.id.programme_three);
-            programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_three.addTextChangedListener(new MyTextWatcher());
+            programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT3(value);
+                }
+            }));
+            //programme_three.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_four = holder.obtainView(R.id.programme_four);
-            programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_four.addTextChangedListener(new MyTextWatcher());
+            programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT4(value);
+                }
+            }));
+            //programme_four.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_five = holder.obtainView(R.id.programme_five);
-            programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_five.addTextChangedListener(new MyTextWatcher());
+            programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT5(value);
+                }
+            }));
+            //programme_five.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_six = holder.obtainView(R.id.programme_six);
-            programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_six.addTextChangedListener(new MyTextWatcher());
+            programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT6(value);
+                }
+            }));
+            //programme_six.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_seven = holder.obtainView(R.id.programme_seven);
-            programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_seven.addTextChangedListener(new MyTextWatcher());
+            programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT7(value);
+                }
+            }));
+            //programme_seven.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_eight = holder.obtainView(R.id.programme_eight);
-            programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_eight.addTextChangedListener(new MyTextWatcher());
+            programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT8(value);
+                }
+            }));
+            //programme_eight.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_nine = holder.obtainView(R.id.programme_nine);
-            programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_nine.addTextChangedListener(new MyTextWatcher());
+            programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT9(value);
+                }
+            }));
+            //programme_nine.addTextChangedListener(new MyTextWatcher());
 
             EditText programme_ten = holder.obtainView(R.id.programme_ten);
-            programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
-            programme_ten.addTextChangedListener(new MyTextWatcher());
+            programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
+                @Override
+                public void setValue(String value) {
+                    timeCaseListBean.setT10(value);
+                }
+            }));
+            //programme_ten.addTextChangedListener(new MyTextWatcher());
 
             ImageView tvDelete = holder.obtainView(R.id.tv_delete);
             tvDelete.setVisibility(View.VISIBLE);
 
-//            if (index == 0) {
-//                typeOne.setVisibility(View.VISIBLE);
-//                typeTwo.setVisibility(View.GONE);
-//                typeThree.setVisibility(View.GONE);
-//            } else {
-            typeOne.setVisibility(View.GONE);
-            typeTwo.setVisibility(View.GONE);
-            typeThree.setVisibility(View.VISIBLE);
-
             programme_one.setText(timeCaseListBean.getT1());
+            if(!editT1){
+                programme_one.setEnabled(false);
+                programme_one.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_two.setText(timeCaseListBean.getT2());
+            if(!editT2){
+                programme_two.setEnabled(false);
+                programme_two.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_three.setText(timeCaseListBean.getT3());
+            if(!editT3){
+                programme_three.setEnabled(false);
+                programme_three.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_four.setText(timeCaseListBean.getT4());
+            if(!editT4){
+                programme_four.setEnabled(false);
+                programme_four.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_five.setText(timeCaseListBean.getT5());
+            if(!editT5){
+                programme_five.setEnabled(false);
+                programme_five.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_six.setText(timeCaseListBean.getT6());
+            if(!editT6){
+                programme_six.setEnabled(false);
+                programme_six.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_seven.setText(timeCaseListBean.getT7());
+            if(!editT7){
+                programme_seven.setEnabled(false);
+                programme_seven.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_eight.setText(timeCaseListBean.getT8());
+            if(!editT8){
+                programme_eight.setEnabled(false);
+                programme_eight.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_nine.setText(timeCaseListBean.getT9());
+            if(!editT9){
+                programme_nine.setEnabled(false);
+                programme_nine.setTextColor(Color.parseColor("##6C6C6C"));
+            }
             programme_ten.setText(timeCaseListBean.getT10());
+            if(!editT10){
+                programme_ten.setEnabled(false);
+                programme_ten.setTextColor(Color.parseColor("##6C6C6C"));
+            }
 
             timeCaseNo.setText(timeCaseListBean.getNo());
+            /*timeCaseNo.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 0));
+            programme_one.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 1));
+            programme_two.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 2));
+            programme_three.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 3));
+            programme_four.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 4));
+            programme_five.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 5));
+            programme_six.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 6));
+            programme_seven.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 7));
+            programme_eight.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 8));
+            programme_nine.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 9));
+            programme_ten.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 10));*/
 
-            timeCaseNo.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = timeCaseNo;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 0;
-                    return false;
-                }
-            });
-
-            programme_one.setOnTouchListener((v, event) -> {
-                currentEditView = programme_one;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 1;
-                return false;
-            });
-
-
-            programme_two.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_two;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 2;
-                    return false;
-                }
-            });
-
-            programme_three.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_three;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 3;
-                    return false;
-                }
-            });
-
-            programme_four.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_four;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 4;
-                    return false;
-                }
-            });
-//            programme_four.setOnClickListener(v -> {
-//
-//                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-//                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-//                //showPopupCommnet(800);
-//            });
-
-            programme_five.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_five;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 5;
-                    return false;
-                }
-            });
-
-            programme_six.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_six;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 6;
-                    return false;
-                }
-            });
-
-
-            programme_seven.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_seven;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 7;
-                    return false;
-                }
-            });
-
-            programme_eight.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_eight;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 8;
-                    return false;
-                }
-            });
-
-
-            programme_nine.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_nine;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 9;
-                    return false;
-                }
-            });
-
-            programme_ten.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    currentEditView = programme_ten;
-                    currentType = 3;
-                    currentPos = index;
-                    currentChoosePos = 10;
-                    return false;
-                }
-            });
 
             //删除
             tvDelete.setOnClickListener(v -> {
-                lastWeekdaysTimeBean = weekdaysTimeCaseList.get(weekdaysTimeCaseList.size() - 1);
-                lastWeekendTimeBean = weekendTimeCaseList.get(weekendTimeCaseList.size() - 1);
                 if (isWeekday) {
-                    weekdaysTimeCaseList.remove(index);
-                    timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
+                    weekdaysTimeCaseDataList.remove(index);
+                    timeCaseDataAdapter.bindData(true, weekdaysTimeCaseDataList);
                 } else {
-                    weekendTimeCaseList.remove(index);
-                    timeCaseAdapter.bindData(true, weekendTimeCaseList);
+                    noWeekdaysTimeCaseDataList.remove(index);
+                    timeCaseDataAdapter.bindData(true, noWeekdaysTimeCaseDataList);
                 }
                 setTaskState();
             });
@@ -1851,31 +1524,277 @@ public class TimingEditorActivity extends AppCompatActivity {
         taskStatus.setText("调整后");
     }
 
-    class EditViewOnFocusChangeListener implements View.OnFocusChangeListener{
+    class StageImgOnButtonClickListener implements DialogUtils.OnButtonClickListener{
+
+        private int index;
+        private int pos;
+
+        public StageImgOnButtonClickListener(int index, int pos) {
+            this.index = index;
+            this.pos = pos;
+        }
 
         @Override
-        public void onFocusChange(View view, boolean b) {
-            if (b) {
-                view.setBackgroundResource(R.color.select_bg_color);
-                ((EditText)view).setTextColor(Color.parseColor("#F70909"));
-               // ((EditText)view).setText("");
-                currentEditView=((EditText)view);
-            }else{
-//                if(view.getId() != R.id.time_case_no)
-//                else
-//                    view.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                String trim = ((EditText) view).getText().toString().trim();
-                if(TextUtils.isEmpty(trim)){
-                    trim="0";
+        public void onPositiveButtonClick() {
+
+        }
+
+        @Override
+        public void onNegativeButtonClick() {
+
+        }
+
+        @Override
+        public void onChoiceItem(String str, int pos) {
+
+            PlanCaseListBean planCaseListBean = weekdaysPlanCaseDataList.get(index);
+            PlanCaseListBean noWeekDaysplanCaseListBean = noWeekdaysPlanCaseDataList.get(index);
+            if(planCaseListBean == null){
+                return;
+            }
+            if(str == null || "0".equals(str)){
+                clearData(pos);
+            }else {
+                switch (pos){
+                    case 1:
+                        editT1 = true;
+                        planCaseListBean.setT1(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT1(str);
+                        }
+                        break;
+                    case 2:
+                        editT2 = true;
+                        planCaseListBean.setT2(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT2(str);
+                        }
+                        break;
+                    case 3:
+                        editT3 = true;
+                        planCaseListBean.setT3(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT3(str);
+                        }
+                        break;
+                    case 4:
+                        editT4 = true;
+                        planCaseListBean.setT4(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT4(str);
+                        }
+                        break;
+                    case 5:
+                        editT5 = true;
+                        planCaseListBean.setT5(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT5(str);
+                        }
+                        break;
+                    case 6:
+                        editT6 = true;
+                        planCaseListBean.setT6(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT6(str);
+                        }
+                        break;
+                    case 7:
+                        editT7 = true;
+                        planCaseListBean.setT7(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT7(str);
+                        }
+                        break;
+                    case 8:
+                        editT8 = true;
+                        planCaseListBean.setT8(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT8(str);
+                        }
+                        break;
+                    case 9:
+                        editT9 = true;
+                        planCaseListBean.setT9(str);
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT9(str);
+                        }
+                        break;
+                    case 10:
+                        editT10 = true;
+                        planCaseListBean.setT10(str);
+
+                        if(noWeekDaysplanCaseListBean != null){
+                            noWeekDaysplanCaseListBean.setT10(str);
+                        }
+                        break;
                 }
-                ((EditText)view).setText(trim);
-                view.setBackgroundColor(Color.parseColor("#EFEFEF"));
-                ((EditText)view).setTextColor(Color.parseColor("#ff2a4997"));
+            }
+
+            hidePlanCaseDataAdapter.notifyDataSetChanged();
+            planCaseDataAdapter.notifyDataSetChanged();
+            timeCaseDataAdapter.notifyDataSetChanged();
+            setTaskState();
+        }
+    }
+
+    public void clearData(int pos){
+        switch (pos){
+            case 1:
+                editT1 = false;
+                break;
+            case 2:
+                editT2 = false;
+                break;
+            case 3:
+                editT3 = false;
+                break;
+            case 4:
+                editT4 = false;
+                break;
+            case 5:
+                editT5 = false;
+                break;
+            case 6:
+                editT6 = false;
+                break;
+            case 7:
+                editT7 = false;
+                break;
+            case 8:
+                editT8 = false;
+                break;
+            case 9:
+                editT9 = false;
+                break;
+            case 10:
+                editT10 = false;
+                break;
+        }
+        clearPlanCaseForAttr(hideWeekdaysPlanCaseList,pos);
+        clearPlanCaseForAttr(noWeekdaysPlanCaseDataList,pos);
+        clearPlanCaseForAttr(weekdaysPlanCaseDataList,pos);
+        clearTimeCaseForAttr(weekdaysTimeCaseDataList,pos);
+        clearTimeCaseForAttr(noWeekdaysTimeCaseDataList,pos);
+        hidePlanCaseDataAdapter.notifyDataSetChanged();
+        planCaseDataAdapter.notifyDataSetChanged();
+        timeCaseDataAdapter.notifyDataSetChanged();
+
+    }
+
+
+    public void clearPlanCaseForAttr(List<PlanCaseListBean> planCaseListBeanList, int pos){
+        for (PlanCaseListBean planCaseListBean : planCaseListBeanList
+        ) {
+            switch (pos) {
+                case 1:
+                    planCaseListBean.setT1("0");
+                    break;
+                case 2:
+                    planCaseListBean.setT2("0");
+                    break;
+                case 3:
+                    planCaseListBean.setT3("0");
+                    break;
+                case 4:
+                    planCaseListBean.setT4("0");
+                    break;
+                case 5:
+                    planCaseListBean.setT5("0");
+                    break;
+                case 6:
+                    planCaseListBean.setT6("0");
+                    break;
+                case 7:
+                    planCaseListBean.setT7("0");
+                    break;
+                case 8:
+                    planCaseListBean.setT8("0");
+                    break;
+                case 9:
+                    planCaseListBean.setT9("0");
+                    break;
+                case 10:
+                    planCaseListBean.setT10("0");
+                    break;
             }
         }
     }
 
-    class MyTextWatcher implements TextWatcher {
+
+    public void clearTimeCaseForAttr(List<TimeCaseListBean> timeCaseListBeanList, int pos){
+        for (TimeCaseListBean timeCaseListBean : timeCaseListBeanList
+        ) {
+            switch (pos) {
+                case 1:
+                    timeCaseListBean.setT1("0");
+                    break;
+                case 2:
+                    timeCaseListBean.setT2("0");
+                    break;
+                case 3:
+                    timeCaseListBean.setT3("0");
+                    break;
+                case 4:
+                    timeCaseListBean.setT4("0");
+                    break;
+                case 5:
+                    timeCaseListBean.setT5("0");
+                    break;
+                case 6:
+                    timeCaseListBean.setT6("0");
+                    break;
+                case 7:
+                    timeCaseListBean.setT7("0");
+                    break;
+                case 8:
+                    timeCaseListBean.setT8("0");
+                    break;
+                case 9:
+                    timeCaseListBean.setT9("0");
+                    break;
+                case 10:
+                    timeCaseListBean.setT10("0");
+                    break;
+            }
+        }
+    }
+
+    class EditViewOnFocusChangeListener implements View.OnFocusChangeListener{
+
+        private EditViewChangeCallBack callBack;
+
+        public EditViewOnFocusChangeListener(EditViewChangeCallBack callBack) {
+            this.callBack = callBack;
+        }
+
+        @Override
+        public void onFocusChange(View view, boolean b) {
+            EditText editText = ((EditText) view);
+            if (b) {
+                view.setBackgroundResource(R.color.select_bg_color);
+                editText.setTextColor(Color.parseColor("#F70909"));
+                editText.setText("");
+                currentEditView=editText;
+            }else{
+                String value = editText.getText().toString().trim();
+                if(TextUtils.isEmpty(value)){
+                    value = "0";
+                    editText.setText(value);
+                }
+                view.setBackgroundColor(Color.parseColor("#EFEFEF"));
+                ((EditText)view).setTextColor(Color.parseColor("#ff2a4997"));
+                callBack.setValue(value);
+            }
+        }
+    }
+
+    interface EditViewChangeCallBack{
+
+        public void setValue(String value);
+    }
+
+
+    /*class MyTextWatcher implements TextWatcher {
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1890,252 +1809,30 @@ public class TimingEditorActivity extends AppCompatActivity {
         @Override
         public void afterTextChanged(Editable s) {
             //setContent(currentEditView);
-            setContentTest(s.toString());
+            //setContentTest(s.toString());
         }
-    }
-    private void setContent(EditText editable){
-        if (editable==null){
-            return;
-        }
-        if (isWeekday) {
-            //工作日
-            if (currentType == 1) {
-                //配时方案
-                weekdaysPeriodCaseList.get(currentPos).setTimeCaseNo(editable.getText().toString().trim());
-                Log.e("fred", "  数据6");
-            } else if (currentType == 2) {
-                Log.e("fred", "  数据6 " + currentChoosePos + "    " + currentPos);
-                //配时表1
-                if (currentChoosePos == 1) {
-                    weekdaysPlanCaseList.get(currentPos).setT1(editable.getText().toString().trim());
-                } else if (currentChoosePos == 2) {
-                    weekdaysPlanCaseList.get(currentPos).setT2(editable.getText().toString().trim());
-                } else if (currentChoosePos == 3) {
-                    weekdaysPlanCaseList.get(currentPos).setT3(editable.getText().toString().trim());
-                } else if (currentChoosePos == 4) {
-                    weekdaysPlanCaseList.get(currentPos).setT4(editable.getText().toString().trim());
-                } else if (currentChoosePos == 5) {
-                    weekdaysPlanCaseList.get(currentPos).setT5(editable.getText().toString().trim());
-                } else if (currentChoosePos == 6) {
-                    weekdaysPlanCaseList.get(currentPos).setT6(editable.getText().toString().trim());
-                } else if (currentChoosePos == 7) {
-                    weekdaysPlanCaseList.get(currentPos).setT7(editable.getText().toString().trim());
-                } else if (currentChoosePos == 8) {
-                    weekdaysPlanCaseList.get(currentPos).setT8(editable.getText().toString().trim());
-                } else if (currentChoosePos == 9) {
-                    weekdaysPlanCaseList.get(currentPos).setT9(editable.getText().toString().trim());
-                } else if (currentChoosePos == 10) {
-                    weekdaysPlanCaseList.get(currentPos).setT10(editable.getText().toString().trim());
-                }
-            } else {
-                Log.e("fred", "  数据7 " + currentChoosePos + "    " + currentPos);
-                //配时表2
-                if(currentChoosePos ==0){
-                    weekdaysTimeCaseList.get(currentPos).setNo(editable.getText().toString().trim());
-                } else if (currentChoosePos == 1) {
-                    weekdaysTimeCaseList.get(currentPos).setT1(editable.getText().toString().trim());
-                } else if (currentChoosePos == 2) {
-                    weekdaysTimeCaseList.get(currentPos).setT2(editable.getText().toString().trim());
-                } else if (currentChoosePos == 3) {
-                    weekdaysTimeCaseList.get(currentPos).setT3(editable.getText().toString().trim());
-                } else if (currentChoosePos == 4) {
-                    weekdaysTimeCaseList.get(currentPos).setT4(editable.getText().toString().trim());
-                } else if (currentChoosePos == 5) {
-                    weekdaysTimeCaseList.get(currentPos).setT5(editable.getText().toString().trim());
-                } else if (currentChoosePos == 6) {
-                    weekdaysTimeCaseList.get(currentPos).setT6(editable.getText().toString().trim());
-                } else if (currentChoosePos == 7) {
-                    weekdaysTimeCaseList.get(currentPos).setT7(editable.getText().toString().trim());
-                } else if (currentChoosePos == 8) {
-                    weekdaysTimeCaseList.get(currentPos).setT8(editable.getText().toString().trim());
-                } else if (currentChoosePos == 9) {
-                    weekdaysTimeCaseList.get(currentPos).setT9(editable.getText().toString().trim());
-                } else if (currentChoosePos == 10) {
-                    weekdaysTimeCaseList.get(currentPos).setT10(editable.getText().toString().trim());
-                }
-            }
+    }*/
+/*
 
-            for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-                String t1 = weekdaysTimeCaseList.get(i).getT1();
-                Log.e("fred  数据5", i + "   " + weekdaysTimeCaseList.get(i).getT1());
-            }
-        } else {
-            //周末
-            if (currentType == 1) {
-                //配时方案
-                weekendPeriodCaseList.get(currentPos).setTimeCaseNo(editable.getText().toString().trim());
-            } else if (currentType == 2) {
-                //配时表1
-                if (currentChoosePos == 1) {
-                    weekendPlanCaseList.get(currentPos).setT1(editable.getText().toString().trim());
-                } else if (currentChoosePos == 2) {
-                    weekendPlanCaseList.get(currentPos).setT2(editable.getText().toString().trim());
-                } else if (currentChoosePos == 3) {
-                    weekendPlanCaseList.get(currentPos).setT3(editable.getText().toString().trim());
-                } else if (currentChoosePos == 4) {
-                    weekendPlanCaseList.get(currentPos).setT4(editable.getText().toString().trim());
-                } else if (currentChoosePos == 5) {
-                    weekendPlanCaseList.get(currentPos).setT5(editable.getText().toString().trim());
-                } else if (currentChoosePos == 6) {
-                    weekendPlanCaseList.get(currentPos).setT6(editable.getText().toString().trim());
-                } else if (currentChoosePos == 7) {
-                    weekendPlanCaseList.get(currentPos).setT7(editable.getText().toString().trim());
-                } else if (currentChoosePos == 8) {
-                    weekendPlanCaseList.get(currentPos).setT8(editable.getText().toString().trim());
-                } else if (currentChoosePos == 9) {
-                    weekendPlanCaseList.get(currentPos).setT9(editable.getText().toString().trim());
-                } else if (currentChoosePos == 10) {
-                    weekendPlanCaseList.get(currentPos).setT10(editable.getText().toString().trim());
-                }
-            } else {
-                //配时表2
-                if(currentChoosePos ==0){
-                    weekendTimeCaseList.get(currentPos).setNo(editable.getText().toString().trim());
-                } else if (currentChoosePos == 1) {
-                    weekendTimeCaseList.get(currentPos).setT1(editable.getText().toString().trim());
-                } else if (currentChoosePos == 2) {
-                    weekendTimeCaseList.get(currentPos).setT2(editable.getText().toString().trim());
-                } else if (currentChoosePos == 3) {
-                    weekendTimeCaseList.get(currentPos).setT3(editable.getText().toString().trim());
-                } else if (currentChoosePos == 4) {
-                    weekendTimeCaseList.get(currentPos).setT4(editable.getText().toString().trim());
-                } else if (currentChoosePos == 5) {
-                    weekendTimeCaseList.get(currentPos).setT5(editable.getText().toString().trim());
-                } else if (currentChoosePos == 6) {
-                    weekendTimeCaseList.get(currentPos).setT6(editable.getText().toString().trim());
-                } else if (currentChoosePos == 7) {
-                    weekendTimeCaseList.get(currentPos).setT7(editable.getText().toString().trim());
-                } else if (currentChoosePos == 8) {
-                    weekendTimeCaseList.get(currentPos).setT8(editable.getText().toString().trim());
-                } else if (currentChoosePos == 9) {
-                    weekendTimeCaseList.get(currentPos).setT9(editable.getText().toString().trim());
-                } else if (currentChoosePos == 10) {
-                    weekendTimeCaseList.get(currentPos).setT10(editable.getText().toString().trim());
-                }
-            }
-        }
-    }
+    class EditViewOnTouchListener implements View.OnTouchListener{
 
-    private void setContentTest(String str){
-        if (TextUtils.isEmpty(str)){
-            str="0";
-        }
-        if (isWeekday) {
-            //工作日
-            if (currentType == 1) {
-                //配时方案
-                weekdaysPeriodCaseList.get(currentPos).setTimeCaseNo(str);
-                Log.e("fred", "  数据6");
-            } else if (currentType == 2) {
-                Log.e("fred", "  数据6 " + currentChoosePos + "    " + currentPos);
-                //配时表1
-                if (currentChoosePos == 1) {
-                    weekdaysPlanCaseList.get(currentPos).setT1(str);
-                } else if (currentChoosePos == 2) {
-                    weekdaysPlanCaseList.get(currentPos).setT2(str);
-                } else if (currentChoosePos == 3) {
-                    weekdaysPlanCaseList.get(currentPos).setT3(str);
-                } else if (currentChoosePos == 4) {
-                    weekdaysPlanCaseList.get(currentPos).setT4(str);
-                } else if (currentChoosePos == 5) {
-                    weekdaysPlanCaseList.get(currentPos).setT5(str);
-                } else if (currentChoosePos == 6) {
-                    weekdaysPlanCaseList.get(currentPos).setT6(str);
-                } else if (currentChoosePos == 7) {
-                    weekdaysPlanCaseList.get(currentPos).setT7(str);
-                } else if (currentChoosePos == 8) {
-                    weekdaysPlanCaseList.get(currentPos).setT8(str);
-                } else if (currentChoosePos == 9) {
-                    weekdaysPlanCaseList.get(currentPos).setT9(str);
-                } else if (currentChoosePos == 10) {
-                    weekdaysPlanCaseList.get(currentPos).setT10(str);
-                }
-            } else {
-                Log.e("fred", "  数据7 " + currentChoosePos + "    " + currentPos);
-                //配时表2
-                if(currentChoosePos ==0){
-                    weekdaysTimeCaseList.get(currentPos).setNo(str);
-                } else if (currentChoosePos == 1) {
-                    weekdaysTimeCaseList.get(currentPos).setT1(str);
-                } else if (currentChoosePos == 2) {
-                    weekdaysTimeCaseList.get(currentPos).setT2(str);
-                } else if (currentChoosePos == 3) {
-                    weekdaysTimeCaseList.get(currentPos).setT3(str);
-                } else if (currentChoosePos == 4) {
-                    weekdaysTimeCaseList.get(currentPos).setT4(str);
-                } else if (currentChoosePos == 5) {
-                    weekdaysTimeCaseList.get(currentPos).setT5(str);
-                } else if (currentChoosePos == 6) {
-                    weekdaysTimeCaseList.get(currentPos).setT6(str);
-                } else if (currentChoosePos == 7) {
-                    weekdaysTimeCaseList.get(currentPos).setT7(str);
-                } else if (currentChoosePos == 8) {
-                    weekdaysTimeCaseList.get(currentPos).setT8(str);
-                } else if (currentChoosePos == 9) {
-                    weekdaysTimeCaseList.get(currentPos).setT9(str);
-                } else if (currentChoosePos == 10) {
-                    weekdaysTimeCaseList.get(currentPos).setT10(str);
-                }
-            }
+        private int listType; //1是 0不是 -1不区分工作日
+        private int listIndex; //正在编辑的索引
+        private int listDataPos; //正在编辑的阶段配时
 
-            for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-                String t1 = weekdaysTimeCaseList.get(i).getT1();
-                Log.e("fred  数据5", i + "   " + weekdaysTimeCaseList.get(i).getT1());
-            }
-        } else {
-            //周末
-            if (currentType == 1) {
-                //配时方案
-                weekendPeriodCaseList.get(currentPos).setTimeCaseNo(str);
-            } else if (currentType == 2) {
-                //配时表1
-                if (currentChoosePos == 1) {
-                    weekendPlanCaseList.get(currentPos).setT1(str);
-                } else if (currentChoosePos == 2) {
-                    weekendPlanCaseList.get(currentPos).setT2(str);
-                } else if (currentChoosePos == 3) {
-                    weekendPlanCaseList.get(currentPos).setT3(str);
-                } else if (currentChoosePos == 4) {
-                    weekendPlanCaseList.get(currentPos).setT4(str);
-                } else if (currentChoosePos == 5) {
-                    weekendPlanCaseList.get(currentPos).setT5(str);
-                } else if (currentChoosePos == 6) {
-                    weekendPlanCaseList.get(currentPos).setT6(str);
-                } else if (currentChoosePos == 7) {
-                    weekendPlanCaseList.get(currentPos).setT7(str);
-                } else if (currentChoosePos == 8) {
-                    weekendPlanCaseList.get(currentPos).setT8(str);
-                } else if (currentChoosePos == 9) {
-                    weekendPlanCaseList.get(currentPos).setT9(str);
-                } else if (currentChoosePos == 10) {
-                    weekendPlanCaseList.get(currentPos).setT10(str);
-                }
-            } else {
-                //配时表2
-                if(currentChoosePos ==0){
-                    weekendTimeCaseList.get(currentPos).setNo(str);
-                } else if (currentChoosePos == 1) {
-                    weekendTimeCaseList.get(currentPos).setT1(str);
-                } else if (currentChoosePos == 2) {
-                    weekendTimeCaseList.get(currentPos).setT2(str);
-                } else if (currentChoosePos == 3) {
-                    weekendTimeCaseList.get(currentPos).setT3(str);
-                } else if (currentChoosePos == 4) {
-                    weekendTimeCaseList.get(currentPos).setT4(str);
-                } else if (currentChoosePos == 5) {
-                    weekendTimeCaseList.get(currentPos).setT5(str);
-                } else if (currentChoosePos == 6) {
-                    weekendTimeCaseList.get(currentPos).setT6(str);
-                } else if (currentChoosePos == 7) {
-                    weekendTimeCaseList.get(currentPos).setT7(str);
-                } else if (currentChoosePos == 8) {
-                    weekendTimeCaseList.get(currentPos).setT8(str);
-                } else if (currentChoosePos == 9) {
-                    weekendTimeCaseList.get(currentPos).setT9(str);
-                } else if (currentChoosePos == 10) {
-                    weekendTimeCaseList.get(currentPos).setT10(str);
-                }
-            }
+        public EditViewOnTouchListener(int listType, int listIndex, int listDataPos) {
+            this.listType = listType;
+            this.listIndex = listIndex;
+            this.listDataPos = listDataPos;
         }
-    }
+
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            currentListType = listType;
+            currentListIndex = listIndex;
+            currentListDataPos = listDataPos;
+            return false;
+        }
+    }*/
+
 }

@@ -161,7 +161,7 @@
             android:layout_marginRight="14dp"
             android:gravity="center"
             android:layout_gravity="center_vertical"
-            android:layout_width="34dp"
+            android:layout_width="40dp"
             android:layout_height="35dp"
             android:text="放行次序"
             android:textColor="#ff0e0e0e"
@@ -174,7 +174,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -184,7 +184,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -194,7 +194,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -204,7 +204,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -214,7 +214,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -224,7 +224,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -234,7 +234,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -244,7 +244,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -254,7 +254,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
 
@@ -264,7 +264,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:layout_width="37dp"
-            android:layout_height="50dp">
+            android:layout_height="37dp">
 
         </ImageView>
     </LinearLayout>
@@ -282,15 +282,17 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="10dp"
             android:orientation="horizontal"
-            android:layout_width="60dp"
+            android:layout_width="65dp"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
             android:layout_height="wrap_content">
-
+            <requestFocus />
             <ImageView
-                android:visibility="visible"
+                android:visibility="gone"
                 android:id="@+id/tv_delete"
                 android:textColor="@color/black"
                 android:background="@mipmap/delete_bg"
-                android:layout_width="15dp"
+                android:layout_width="22dp"
                 android:layout_height="22dp">
 
             </ImageView>
@@ -307,11 +309,11 @@
 
             <EditText
                 android:id="@+id/time_case_no"
-                android:layout_width="28dp"
+                android:layout_width="37dp"
                 android:layout_height="28dp"
                 android:gravity="center"
                 android:maxLength="3"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:inputType="number"
                 android:background="@drawable/selector_tv_bg"
                 android:textColor="#ff2a4997"

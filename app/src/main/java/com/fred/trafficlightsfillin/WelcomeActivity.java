@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.fred.trafficlightsfillin.login.LoginActivity;
+import com.fred.trafficlightsfillin.utils.StageDataUtil;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
 
 import java.util.Timer;
@@ -33,6 +34,7 @@ public class WelcomeActivity extends Activity {
             }
         };
         timer.schedule(task, 2000);
+        StageDataUtil.init();
     }
 
     @Override

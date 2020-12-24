@@ -302,7 +302,7 @@
                                 android:orientation="horizontal">
 
                                 <TextView
-                                    android:layout_width="57dp"
+                                    android:layout_width="65dp"
                                     android:layout_height="20dp"
                                     android:layout_marginHorizontal="10dp"
                                     android:layout_marginVertical="10dp">
@@ -460,7 +460,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="63dp"
+                        android:layout_width="70dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:visibility="gone">
@@ -513,12 +513,12 @@
                                 android:orientation="horizontal">
 
                                 <TextView
-                                    android:layout_width="37dp"
+                                    android:layout_width="45dp"
                                     android:layout_height="20dp"
                                     android:layout_marginHorizontal="10dp"
                                     android:layout_marginVertical="10dp"
                                     android:gravity="center"
-                                    android:text="配时方案"
+                                    android:text="方案号"
                                     android:textColor="@color/black">
 
                                 </TextView>
@@ -671,8 +671,8 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="35dp"
                     android:id="@+id/timetable_add"
-                    android:layout_width="15dp"
-                    android:layout_height="27dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:textColor="@color/black">
 
                 </TextView>
@@ -721,8 +721,8 @@
                     android:background="@mipmap/add"
                     android:layout_marginLeft="60dp"
                     android:id="@+id/time_list_add"
-                    android:layout_width="15dp"
-                    android:layout_height="27dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:textColor="@color/black">
 
                 </TextView>

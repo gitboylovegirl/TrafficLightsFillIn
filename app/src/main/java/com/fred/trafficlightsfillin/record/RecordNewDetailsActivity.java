@@ -120,6 +120,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
             intent.putExtra("id",taskDetails.id);
             intent.putExtra("trafficLightId",taskDetails.trafficLightId);
             startActivity(intent);
+            finish();
         });
 
        goTo.setOnClickListener(v -> {

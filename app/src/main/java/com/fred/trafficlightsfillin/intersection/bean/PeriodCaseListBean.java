@@ -46,4 +46,5 @@ public class PeriodCaseListBean implements Serializable {
     public void setWorkday(String workday) {
         this.workday = workday;
     }
+
 }

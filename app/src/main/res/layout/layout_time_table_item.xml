@@ -14,8 +14,8 @@
         <ImageView
             android:layout_marginRight="3dp"
             android:id="@+id/timetable_delete"
-            android:layout_width="15dp"
-            android:layout_height="27dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:src="@mipmap/delete_bg"
             android:textColor="@color/black"
             android:visibility="invisible">
