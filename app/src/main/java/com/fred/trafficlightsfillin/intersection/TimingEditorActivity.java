@@ -419,25 +419,25 @@ public class TimingEditorActivity extends AppCompatActivity {
      */
     private void submitTaskResult(String json) {
         Log.e("json", json.toString());
-//        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
-//        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_RESULT))
-//                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-//                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-//                .setBody(body)
-//                .build()
-//                .postBodyAsync(new ICallback<TaskResultResponse>() {
-//                    @Override
-//                    public void onSuccess(TaskResultResponse response) {
-//                        if (response.code == 0) {
-//                            finish();
-//                        }
-//                        ToastUtil.showMsg(TimingEditorActivity.this, response.msg);
-//                    }
-//
-//                    @Override
-//                    public void onFail(int errorCode, String errorMsg) {
-//                    }
-//                });
+        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_RESULT))
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .setBody(body)
+                .build()
+                .postBodyAsync(new ICallback<TaskResultResponse>() {
+                    @Override
+                    public void onSuccess(TaskResultResponse response) {
+                        if (response.code == 0) {
+                            finish();
+                        }
+                        ToastUtil.showMsg(TimingEditorActivity.this, response.msg);
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                    }
+                });
     }
 
     /**
