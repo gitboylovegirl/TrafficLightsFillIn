@@ -24,6 +24,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -233,7 +234,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         //监听
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             scrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                Log.e("fred", "%%%%     " + scrollY);
+                //Log.e("fred", "%%%%     " + scrollY);
                 if (scrollY > 1180) {//滑动距离大于v_report_divider的底坐标
                     layoutHideScrollview.setVisibility(View.VISIBLE);
                 } else {
@@ -349,11 +350,15 @@ public class TimingEditorActivity extends AppCompatActivity {
         //时间表新增
         timeListAdd.setOnClickListener(v -> {
             if (isWeekday) {
-                weekdaysPeriodCaseList.add(lastWeekdayPeriodBean);
-                timeTableAdapter.bindData(true, weekdaysPeriodCaseList);
+                List<PeriodCaseListBean> addPeriodCaseList = new ArrayList<>();
+                addPeriodCaseList.add(lastWeekdayPeriodBean);
+                timeTableAdapter.bindData(false, addPeriodCaseList);
+                weekdaysPeriodCaseList.addAll(addPeriodCaseList);
             } else {
-                weekendPeriodCaseList.add(lastWeekendPeriodBean);
-                timeTableAdapter.bindData(true, weekendPeriodCaseList);
+                List<PeriodCaseListBean> addPeriodCaseList = new ArrayList<>();
+                addPeriodCaseList.add(lastWeekendPeriodBean);
+                timeTableAdapter.bindData(false, addPeriodCaseList);
+                weekendPeriodCaseList.addAll(addPeriodCaseList);
             }
             lastWeekdayPeriodBean = weekdaysPeriodCaseList.get(weekdaysPeriodCaseList.size() - 1);
             lastWeekendPeriodBean = weekendPeriodCaseList.get(weekendPeriodCaseList.size() - 1);
@@ -369,11 +374,15 @@ public class TimingEditorActivity extends AppCompatActivity {
 //                Log.e("fred  数据1",i+"   "+weekdaysTimeCaseList.get(i).getT1());
 //            }
             if (isWeekday) {
-                weekdaysTimeCaseList.add(lastWeekdaysTimeBean);
-                timeCaseAdapter.bindData(true, weekdaysTimeCaseList);
+                List<TimeCaseListBean> addTimeCaseList = new ArrayList<>();//周末配时表1
+                addTimeCaseList.add(lastWeekdaysTimeBean);
+                timeCaseAdapter.bindData(false, addTimeCaseList);
+                weekdaysTimeCaseList.addAll(addTimeCaseList);
             } else {
-                weekendTimeCaseList.add(lastWeekendTimeBean);
-                timeCaseAdapter.bindData(true, weekendTimeCaseList);
+                List<TimeCaseListBean> addTimeCaseList = new ArrayList<>();//周末配时表1
+                addTimeCaseList.add(lastWeekendTimeBean);
+                timeCaseAdapter.bindData(false, addTimeCaseList);
+                weekendTimeCaseList.addAll(addTimeCaseList);
             }
             lastWeekdaysTimeBean = weekdaysTimeCaseList.get(weekdaysTimeCaseList.size() - 1);
             lastWeekendTimeBean = weekdaysTimeCaseList.get(weekendTimeCaseList.size() - 1);
@@ -410,25 +419,25 @@ public class TimingEditorActivity extends AppCompatActivity {
      */
     private void submitTaskResult(String json) {
         Log.e("json", json.toString());
-        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_RESULT))
-                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .setBody(body)
-                .build()
-                .postBodyAsync(new ICallback<TaskResultResponse>() {
-                    @Override
-                    public void onSuccess(TaskResultResponse response) {
-                        if (response.code == 0) {
-                            finish();
-                        }
-                        ToastUtil.showMsg(TimingEditorActivity.this, response.msg);
-                    }
-
-                    @Override
-                    public void onFail(int errorCode, String errorMsg) {
-                    }
-                });
+//        RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
+//        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_RESULT))
+//                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+//                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+//                .setBody(body)
+//                .build()
+//                .postBodyAsync(new ICallback<TaskResultResponse>() {
+//                    @Override
+//                    public void onSuccess(TaskResultResponse response) {
+//                        if (response.code == 0) {
+//                            finish();
+//                        }
+//                        ToastUtil.showMsg(TimingEditorActivity.this, response.msg);
+//                    }
+//
+//                    @Override
+//                    public void onFail(int errorCode, String errorMsg) {
+//                    }
+//                });
     }
 
     /**
@@ -977,123 +986,6 @@ public class TimingEditorActivity extends AppCompatActivity {
                 for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
                     Log.e("fred  数据4", i + "   " + weekdaysTimeCaseList.get(i).getT1());
                 }
-                if (isWeekday) {
-                    //工作日
-                    if (currentType == 1) {
-                        //配时方案
-                        weekdaysPeriodCaseList.get(currentPos).setTimeCaseNo(editable.toString().trim());
-                        Log.e("fred", "  数据6");
-                    } else if (currentType == 2) {
-                        Log.e("fred", "  数据6 " + currentChoosePos + "    " + currentPos);
-                        //配时表1
-                        if (currentChoosePos == 1) {
-                            weekdaysPlanCaseList.get(currentPos).setT1(editable.toString().trim());
-                        } else if (currentChoosePos == 2) {
-                            weekdaysPlanCaseList.get(currentPos).setT2(editable.toString().trim());
-                        } else if (currentChoosePos == 3) {
-                            weekdaysPlanCaseList.get(currentPos).setT3(editable.toString().trim());
-                        } else if (currentChoosePos == 4) {
-                            weekdaysPlanCaseList.get(currentPos).setT4(editable.toString().trim());
-                        } else if (currentChoosePos == 5) {
-                            weekdaysPlanCaseList.get(currentPos).setT5(editable.toString().trim());
-                        } else if (currentChoosePos == 6) {
-                            weekdaysPlanCaseList.get(currentPos).setT6(editable.toString().trim());
-                        } else if (currentChoosePos == 7) {
-                            weekdaysPlanCaseList.get(currentPos).setT7(editable.toString().trim());
-                        } else if (currentChoosePos == 8) {
-                            weekdaysPlanCaseList.get(currentPos).setT8(editable.toString().trim());
-                        } else if (currentChoosePos == 9) {
-                            weekdaysPlanCaseList.get(currentPos).setT9(editable.toString().trim());
-                        } else if (currentChoosePos == 10) {
-                            weekdaysPlanCaseList.get(currentPos).setT10(editable.toString().trim());
-                        }
-                    } else {
-                        Log.e("fred", "  数据7 " + currentChoosePos + "    " + currentPos);
-                        //配时表2
-                        if(currentChoosePos ==0){
-                            weekdaysTimeCaseList.get(currentPos).setNo(editable.toString().trim());
-                        } else if (currentChoosePos == 1) {
-                            weekdaysTimeCaseList.get(currentPos).setT1(editable.toString().trim());
-                        } else if (currentChoosePos == 2) {
-                            weekdaysTimeCaseList.get(currentPos).setT2(editable.toString().trim());
-                        } else if (currentChoosePos == 3) {
-                            weekdaysTimeCaseList.get(currentPos).setT3(editable.toString().trim());
-                        } else if (currentChoosePos == 4) {
-                            weekdaysTimeCaseList.get(currentPos).setT4(editable.toString().trim());
-                        } else if (currentChoosePos == 5) {
-                            weekdaysTimeCaseList.get(currentPos).setT5(editable.toString().trim());
-                        } else if (currentChoosePos == 6) {
-                            weekdaysTimeCaseList.get(currentPos).setT6(editable.toString().trim());
-                        } else if (currentChoosePos == 7) {
-                            weekdaysTimeCaseList.get(currentPos).setT7(editable.toString().trim());
-                        } else if (currentChoosePos == 8) {
-                            weekdaysTimeCaseList.get(currentPos).setT8(editable.toString().trim());
-                        } else if (currentChoosePos == 9) {
-                            weekdaysTimeCaseList.get(currentPos).setT9(editable.toString().trim());
-                        } else if (currentChoosePos == 10) {
-                            weekdaysTimeCaseList.get(currentPos).setT10(editable.toString().trim());
-                        }
-                    }
-
-                    for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
-                        String t1 = weekdaysTimeCaseList.get(i).getT1();
-                        Log.e("fred  数据5", i + "   " + weekdaysTimeCaseList.get(i).getT1());
-                    }
-                } else {
-                    //周末
-                    if (currentType == 1) {
-                        //配时方案
-                        weekendPeriodCaseList.get(currentPos).setTimeCaseNo(editable.toString().trim());
-                    } else if (currentType == 2) {
-                        //配时表1
-                        if (currentChoosePos == 1) {
-                            weekendPlanCaseList.get(currentPos).setT1(editable.toString().trim());
-                        } else if (currentChoosePos == 2) {
-                            weekendPlanCaseList.get(currentPos).setT2(editable.toString().trim());
-                        } else if (currentChoosePos == 3) {
-                            weekendPlanCaseList.get(currentPos).setT3(editable.toString().trim());
-                        } else if (currentChoosePos == 4) {
-                            weekendPlanCaseList.get(currentPos).setT4(editable.toString().trim());
-                        } else if (currentChoosePos == 5) {
-                            weekendPlanCaseList.get(currentPos).setT5(editable.toString().trim());
-                        } else if (currentChoosePos == 6) {
-                            weekendPlanCaseList.get(currentPos).setT6(editable.toString().trim());
-                        } else if (currentChoosePos == 7) {
-                            weekendPlanCaseList.get(currentPos).setT7(editable.toString().trim());
-                        } else if (currentChoosePos == 8) {
-                            weekendPlanCaseList.get(currentPos).setT8(editable.toString().trim());
-                        } else if (currentChoosePos == 9) {
-                            weekendPlanCaseList.get(currentPos).setT9(editable.toString().trim());
-                        } else if (currentChoosePos == 10) {
-                            weekendPlanCaseList.get(currentPos).setT10(editable.toString().trim());
-                        }
-                    } else {
-                        //配时表2
-                        if(currentChoosePos ==0){
-                            weekendTimeCaseList.get(currentPos).setNo(editable.toString().trim());
-                        } else if (currentChoosePos == 1) {
-                            weekendTimeCaseList.get(currentPos).setT1(editable.toString().trim());
-                        } else if (currentChoosePos == 2) {
-                            weekendTimeCaseList.get(currentPos).setT2(editable.toString().trim());
-                        } else if (currentChoosePos == 3) {
-                            weekendTimeCaseList.get(currentPos).setT3(editable.toString().trim());
-                        } else if (currentChoosePos == 4) {
-                            weekendTimeCaseList.get(currentPos).setT4(editable.toString().trim());
-                        } else if (currentChoosePos == 5) {
-                            weekendTimeCaseList.get(currentPos).setT5(editable.toString().trim());
-                        } else if (currentChoosePos == 6) {
-                            weekendTimeCaseList.get(currentPos).setT6(editable.toString().trim());
-                        } else if (currentChoosePos == 7) {
-                            weekendTimeCaseList.get(currentPos).setT7(editable.toString().trim());
-                        } else if (currentChoosePos == 8) {
-                            weekendTimeCaseList.get(currentPos).setT8(editable.toString().trim());
-                        } else if (currentChoosePos == 9) {
-                            weekendTimeCaseList.get(currentPos).setT9(editable.toString().trim());
-                        } else if (currentChoosePos == 10) {
-                            weekendTimeCaseList.get(currentPos).setT10(editable.toString().trim());
-                        }
-                    }
-                }
             }
         });
 
@@ -1141,6 +1033,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             return R.layout.layout_timing_table_item;
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable PlanCaseListBean planCaseListBean, int index) {
             LinearLayout typeOne = holder.obtainView(R.id.type_one);
@@ -1164,132 +1057,152 @@ public class TimingEditorActivity extends AppCompatActivity {
             timeCaseNo.setVisibility(View.GONE);
             EditText programme_one = holder.obtainView(R.id.programme_one);
             programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_one.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_two = holder.obtainView(R.id.programme_two);
             programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_two.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_three = holder.obtainView(R.id.programme_three);
             programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_three.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_four = holder.obtainView(R.id.programme_four);
             programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_four.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_five = holder.obtainView(R.id.programme_five);
             programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_five.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_six = holder.obtainView(R.id.programme_six);
             programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_six.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_seven = holder.obtainView(R.id.programme_seven);
             programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_seven.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_eight = holder.obtainView(R.id.programme_eight);
             programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_eight.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_nine = holder.obtainView(R.id.programme_nine);
             programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_nine.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_ten = holder.obtainView(R.id.programme_ten);
             programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_ten.addTextChangedListener(new MyTextWatcher());
 
-            programme_one.setOnClickListener(v -> {
-                currentEditView = programme_one;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 1;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_one.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_one;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 1;
+                    return false;
+                }
             });
 
-            programme_two.setOnClickListener(v -> {
-                currentEditView = programme_two;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 2;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_two.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_two;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 2;
+                    return false;
+                }
             });
 
-            programme_three.setOnClickListener(v -> {
-                currentEditView = programme_three;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 3;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_three.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_three;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 3;
+                    return false;
+                }
             });
 
-            programme_four.setOnClickListener(v -> {
-                currentEditView = programme_four;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 4;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_four.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_four;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 4;
+                    return false;
+                }
             });
 
-            programme_five.setOnClickListener(v -> {
-                currentEditView = programme_five;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 5;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_five.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_five;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 5;
+                    return false;
+                }
             });
 
-            programme_six.setOnClickListener(v -> {
-                currentEditView = programme_six;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 6;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_six.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_six;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 6;
+                    return false;
+                }
             });
 
-            programme_seven.setOnClickListener(v -> {
-                currentEditView = programme_seven;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 7;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_seven.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_seven;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 7;
+                    return false;
+                }
             });
 
-            programme_eight.setOnClickListener(v -> {
-                currentEditView = programme_eight;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 8;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_eight.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_eight;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 8;
+                    return false;
+                }
             });
 
-            programme_nine.setOnClickListener(v -> {
-                currentEditView = programme_nine;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 9;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_nine.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_nine;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 9;
+                    return false;
+                }
             });
 
-            programme_ten.setOnClickListener(v -> {
-                currentEditView = programme_ten;
-                currentType = 2;
-                currentPos = index;
-                currentChoosePos = 10;
-
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_ten.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_ten;
+                    currentType = 2;
+                    currentPos = index;
+                    currentChoosePos = 10;
+                    return false;
+                }
             });
 
             if ("1".equals(planCaseListBean.getType())) {
@@ -1700,6 +1613,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             return R.layout.layout_timing_table_item;
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable TimeCaseListBean timeCaseListBean, int index) {
             LinearLayout typeOne = holder.obtainView(R.id.type_one);
@@ -1719,29 +1633,51 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             TextView titleId = holder.obtainView(R.id.title_id);
             titleId.setVisibility(View.GONE);
+
             EditText timeCaseNo = holder.obtainView(R.id.time_case_no);
             timeCaseNo.setVisibility(View.VISIBLE);
             timeCaseNo.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            timeCaseNo.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_one = holder.obtainView(R.id.programme_one);
             programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_one.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_two = holder.obtainView(R.id.programme_two);
             programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_two.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_three = holder.obtainView(R.id.programme_three);
             programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_three.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_four = holder.obtainView(R.id.programme_four);
             programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_four.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_five = holder.obtainView(R.id.programme_five);
             programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_five.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_six = holder.obtainView(R.id.programme_six);
             programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_six.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_seven = holder.obtainView(R.id.programme_seven);
             programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_seven.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_eight = holder.obtainView(R.id.programme_eight);
             programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_eight.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_nine = holder.obtainView(R.id.programme_nine);
             programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_nine.addTextChangedListener(new MyTextWatcher());
+
             EditText programme_ten = holder.obtainView(R.id.programme_ten);
             programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener());
+            programme_ten.addTextChangedListener(new MyTextWatcher());
 
             ImageView tvDelete = holder.obtainView(R.id.tv_delete);
             tvDelete.setVisibility(View.VISIBLE);
@@ -1768,114 +1704,131 @@ public class TimingEditorActivity extends AppCompatActivity {
 
             timeCaseNo.setText(timeCaseListBean.getNo());
 
-            timeCaseNo.setOnClickListener(v -> {
-                currentEditView = timeCaseNo;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 0;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            timeCaseNo.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = timeCaseNo;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 0;
+                    return false;
+                }
             });
 
-            programme_one.setOnClickListener(v -> {
+            programme_one.setOnTouchListener((v, event) -> {
                 currentEditView = programme_one;
                 currentType = 3;
                 currentPos = index;
                 currentChoosePos = 1;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+                return false;
             });
 
-            programme_two.setOnClickListener(v -> {
-                currentEditView = programme_two;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 2;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+
+            programme_two.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_two;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 2;
+                    return false;
+                }
             });
 
-            programme_three.setOnClickListener(v -> {
-                currentEditView = programme_three;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 3;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_three.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_three;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 3;
+                    return false;
+                }
             });
 
-            programme_four.setOnClickListener(v -> {
-                currentEditView = programme_four;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 4;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_four.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_four;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 4;
+                    return false;
+                }
+            });
+//            programme_four.setOnClickListener(v -> {
+//
+//                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
+//                //currentEditView.setBackgroundResource(R.color.select_bg_color);
+//                //showPopupCommnet(800);
+//            });
+
+            programme_five.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_five;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 5;
+                    return false;
+                }
             });
 
-            programme_five.setOnClickListener(v -> {
-                currentEditView = programme_five;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 5;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_six.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_six;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 6;
+                    return false;
+                }
             });
 
-            programme_six.setOnClickListener(v -> {
-                currentEditView = programme_six;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 6;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+
+            programme_seven.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_seven;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 7;
+                    return false;
+                }
             });
 
-            programme_seven.setOnClickListener(v -> {
-                currentEditView = programme_seven;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 7;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_eight.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_eight;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 8;
+                    return false;
+                }
             });
 
-            programme_eight.setOnClickListener(v -> {
-                currentEditView = programme_eight;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 8;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+
+            programme_nine.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_nine;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 9;
+                    return false;
+                }
             });
 
-            programme_nine.setOnClickListener(v -> {
-                currentEditView = programme_nine;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 9;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
-            });
-
-            programme_ten.setOnClickListener(v -> {
-                currentEditView = programme_ten;
-                currentType = 3;
-                currentPos = index;
-                currentChoosePos = 10;
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                //currentEditView.setBackgroundResource(R.color.select_bg_color);
-                //showPopupCommnet(800);
+            programme_ten.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    currentEditView = programme_ten;
+                    currentType = 3;
+                    currentPos = index;
+                    currentChoosePos = 10;
+                    return false;
+                }
             });
 
             //删除
@@ -1904,11 +1857,284 @@ public class TimingEditorActivity extends AppCompatActivity {
         public void onFocusChange(View view, boolean b) {
             if (b) {
                 view.setBackgroundResource(R.color.select_bg_color);
+                ((EditText)view).setTextColor(Color.parseColor("#F70909"));
+               // ((EditText)view).setText("");
+                currentEditView=((EditText)view);
             }else{
-                if(view.getId() != R.id.time_case_no)
-                    view.setBackgroundColor(Color.parseColor("#EFEFEF"));
-                else
-                    view.setBackgroundColor(Color.parseColor("#FFFFFF"));
+//                if(view.getId() != R.id.time_case_no)
+//                else
+//                    view.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                String trim = ((EditText) view).getText().toString().trim();
+                if(TextUtils.isEmpty(trim)){
+                    trim="0";
+                }
+                ((EditText)view).setText(trim);
+                view.setBackgroundColor(Color.parseColor("#EFEFEF"));
+                ((EditText)view).setTextColor(Color.parseColor("#ff2a4997"));
+            }
+        }
+    }
+
+    class MyTextWatcher implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            //setContent(currentEditView);
+            setContentTest(s.toString());
+        }
+    }
+    private void setContent(EditText editable){
+        if (editable==null){
+            return;
+        }
+        if (isWeekday) {
+            //工作日
+            if (currentType == 1) {
+                //配时方案
+                weekdaysPeriodCaseList.get(currentPos).setTimeCaseNo(editable.getText().toString().trim());
+                Log.e("fred", "  数据6");
+            } else if (currentType == 2) {
+                Log.e("fred", "  数据6 " + currentChoosePos + "    " + currentPos);
+                //配时表1
+                if (currentChoosePos == 1) {
+                    weekdaysPlanCaseList.get(currentPos).setT1(editable.getText().toString().trim());
+                } else if (currentChoosePos == 2) {
+                    weekdaysPlanCaseList.get(currentPos).setT2(editable.getText().toString().trim());
+                } else if (currentChoosePos == 3) {
+                    weekdaysPlanCaseList.get(currentPos).setT3(editable.getText().toString().trim());
+                } else if (currentChoosePos == 4) {
+                    weekdaysPlanCaseList.get(currentPos).setT4(editable.getText().toString().trim());
+                } else if (currentChoosePos == 5) {
+                    weekdaysPlanCaseList.get(currentPos).setT5(editable.getText().toString().trim());
+                } else if (currentChoosePos == 6) {
+                    weekdaysPlanCaseList.get(currentPos).setT6(editable.getText().toString().trim());
+                } else if (currentChoosePos == 7) {
+                    weekdaysPlanCaseList.get(currentPos).setT7(editable.getText().toString().trim());
+                } else if (currentChoosePos == 8) {
+                    weekdaysPlanCaseList.get(currentPos).setT8(editable.getText().toString().trim());
+                } else if (currentChoosePos == 9) {
+                    weekdaysPlanCaseList.get(currentPos).setT9(editable.getText().toString().trim());
+                } else if (currentChoosePos == 10) {
+                    weekdaysPlanCaseList.get(currentPos).setT10(editable.getText().toString().trim());
+                }
+            } else {
+                Log.e("fred", "  数据7 " + currentChoosePos + "    " + currentPos);
+                //配时表2
+                if(currentChoosePos ==0){
+                    weekdaysTimeCaseList.get(currentPos).setNo(editable.getText().toString().trim());
+                } else if (currentChoosePos == 1) {
+                    weekdaysTimeCaseList.get(currentPos).setT1(editable.getText().toString().trim());
+                } else if (currentChoosePos == 2) {
+                    weekdaysTimeCaseList.get(currentPos).setT2(editable.getText().toString().trim());
+                } else if (currentChoosePos == 3) {
+                    weekdaysTimeCaseList.get(currentPos).setT3(editable.getText().toString().trim());
+                } else if (currentChoosePos == 4) {
+                    weekdaysTimeCaseList.get(currentPos).setT4(editable.getText().toString().trim());
+                } else if (currentChoosePos == 5) {
+                    weekdaysTimeCaseList.get(currentPos).setT5(editable.getText().toString().trim());
+                } else if (currentChoosePos == 6) {
+                    weekdaysTimeCaseList.get(currentPos).setT6(editable.getText().toString().trim());
+                } else if (currentChoosePos == 7) {
+                    weekdaysTimeCaseList.get(currentPos).setT7(editable.getText().toString().trim());
+                } else if (currentChoosePos == 8) {
+                    weekdaysTimeCaseList.get(currentPos).setT8(editable.getText().toString().trim());
+                } else if (currentChoosePos == 9) {
+                    weekdaysTimeCaseList.get(currentPos).setT9(editable.getText().toString().trim());
+                } else if (currentChoosePos == 10) {
+                    weekdaysTimeCaseList.get(currentPos).setT10(editable.getText().toString().trim());
+                }
+            }
+
+            for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
+                String t1 = weekdaysTimeCaseList.get(i).getT1();
+                Log.e("fred  数据5", i + "   " + weekdaysTimeCaseList.get(i).getT1());
+            }
+        } else {
+            //周末
+            if (currentType == 1) {
+                //配时方案
+                weekendPeriodCaseList.get(currentPos).setTimeCaseNo(editable.getText().toString().trim());
+            } else if (currentType == 2) {
+                //配时表1
+                if (currentChoosePos == 1) {
+                    weekendPlanCaseList.get(currentPos).setT1(editable.getText().toString().trim());
+                } else if (currentChoosePos == 2) {
+                    weekendPlanCaseList.get(currentPos).setT2(editable.getText().toString().trim());
+                } else if (currentChoosePos == 3) {
+                    weekendPlanCaseList.get(currentPos).setT3(editable.getText().toString().trim());
+                } else if (currentChoosePos == 4) {
+                    weekendPlanCaseList.get(currentPos).setT4(editable.getText().toString().trim());
+                } else if (currentChoosePos == 5) {
+                    weekendPlanCaseList.get(currentPos).setT5(editable.getText().toString().trim());
+                } else if (currentChoosePos == 6) {
+                    weekendPlanCaseList.get(currentPos).setT6(editable.getText().toString().trim());
+                } else if (currentChoosePos == 7) {
+                    weekendPlanCaseList.get(currentPos).setT7(editable.getText().toString().trim());
+                } else if (currentChoosePos == 8) {
+                    weekendPlanCaseList.get(currentPos).setT8(editable.getText().toString().trim());
+                } else if (currentChoosePos == 9) {
+                    weekendPlanCaseList.get(currentPos).setT9(editable.getText().toString().trim());
+                } else if (currentChoosePos == 10) {
+                    weekendPlanCaseList.get(currentPos).setT10(editable.getText().toString().trim());
+                }
+            } else {
+                //配时表2
+                if(currentChoosePos ==0){
+                    weekendTimeCaseList.get(currentPos).setNo(editable.getText().toString().trim());
+                } else if (currentChoosePos == 1) {
+                    weekendTimeCaseList.get(currentPos).setT1(editable.getText().toString().trim());
+                } else if (currentChoosePos == 2) {
+                    weekendTimeCaseList.get(currentPos).setT2(editable.getText().toString().trim());
+                } else if (currentChoosePos == 3) {
+                    weekendTimeCaseList.get(currentPos).setT3(editable.getText().toString().trim());
+                } else if (currentChoosePos == 4) {
+                    weekendTimeCaseList.get(currentPos).setT4(editable.getText().toString().trim());
+                } else if (currentChoosePos == 5) {
+                    weekendTimeCaseList.get(currentPos).setT5(editable.getText().toString().trim());
+                } else if (currentChoosePos == 6) {
+                    weekendTimeCaseList.get(currentPos).setT6(editable.getText().toString().trim());
+                } else if (currentChoosePos == 7) {
+                    weekendTimeCaseList.get(currentPos).setT7(editable.getText().toString().trim());
+                } else if (currentChoosePos == 8) {
+                    weekendTimeCaseList.get(currentPos).setT8(editable.getText().toString().trim());
+                } else if (currentChoosePos == 9) {
+                    weekendTimeCaseList.get(currentPos).setT9(editable.getText().toString().trim());
+                } else if (currentChoosePos == 10) {
+                    weekendTimeCaseList.get(currentPos).setT10(editable.getText().toString().trim());
+                }
+            }
+        }
+    }
+
+    private void setContentTest(String str){
+        if (TextUtils.isEmpty(str)){
+            str="0";
+        }
+        if (isWeekday) {
+            //工作日
+            if (currentType == 1) {
+                //配时方案
+                weekdaysPeriodCaseList.get(currentPos).setTimeCaseNo(str);
+                Log.e("fred", "  数据6");
+            } else if (currentType == 2) {
+                Log.e("fred", "  数据6 " + currentChoosePos + "    " + currentPos);
+                //配时表1
+                if (currentChoosePos == 1) {
+                    weekdaysPlanCaseList.get(currentPos).setT1(str);
+                } else if (currentChoosePos == 2) {
+                    weekdaysPlanCaseList.get(currentPos).setT2(str);
+                } else if (currentChoosePos == 3) {
+                    weekdaysPlanCaseList.get(currentPos).setT3(str);
+                } else if (currentChoosePos == 4) {
+                    weekdaysPlanCaseList.get(currentPos).setT4(str);
+                } else if (currentChoosePos == 5) {
+                    weekdaysPlanCaseList.get(currentPos).setT5(str);
+                } else if (currentChoosePos == 6) {
+                    weekdaysPlanCaseList.get(currentPos).setT6(str);
+                } else if (currentChoosePos == 7) {
+                    weekdaysPlanCaseList.get(currentPos).setT7(str);
+                } else if (currentChoosePos == 8) {
+                    weekdaysPlanCaseList.get(currentPos).setT8(str);
+                } else if (currentChoosePos == 9) {
+                    weekdaysPlanCaseList.get(currentPos).setT9(str);
+                } else if (currentChoosePos == 10) {
+                    weekdaysPlanCaseList.get(currentPos).setT10(str);
+                }
+            } else {
+                Log.e("fred", "  数据7 " + currentChoosePos + "    " + currentPos);
+                //配时表2
+                if(currentChoosePos ==0){
+                    weekdaysTimeCaseList.get(currentPos).setNo(str);
+                } else if (currentChoosePos == 1) {
+                    weekdaysTimeCaseList.get(currentPos).setT1(str);
+                } else if (currentChoosePos == 2) {
+                    weekdaysTimeCaseList.get(currentPos).setT2(str);
+                } else if (currentChoosePos == 3) {
+                    weekdaysTimeCaseList.get(currentPos).setT3(str);
+                } else if (currentChoosePos == 4) {
+                    weekdaysTimeCaseList.get(currentPos).setT4(str);
+                } else if (currentChoosePos == 5) {
+                    weekdaysTimeCaseList.get(currentPos).setT5(str);
+                } else if (currentChoosePos == 6) {
+                    weekdaysTimeCaseList.get(currentPos).setT6(str);
+                } else if (currentChoosePos == 7) {
+                    weekdaysTimeCaseList.get(currentPos).setT7(str);
+                } else if (currentChoosePos == 8) {
+                    weekdaysTimeCaseList.get(currentPos).setT8(str);
+                } else if (currentChoosePos == 9) {
+                    weekdaysTimeCaseList.get(currentPos).setT9(str);
+                } else if (currentChoosePos == 10) {
+                    weekdaysTimeCaseList.get(currentPos).setT10(str);
+                }
+            }
+
+            for (int i = 0; i < weekdaysTimeCaseList.size(); i++) {
+                String t1 = weekdaysTimeCaseList.get(i).getT1();
+                Log.e("fred  数据5", i + "   " + weekdaysTimeCaseList.get(i).getT1());
+            }
+        } else {
+            //周末
+            if (currentType == 1) {
+                //配时方案
+                weekendPeriodCaseList.get(currentPos).setTimeCaseNo(str);
+            } else if (currentType == 2) {
+                //配时表1
+                if (currentChoosePos == 1) {
+                    weekendPlanCaseList.get(currentPos).setT1(str);
+                } else if (currentChoosePos == 2) {
+                    weekendPlanCaseList.get(currentPos).setT2(str);
+                } else if (currentChoosePos == 3) {
+                    weekendPlanCaseList.get(currentPos).setT3(str);
+                } else if (currentChoosePos == 4) {
+                    weekendPlanCaseList.get(currentPos).setT4(str);
+                } else if (currentChoosePos == 5) {
+                    weekendPlanCaseList.get(currentPos).setT5(str);
+                } else if (currentChoosePos == 6) {
+                    weekendPlanCaseList.get(currentPos).setT6(str);
+                } else if (currentChoosePos == 7) {
+                    weekendPlanCaseList.get(currentPos).setT7(str);
+                } else if (currentChoosePos == 8) {
+                    weekendPlanCaseList.get(currentPos).setT8(str);
+                } else if (currentChoosePos == 9) {
+                    weekendPlanCaseList.get(currentPos).setT9(str);
+                } else if (currentChoosePos == 10) {
+                    weekendPlanCaseList.get(currentPos).setT10(str);
+                }
+            } else {
+                //配时表2
+                if(currentChoosePos ==0){
+                    weekendTimeCaseList.get(currentPos).setNo(str);
+                } else if (currentChoosePos == 1) {
+                    weekendTimeCaseList.get(currentPos).setT1(str);
+                } else if (currentChoosePos == 2) {
+                    weekendTimeCaseList.get(currentPos).setT2(str);
+                } else if (currentChoosePos == 3) {
+                    weekendTimeCaseList.get(currentPos).setT3(str);
+                } else if (currentChoosePos == 4) {
+                    weekendTimeCaseList.get(currentPos).setT4(str);
+                } else if (currentChoosePos == 5) {
+                    weekendTimeCaseList.get(currentPos).setT5(str);
+                } else if (currentChoosePos == 6) {
+                    weekendTimeCaseList.get(currentPos).setT6(str);
+                } else if (currentChoosePos == 7) {
+                    weekendTimeCaseList.get(currentPos).setT7(str);
+                } else if (currentChoosePos == 8) {
+                    weekendTimeCaseList.get(currentPos).setT8(str);
+                } else if (currentChoosePos == 9) {
+                    weekendTimeCaseList.get(currentPos).setT9(str);
+                } else if (currentChoosePos == 10) {
+                    weekendTimeCaseList.get(currentPos).setT10(str);
+                }
             }
         }
     }

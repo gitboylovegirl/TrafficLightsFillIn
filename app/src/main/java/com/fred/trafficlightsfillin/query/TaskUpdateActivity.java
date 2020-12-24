@@ -36,6 +36,7 @@ import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.query.bean.UpPictureResponse;
 import com.fred.trafficlightsfillin.record.RecordNewDetailsActivity;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
@@ -104,8 +105,10 @@ public class TaskUpdateActivity extends AppCompatActivity {
         trafficLightId = getIntent().getStringExtra("trafficLightId");
 
         initView();
-        initPictrue();
+        //initPictrue();
         initData();
+        imageBeans.add(imageBeans.size(), new ImageResponse.ImageBean());
+        pictureAdapter.bindData(true, imageBeans);
     }
 
     private void initData() {
@@ -344,11 +347,13 @@ public class TaskUpdateActivity extends AppCompatActivity {
                 .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addUploadFiles(data)
                 .build()
-                .uploadFiles(new ICallback<BaseResponse>() {
+                .uploadFiles(new ICallback<UpPictureResponse>() {
                     @Override
-                    public void onSuccess(BaseResponse response) {
+                    public void onSuccess(UpPictureResponse response) {
                         if (response.code == 0) {
-                            initPictrue();
+                            //initPictrue();
+                            pictureAdapter.bindData(true, imageBeans);
+                            pictureAdapter.notifyDataSetChanged();
                             ToastUtil.showMsg(TaskUpdateActivity.this, "图片上传成功");
                         }
                     }
@@ -373,7 +378,7 @@ public class TaskUpdateActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(BaseResponse response) {
                         if (response.code == 0) {
-                            initPictrue();
+                            //initPictrue();
                             ToastUtil.showMsg(TaskUpdateActivity.this, "图片删除成功");
                         }
                     }
