@@ -5,9 +5,12 @@
 
     <LinearLayout
         android:id="@+id/type_one"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+        <requestFocus/>
 
         <TextView
             android:layout_width="37dp"
@@ -152,9 +155,12 @@
         android:background="@color/white"
         android:visibility="gone"
         android:id="@+id/type_two"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+        <requestFocus />
 
         <TextView
             android:layout_marginLeft="30dp"
@@ -272,9 +278,12 @@
     <LinearLayout
         android:gravity="center_vertical"
         android:id="@+id/type_three"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+        <requestFocus />
 
 
         <LinearLayout

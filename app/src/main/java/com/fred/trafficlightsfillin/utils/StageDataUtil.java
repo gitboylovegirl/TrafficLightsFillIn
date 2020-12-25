@@ -41,6 +41,12 @@ public class StageDataUtil {
         if(no == null || "".equals(no.trim())){
             return null;
         }
+        try{
+            Integer n = Integer.parseInt(no.trim());
+            if(n < 1){
+                return null;
+            }
+        } catch (Exception e){}
         if(stageNo2BitMap == null){
             init();
         }

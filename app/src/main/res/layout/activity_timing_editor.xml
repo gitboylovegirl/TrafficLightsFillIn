@@ -199,32 +199,32 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/week_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/weekday"
+                    android:id="@+id/weekday_title"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_color_blue_gray_stroke_main"
                     android:gravity="center"
                     android:paddingVertical="3dp"
+                    android:visibility="gone"
                     android:text="@string/work_day">
 
                 </TextView>
 
                 <TextView
-                    android:id="@+id/weekend"
+                    android:id="@+id/noweekday_title"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_color_blue_gray_stroke"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:paddingVertical="3dp"
-                    android:text="休息日">
+                    android:text="@string/weekend">
 
                 </TextView>
             </LinearLayout>

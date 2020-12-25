@@ -29,7 +29,7 @@
     <string name="intersection_inurdoce">路口基本资料</string>
     <string name="road_peishi_info">路口配时信息</string>
     <string name="work_day">工作日</string>
-    <string name="weekend">周末</string>
+    <string name="weekend">周六日</string>
     <string name="time_set">确定</string>
     <string name="cancel">关闭</string>
 </resources>

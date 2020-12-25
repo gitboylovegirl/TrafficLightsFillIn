@@ -225,7 +225,11 @@ public class DialogUtils {
 
         timingAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
             if (listener!=null){
-                listener.onChoiceItem(data.get(index).no,index);
+                String no = data.get(index).no;
+                if(no == null){
+                    no = "0";
+                }
+                listener.onChoiceItem(no.trim(),index);
             }
             dialog.dismiss();
         });

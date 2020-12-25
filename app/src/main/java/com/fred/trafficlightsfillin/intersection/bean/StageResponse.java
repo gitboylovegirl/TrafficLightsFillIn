@@ -26,5 +26,7 @@ public class StageResponse extends BaseResponse {
         public String no;
         public String updateTime;
         public String updateUser;
+
+
     }
 }

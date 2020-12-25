@@ -2,7 +2,6 @@ package com.fred.trafficlightsfillin.intersection;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,20 +16,12 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -63,18 +53,25 @@ import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.GetImagePath;
+import com.fred.trafficlightsfillin.utils.JsonUtil;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
-import com.fred.trafficlightsfillin.utils.SoftKeyBoardListener;
 import com.fred.trafficlightsfillin.utils.StageDataUtil;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.ikovac.timepickerwithseconds.MyTimePickerDialog;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -118,12 +115,10 @@ public class TimingEditorActivity extends AppCompatActivity {
     TextView endTime;
     @BindView(R.id.submit)
     TextView submit;
-    @BindView(R.id.weekday)
-    TextView weekday;
-    @BindView(R.id.weekend)
-    TextView weekend;
-    @BindView(R.id.week_title)
-    LinearLayout weekTitle;
+    @BindView(R.id.weekday_title)
+    TextView weekdayTitle;
+    @BindView(R.id.noweekday_title)
+    TextView noweekdayTitle;
     @BindView(R.id.task_status)
     TextView taskStatus;
     @BindView(R.id.type_one)
@@ -144,12 +139,6 @@ public class TimingEditorActivity extends AppCompatActivity {
     HorizontalScrollView scrollViewOne;
     @BindView(R.id.scrollView_two)
     HorizontalScrollView scrollViewTwo;
-
-    private View popuwindowView;
-    private PopupWindow popupWindow;
-    private EditText currentEditView;
-
-    EditText inputComment;
 
     private List<PeriodCaseListBean> weekdaysPeriodCaseDataList = new ArrayList<>();//工作日时间表
     private List<PeriodCaseListBean> noWeekDaysPeriodCaseDataList = new ArrayList<>();//周末时间表
@@ -172,9 +161,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 
     boolean hasNoWeekDay = false;//是否区分工作日
     boolean isWeekday = true;
-    boolean isShow = false;
 
-    int keyHigh=831;
     int scrollviewHigh=0;
 
     private boolean editT1 = true;
@@ -187,6 +174,8 @@ public class TimingEditorActivity extends AppCompatActivity {
     private boolean editT8 = true;
     private boolean editT9 = true;
     private boolean editT10 = true;
+
+    private Map<String, Boolean> hasCaseNoMap = new HashMap<>();//已有的方案号
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -273,19 +262,19 @@ public class TimingEditorActivity extends AppCompatActivity {
             });
         }
         //工作日/不区分工作日
-        weekday.setOnClickListener(view -> {
+        weekdayTitle.setOnClickListener(view -> {
             isWeekday = true;
-            weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
-            weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
+            weekdayTitle.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
+            noweekdayTitle.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekdaysPeriodCaseDataList);
             planCaseDataAdapter.bindData(true, weekdaysPlanCaseDataList);
             timeCaseDataAdapter.bindData(true, weekdaysTimeCaseDataList);
         });
         //周日
-        weekend.setOnClickListener(view -> {
+        noweekdayTitle.setOnClickListener(view -> {
             isWeekday = false;
-            weekend.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
-            weekday.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
+            noweekdayTitle.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
+            weekdayTitle.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, noWeekDaysPeriodCaseDataList);
             planCaseDataAdapter.bindData(true, noWeekdaysPlanCaseDataList);
             timeCaseDataAdapter.bindData(true, noWeekdaysTimeCaseDataList);
@@ -306,6 +295,20 @@ public class TimingEditorActivity extends AppCompatActivity {
             if(noWeekDaysPeriodCaseDataList != null && noWeekDaysPeriodCaseDataList.size() > 0)
                 periodCaseList.addAll(noWeekDaysPeriodCaseDataList);
             submitBean.setPeriodCaseList(periodCaseList);
+            Log.e("fred","SUBMIT:"+JsonUtil.toJsonStr(hasCaseNoMap));
+            for (PeriodCaseListBean periodCaseListBean : periodCaseList
+                 ) {
+                String start = periodCaseListBean.getStart();
+                String no = periodCaseListBean.getTimeCaseNo();
+                if(start == null || "".equals(start.trim()) || no == null || "".equals(no.trim())){
+                    ToastUtil.showShort(TimingEditorActivity.this,"请检查时间表输入项！");
+                    return;
+                }
+                if(hasCaseNoMap.get(no.trim()) == null){
+                    ToastUtil.showShort(TimingEditorActivity.this,"时间表使用的方案号不存在！");
+                    return;
+                }
+            }
 
 
             List<PlanCaseListBean> planCaseList = new ArrayList<>();
@@ -321,12 +324,29 @@ public class TimingEditorActivity extends AppCompatActivity {
             if(noWeekdaysTimeCaseDataList != null && noWeekdaysTimeCaseDataList.size() > 0)
                 timeCaseList.addAll(noWeekdaysTimeCaseDataList);
             submitBean.setTimeCaseList(timeCaseList);
-
+            for (TimeCaseListBean timeCaseListBean : timeCaseList
+            ) {
+                String no = timeCaseListBean.getNo();
+                if(no == null || "".equals(no.trim())){
+                    ToastUtil.showShort(TimingEditorActivity.this,"配时方案号不能为空！");
+                    return;
+                }
+                try{
+                    Integer n = Integer.parseInt(no.trim());
+                    if(n < 1){
+                        ToastUtil.showShort(TimingEditorActivity.this,"配时方案号必须大于0！");
+                        return;
+                    }
+                }catch (Exception e){
+                    ToastUtil.showShort(TimingEditorActivity.this,"配时方案号输入格式有误！");
+                    return;
+                }
+            }
             Gson gson = new Gson();
             DialogUtils.showCurrencyDialog(this, "是否确认上传？", new DialogUtils.OnButtonClickListener() {
                 @Override
                 public void onPositiveButtonClick() {
-                    submitTaskResult(gson.toJson(submitBean));
+                    //submitTaskResult(gson.toJson(submitBean));
                 }
 
                 @Override
@@ -374,6 +394,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 }else{
                     newBean = gson.fromJson(gson.toJson(newBean), PeriodCaseListBean.class);
                 }
+                newBean.setTimeCaseNo("");
                 addPeriodCaseList.add(newBean);
                 timeTableAdapter.bindData(false, addPeriodCaseList);
                 weekdaysPeriodCaseDataList.addAll(addPeriodCaseList);
@@ -385,6 +406,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 }else{
                     newBean = gson.fromJson(gson.toJson(newBean), PeriodCaseListBean.class);
                 }
+                newBean.setTimeCaseNo("");
                 addPeriodCaseList.add(newBean);
                 timeTableAdapter.bindData(false, addPeriodCaseList);
                 noWeekDaysPeriodCaseDataList.addAll(addPeriodCaseList);
@@ -410,6 +432,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 }else{
                     newBean = gson.fromJson(gson.toJson(newBean), TimeCaseListBean.class);
                 }
+                newBean.setNo("");
                 addTimeCaseList.add(newBean);
                 timeCaseDataAdapter.bindData(false, addTimeCaseList);
                 weekdaysTimeCaseDataList.addAll(addTimeCaseList);
@@ -421,6 +444,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 }else{
                     newBean = gson.fromJson(gson.toJson(newBean), TimeCaseListBean.class);
                 }
+                newBean.setNo("");
                 addTimeCaseList.add(newBean);
                 timeCaseDataAdapter.bindData(false, addTimeCaseList);
                 noWeekdaysTimeCaseDataList.addAll(addTimeCaseList);
@@ -430,24 +454,6 @@ public class TimingEditorActivity extends AppCompatActivity {
 
         endTime.setText(TimeUtils.time10(String.valueOf(System.currentTimeMillis())));
 
-        //键盘显示监听
-        SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
-            @Override
-            public void keyBoardShow(int height) {
-                keyHigh=height;
-                if (isShow) {
-                    showPopupCommnet(height);
-                    inputComment.requestFocus();
-                }
-            }
-
-            @Override
-            public void keyBoardHide(int height) {
-                if (popupWindow != null) {
-                    popupWindow.dismiss();
-                }
-            }
-        });
     }
 
     /**
@@ -775,8 +781,19 @@ public class TimingEditorActivity extends AppCompatActivity {
                         TimingDetailsResponse.DataBean data = response.getData();
                         List<PeriodCaseListBean> periodCaseList = data.getPeriodCaseList();
                         List<PlanCaseListBean> planCaseList = data.getPlanCaseList();
+                        Collections.sort(planCaseList, new Comparator<PlanCaseListBean>() {
+                            @Override
+                            public int compare(PlanCaseListBean o1, PlanCaseListBean o2) {
+                                try{
+                                    Integer i1 = Integer.parseInt(o1.getType());
+                                    Integer i2 = Integer.parseInt(o2.getType());
+                                    return i1 - i2;
+                                }catch (Exception e){
+                                    return 0;
+                                }
+                            }
+                        });
                         List<TimeCaseListBean> timeCaseList = data.getTimeCaseList();
-
 
                         for (PlanCaseListBean planCaseListBean : planCaseList
                              ) {
@@ -811,9 +828,11 @@ public class TimingEditorActivity extends AppCompatActivity {
                         }
 
                         if (!hasNoWeekDay) {
-                            weekTitle.setVisibility(View.GONE);
+                            weekdayTitle.setText("配时信息");
+                            weekdayTitle.setVisibility(View.VISIBLE);
                         } else {
-                            weekTitle.setVisibility(View.VISIBLE);
+                            weekdayTitle.setVisibility(View.VISIBLE);
+                            noweekdayTitle.setVisibility(View.VISIBLE);
                         }
 
 
@@ -863,10 +882,16 @@ public class TimingEditorActivity extends AppCompatActivity {
             no.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack(){
 
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
+                    if(hasCaseNoMap.get(value) == null){
+                        ToastUtil.showShort(TimingEditorActivity.this, "方案号不存在！");
+                        return false;
+                    }
                     periodCaseListBean.setTimeCaseNo(value);
+                    return true;
                 }
             }));
+
 
             //no.addTextChangedListener(new MyTextWatcher());
 
@@ -909,111 +934,6 @@ public class TimingEditorActivity extends AppCompatActivity {
     }
 
     /**
-     * 显示键盘
-     *
-     * @param et 输入焦点
-     */
-    public void showInput(final EditText et) {
-        et.requestFocus();
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-                           public void run() {
-                               InputMethodManager inputManager =
-                                       (InputMethodManager) inputComment.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                               inputManager.showSoftInput(inputComment, 0);
-                           }
-
-                       },
-                200);
-    }
-
-    @SuppressLint("WrongConstant")
-    private void showPopupCommnet(int height) {
-        popuwindowView = LayoutInflater.from(TimingEditorActivity.this).inflate(
-                R.layout.layout_tv_bottom_view, null);
-        inputComment = (EditText) popuwindowView.findViewById(R.id.number_tv);
-        //inputComment.requestFocus();//请求焦点
-        showInput(inputComment);
-        popupWindow = new PopupWindow(popuwindowView, ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, true);
-
-        popupWindow.setTouchable(true);
-        popupWindow.setTouchInterceptor((v, event) -> false);
-        popupWindow.setFocusable(true);
-        // 设置点击窗口外边窗口消失
-        popupWindow.setOutsideTouchable(true);
-
-        int[] location = new int[2];
-        currentEditView.getLocationOnScreen(location);
-        int x = location[0];
-        int y = location[1];
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
-        int heightPixels = outMetrics.heightPixels;//屏幕高度
-
-        //距离下边界的高度
-        int  bottom= heightPixels - y;
-        if(keyHigh>bottom){
-            //向上滑动
-            scrollView.scrollTo(x,scrollviewHigh+(keyHigh-bottom)+150);
-        }
-        //输入变化监听
-        inputComment.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                currentEditView.setText(editable.toString().trim());
-                //currentEditView.setTextColor(Color.parseColor("#ff2d51"));
-                currentEditView.setBackgroundColor(Color.parseColor("#EFEFEF"));
-
-                setTaskState();
-            }
-        });
-
-        popupWindow.showAtLocation(popuwindowView, Gravity.BOTTOM, 0, 0);
-        ColorDrawable cd = new ColorDrawable(0x000000);
-        popupWindow.setBackgroundDrawable(cd);
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.alpha = 1.0f;
-
-        getWindow().setAttributes(params);
-        // 设置popWindow的显示和消失动画
-        popupWindow.setAnimationStyle(R.style.BottomDialogStyle);
-        popupWindow.update();
-        popupWindow.setOnDismissListener(() -> {
-            //隐藏软键盘
-            //Toast.makeText(this, "软键盘隐藏" + height, Toast.LENGTH_SHORT).show();
-            //liveRoomText.clearFocus();
-            hideKeyBoard(this);
-            isShow = false;
-        });
-    }
-
-    /**
-     * 隐藏软键盘
-     *
-     * @param activity
-     */
-    public static void hideKeyBoard(Activity activity) {
-        if (activity != null && activity.getWindow() != null && activity.getWindow().getAttributes() != null) {
-            if (activity.getCurrentFocus() != null && activity.getCurrentFocus().getWindowToken() != null) {
-                ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(activity
-                        .getCurrentFocus()
-                        .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-            }
-        }
-    }
-
-    /**
      * 配时方案1 adapter
      */
     class PlanCaseAdapter extends BaseRecyclerAdapter<PlanCaseListBean> {
@@ -1037,8 +957,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_one = holder.obtainView(R.id.programme_one);
             programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT1(value);
+                    return true;
                 }
             }));
             //programme_one.addTextChangedListener(new MyTextWatcher());
@@ -1047,8 +968,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_two = holder.obtainView(R.id.programme_two);
             programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT2(value);
+                    return true;
                 }
             }));
             //programme_two.addTextChangedListener(new MyTextWatcher());
@@ -1057,8 +979,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_three = holder.obtainView(R.id.programme_three);
             programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT3(value);
+                    return true;
                 }
             }));
             //programme_three.addTextChangedListener(new MyTextWatcher());
@@ -1067,8 +990,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_four = holder.obtainView(R.id.programme_four);
             programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT4(value);
+                    return true;
                 }
             }));
             //programme_four.addTextChangedListener(new MyTextWatcher());
@@ -1077,8 +1001,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_five = holder.obtainView(R.id.programme_five);
             programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT5(value);
+                    return true;
                 }
             }));
             //programme_five.addTextChangedListener(new MyTextWatcher());
@@ -1087,8 +1012,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_six = holder.obtainView(R.id.programme_six);
             programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT6(value);
+                    return true;
                 }
             }));
             //programme_six.addTextChangedListener(new MyTextWatcher());
@@ -1097,8 +1023,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_seven = holder.obtainView(R.id.programme_seven);
             programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT7(value);
+                    return true;
                 }
             }));
             //programme_seven.addTextChangedListener(new MyTextWatcher());
@@ -1107,8 +1034,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_eight = holder.obtainView(R.id.programme_eight);
             programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT8(value);
+                    return true;
                 }
             }));
             //programme_eight.addTextChangedListener(new MyTextWatcher());
@@ -1117,8 +1045,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_nine = holder.obtainView(R.id.programme_nine);
             programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT9(value);
+                    return true;
                 }
             }));
             //programme_nine.addTextChangedListener(new MyTextWatcher());
@@ -1127,8 +1056,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_ten = holder.obtainView(R.id.programme_ten);
             programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     planCaseListBean.setT10(value);
+                    return true;
                 }
             }));
             //programme_ten.addTextChangedListener(new MyTextWatcher());
@@ -1144,6 +1074,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT1 = true;
                     ivOne.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT1()));
                 }else{
+                    ivOne.setImageResource(R.mipmap.select_stage);
                     editT1 = false;
                 }
                 ImageView ivTwo = holder.obtainView(R.id.iv_two);
@@ -1151,6 +1082,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT2 = true;
                     ivTwo.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT2()));
                 }else{
+                    ivTwo.setImageResource(R.mipmap.select_stage);
                     editT2 = false;
                 }
                 ImageView ivthree = holder.obtainView(R.id.iv_three);
@@ -1158,6 +1090,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT3 = true;
                     ivthree.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT3()));
                 }else{
+                    ivthree.setImageResource(R.mipmap.select_stage);
                     editT3 = false;
                 }
                 ImageView ivFour = holder.obtainView(R.id.iv_four);
@@ -1165,6 +1098,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT4 = true;
                     ivFour.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT4()));
                 }else{
+                    ivFour.setImageResource(R.mipmap.select_stage);
                     editT4 = false;
                 }
                 ImageView ivFive = holder.obtainView(R.id.iv_five);
@@ -1172,6 +1106,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT5 = true;
                     ivFive.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT5()));
                 }else{
+                    ivFive.setImageResource(R.mipmap.select_stage);
                     editT5 = false;
                 }
                 ImageView ivSix = holder.obtainView(R.id.iv_six);
@@ -1179,6 +1114,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT6 = true;
                     ivSix.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT6()));
                 }else{
+                    ivSix.setImageResource(R.mipmap.select_stage);
                     editT6 = false;
                 }
                 ImageView ivSeven = holder.obtainView(R.id.iv_seven);
@@ -1186,6 +1122,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT7 = true;
                     ivSeven.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT7()));
                 }else{
+                    ivSeven.setImageResource(R.mipmap.select_stage);
                     editT7 = false;
                 }
                 ImageView ivEight = holder.obtainView(R.id.iv_eight);
@@ -1193,6 +1130,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT8 = true;
                     ivEight.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT8()));
                 }else{
+                    ivEight.setImageResource(R.mipmap.select_stage);
                     editT8 = false;
                 }
                 ImageView ivNine = holder.obtainView(R.id.iv_nine);
@@ -1200,6 +1138,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT9 = true;
                     ivNine.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT9()));
                 }else{
+                    ivNine.setImageResource(R.mipmap.select_stage);
                     editT9 = false;
                 }
                 ImageView ivTen = holder.obtainView(R.id.iv_ten);
@@ -1207,39 +1146,40 @@ public class TimingEditorActivity extends AppCompatActivity {
                     editT10 = true;
                     ivTen.setImageBitmap(StageDataUtil.getBitMapByStageNo(planCaseListBean.getT10()));
                 }else{
+                    ivTen.setImageResource(R.mipmap.select_stage);
                     editT10 = false;
                 }
 
 
                 ivOne.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 1));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(1));
                 });
                 ivTwo.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 2));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(2));
                 });
                 ivthree.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 3));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(3));
                 });
                 ivFour.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 4));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(4));
                 });
                 ivFive.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 5));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(5));
                 });
                 ivSix.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 6));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(6));
                 });
                 ivSeven.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 7));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(7));
                 });
                 ivEight.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 8));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(8));
                 });
                 ivNine.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 9));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(9));
                 });
                 ivTen.setOnClickListener(v -> {
-                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(index, 10));
+                    DialogUtils.showTimingChoiceDialog(TimingEditorActivity.this, StageDataUtil.getAllStage(), new StageImgOnButtonClickListener(10));
                 });
 
 
@@ -1252,51 +1192,81 @@ public class TimingEditorActivity extends AppCompatActivity {
                 if(!editT1){
                     programme_one.setEnabled(false);
                     programme_one.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_one.setEnabled(true);
+                    programme_one.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_two.setText(planCaseListBean.getT2());
                 if(!editT2){
                     programme_two.setEnabled(false);
                     programme_two.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_two.setEnabled(true);
+                    programme_two.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_three.setText(planCaseListBean.getT3());
                 if(!editT3){
                     programme_three.setEnabled(false);
                     programme_three.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_three.setEnabled(true);
+                    programme_three.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_four.setText(planCaseListBean.getT4());
                 if(!editT4){
                     programme_four.setEnabled(false);
                     programme_four.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_four.setEnabled(true);
+                    programme_four.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_five.setText(planCaseListBean.getT5());
                 if(!editT5){
                     programme_five.setEnabled(false);
                     programme_five.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_five.setEnabled(true);
+                    programme_five.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_six.setText(planCaseListBean.getT6());
                 if(!editT6){
                     programme_six.setEnabled(false);
                     programme_six.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_six.setEnabled(true);
+                    programme_six.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_seven.setText(planCaseListBean.getT7());
                 if(!editT7){
                     programme_seven.setEnabled(false);
                     programme_seven.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_seven.setEnabled(true);
+                    programme_seven.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_eight.setText(planCaseListBean.getT8());
                 if(!editT8){
                     programme_eight.setEnabled(false);
                     programme_eight.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_eight.setEnabled(true);
+                    programme_eight.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_nine.setText(planCaseListBean.getT9());
                 if(!editT9){
                     programme_nine.setEnabled(false);
                     programme_nine.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_nine.setEnabled(true);
+                    programme_nine.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 programme_ten.setText(planCaseListBean.getT10());
                 if(!editT10){
                     programme_ten.setEnabled(false);
                     programme_ten.setTextColor(Color.parseColor("#6C6C6C"));
+                }else{
+                    programme_ten.setEnabled(true);
+                    programme_ten.setTextColor(Color.parseColor("#ff2a4997"));
                 }
                 //类型（1 阶段 2绿闪 3黄灯 4全红 5红黄 6 最大绿 7 最小绿
                 if (planCaseListBean.getType().equals("2")) {
@@ -1340,8 +1310,22 @@ public class TimingEditorActivity extends AppCompatActivity {
             timeCaseNo.setVisibility(View.VISIBLE);
             timeCaseNo.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
-                    timeCaseListBean.setNo(value);
+                public boolean setValue(String value) {
+                    if(value == null || "".equals(value.trim()) || "0".equals(value.trim())){
+                        ToastUtil.showShort(TimingEditorActivity.this, "请输入方案号！");
+                        return false;
+                    }
+                    String oldValue = timeCaseListBean.getNo();
+                    if(oldValue != null && !"".equals(oldValue.trim())){
+                        hasCaseNoMap.remove(oldValue.trim());
+                    }
+                    if(hasCaseNoMap.get(value.trim()) != null){
+                        ToastUtil.showShort(TimingEditorActivity.this, "方案号已存在！");
+                        return false;
+                    }
+                    hasCaseNoMap.put(value.trim(), true);
+                    timeCaseListBean.setNo(value.trim());
+                    return true;
                 }
             }));
             //timeCaseNo.addTextChangedListener(new MyTextWatcher());
@@ -1349,8 +1333,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_one = holder.obtainView(R.id.programme_one);
             programme_one.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT1(value);
+                    return true;
                 }
             }));
             //programme_one.addTextChangedListener(new MyTextWatcher());
@@ -1358,8 +1343,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_two = holder.obtainView(R.id.programme_two);
             programme_two.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT2(value);
+                    return true;
                 }
             }));
             //programme_two.addTextChangedListener(new MyTextWatcher());
@@ -1367,8 +1353,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_three = holder.obtainView(R.id.programme_three);
             programme_three.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT3(value);
+                    return true;
                 }
             }));
             //programme_three.addTextChangedListener(new MyTextWatcher());
@@ -1376,8 +1363,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_four = holder.obtainView(R.id.programme_four);
             programme_four.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT4(value);
+                    return true;
                 }
             }));
             //programme_four.addTextChangedListener(new MyTextWatcher());
@@ -1385,8 +1373,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_five = holder.obtainView(R.id.programme_five);
             programme_five.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT5(value);
+                    return true;
                 }
             }));
             //programme_five.addTextChangedListener(new MyTextWatcher());
@@ -1394,8 +1383,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_six = holder.obtainView(R.id.programme_six);
             programme_six.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT6(value);
+                    return true;
                 }
             }));
             //programme_six.addTextChangedListener(new MyTextWatcher());
@@ -1403,8 +1393,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_seven = holder.obtainView(R.id.programme_seven);
             programme_seven.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT7(value);
+                    return true;
                 }
             }));
             //programme_seven.addTextChangedListener(new MyTextWatcher());
@@ -1412,8 +1403,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_eight = holder.obtainView(R.id.programme_eight);
             programme_eight.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT8(value);
+                    return true;
                 }
             }));
             //programme_eight.addTextChangedListener(new MyTextWatcher());
@@ -1421,8 +1413,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_nine = holder.obtainView(R.id.programme_nine);
             programme_nine.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT9(value);
+                    return true;
                 }
             }));
             //programme_nine.addTextChangedListener(new MyTextWatcher());
@@ -1430,8 +1423,9 @@ public class TimingEditorActivity extends AppCompatActivity {
             EditText programme_ten = holder.obtainView(R.id.programme_ten);
             programme_ten.setOnFocusChangeListener(new EditViewOnFocusChangeListener(new EditViewChangeCallBack() {
                 @Override
-                public void setValue(String value) {
+                public boolean setValue(String value) {
                     timeCaseListBean.setT10(value);
+                    return true;
                 }
             }));
             //programme_ten.addTextChangedListener(new MyTextWatcher());
@@ -1439,58 +1433,93 @@ public class TimingEditorActivity extends AppCompatActivity {
             ImageView tvDelete = holder.obtainView(R.id.tv_delete);
             tvDelete.setVisibility(View.VISIBLE);
 
+
+            timeCaseNo.setText(timeCaseListBean.getNo());
+            if(timeCaseListBean.getNo() != null && !"".equals(timeCaseListBean.getNo().trim())){
+                hasCaseNoMap.put(timeCaseListBean.getNo().trim(),true);
+            }
+
             programme_one.setText(timeCaseListBean.getT1());
             if(!editT1){
                 programme_one.setEnabled(false);
                 programme_one.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_one.setEnabled(true);
+                programme_one.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_two.setText(timeCaseListBean.getT2());
             if(!editT2){
                 programme_two.setEnabled(false);
                 programme_two.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_two.setEnabled(true);
+                programme_two.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_three.setText(timeCaseListBean.getT3());
             if(!editT3){
                 programme_three.setEnabled(false);
                 programme_three.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_three.setEnabled(true);
+                programme_three.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_four.setText(timeCaseListBean.getT4());
             if(!editT4){
                 programme_four.setEnabled(false);
                 programme_four.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_four.setEnabled(true);
+                programme_four.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_five.setText(timeCaseListBean.getT5());
             if(!editT5){
                 programme_five.setEnabled(false);
                 programme_five.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_five.setEnabled(true);
+                programme_five.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_six.setText(timeCaseListBean.getT6());
             if(!editT6){
                 programme_six.setEnabled(false);
                 programme_six.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_six.setEnabled(true);
+                programme_six.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_seven.setText(timeCaseListBean.getT7());
             if(!editT7){
                 programme_seven.setEnabled(false);
                 programme_seven.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_seven.setEnabled(true);
+                programme_seven.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_eight.setText(timeCaseListBean.getT8());
             if(!editT8){
                 programme_eight.setEnabled(false);
                 programme_eight.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_eight.setEnabled(true);
+                programme_eight.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_nine.setText(timeCaseListBean.getT9());
             if(!editT9){
                 programme_nine.setEnabled(false);
                 programme_nine.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_nine.setEnabled(true);
+                programme_nine.setTextColor(Color.parseColor("#ff2a4997"));
             }
             programme_ten.setText(timeCaseListBean.getT10());
             if(!editT10){
                 programme_ten.setEnabled(false);
                 programme_ten.setTextColor(Color.parseColor("#6C6C6C"));
+            }else{
+                programme_ten.setEnabled(true);
+                programme_ten.setTextColor(Color.parseColor("#ff2a4997"));
             }
 
-            timeCaseNo.setText(timeCaseListBean.getNo());
             /*timeCaseNo.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 0));
             programme_one.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 1));
             programme_two.setOnTouchListener(new EditViewOnTouchListener(currentListType, index, 2));
@@ -1524,11 +1553,9 @@ public class TimingEditorActivity extends AppCompatActivity {
 
     class StageImgOnButtonClickListener implements DialogUtils.OnButtonClickListener{
 
-        private int index;
         private int pos;
 
-        public StageImgOnButtonClickListener(int index, int pos) {
-            this.index = index;
+        public StageImgOnButtonClickListener(int pos) {
             this.pos = pos;
         }
 
@@ -1543,89 +1570,119 @@ public class TimingEditorActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onChoiceItem(String str, int pos) {
+        public void onChoiceItem(String str, int index) {
 
-            PlanCaseListBean planCaseListBean = weekdaysPlanCaseDataList.get(index);
-            PlanCaseListBean noWeekDaysplanCaseListBean = noWeekdaysPlanCaseDataList.get(index);
-            if(planCaseListBean == null){
+            PlanCaseListBean weekDayPlanCaseListBean = weekdaysPlanCaseDataList.get(0);
+            PlanCaseListBean noWeekDaysPlanCaseListBean = noWeekdaysPlanCaseDataList.get(0);
+            PlanCaseListBean hideWeekDaysPlanCaseListBean = hideWeekdaysPlanCaseList.get(0);
+
+            if(weekDayPlanCaseListBean == null)
                 return;
-            }
-            if(str == null || "0".equals(str)){
-                clearData(pos);
-            }else {
-                switch (pos){
-                    case 1:
-                        editT1 = true;
-                        planCaseListBean.setT1(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT1(str);
-                        }
-                        break;
-                    case 2:
-                        editT2 = true;
-                        planCaseListBean.setT2(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT2(str);
-                        }
-                        break;
-                    case 3:
-                        editT3 = true;
-                        planCaseListBean.setT3(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT3(str);
-                        }
-                        break;
-                    case 4:
-                        editT4 = true;
-                        planCaseListBean.setT4(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT4(str);
-                        }
-                        break;
-                    case 5:
-                        editT5 = true;
-                        planCaseListBean.setT5(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT5(str);
-                        }
-                        break;
-                    case 6:
-                        editT6 = true;
-                        planCaseListBean.setT6(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT6(str);
-                        }
-                        break;
-                    case 7:
-                        editT7 = true;
-                        planCaseListBean.setT7(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT7(str);
-                        }
-                        break;
-                    case 8:
-                        editT8 = true;
-                        planCaseListBean.setT8(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT8(str);
-                        }
-                        break;
-                    case 9:
-                        editT9 = true;
-                        planCaseListBean.setT9(str);
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT9(str);
-                        }
-                        break;
-                    case 10:
-                        editT10 = true;
-                        planCaseListBean.setT10(str);
 
-                        if(noWeekDaysplanCaseListBean != null){
-                            noWeekDaysplanCaseListBean.setT10(str);
-                        }
-                        break;
-                }
+            if("0".equals(str))
+                clearData(pos);
+
+            switch (pos){
+                case 1:
+                    editT1 = true;
+                    weekDayPlanCaseListBean.setT1(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT1(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT1(str);
+                    }
+                    break;
+                case 2:
+                    editT2 = true;
+                    weekDayPlanCaseListBean.setT2(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT2(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT2(str);
+                    }
+                    break;
+                case 3:
+                    editT3 = true;
+                    weekDayPlanCaseListBean.setT3(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT3(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT3(str);
+                    }
+                    break;
+                case 4:
+                    editT4 = true;
+                    weekDayPlanCaseListBean.setT4(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT4(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT4(str);
+                    }
+                    break;
+                case 5:
+                    editT5 = true;
+                    weekDayPlanCaseListBean.setT5(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT5(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT5(str);
+                    }
+                    break;
+                case 6:
+                    editT6 = true;
+                    weekDayPlanCaseListBean.setT6(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT6(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT6(str);
+                    }
+                    break;
+                case 7:
+                    editT7 = true;
+                    weekDayPlanCaseListBean.setT7(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT7(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT7(str);
+                    }
+                    break;
+                case 8:
+                    editT8 = true;
+                    weekDayPlanCaseListBean.setT8(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT8(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT8(str);
+                    }
+                    break;
+                case 9:
+                    editT9 = true;
+                    weekDayPlanCaseListBean.setT9(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT9(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT9(str);
+                    }
+                    break;
+                case 10:
+                    editT10 = true;
+                    weekDayPlanCaseListBean.setT10(str);
+                    if(hideWeekDaysPlanCaseListBean != null){
+                        hideWeekDaysPlanCaseListBean.setT10(str);
+                    }
+                    if(noWeekDaysPlanCaseListBean != null){
+                        noWeekDaysPlanCaseListBean.setT10(str);
+                    }
+                    break;
             }
 
             hidePlanCaseDataAdapter.notifyDataSetChanged();
@@ -1769,26 +1826,31 @@ public class TimingEditorActivity extends AppCompatActivity {
         public void onFocusChange(View view, boolean b) {
             EditText editText = ((EditText) view);
             if (b) {
-                view.setBackgroundResource(R.color.select_bg_color);
+                editText.setBackgroundResource(R.color.select_bg_color);
                 editText.setTextColor(Color.parseColor("#F70909"));
-                editText.setText("");
-                currentEditView=editText;
+                String value = editText.getText().toString().trim();
+                if("0".equals(value)){
+                    editText.setText("");
+                }
             }else{
                 String value = editText.getText().toString().trim();
                 if(TextUtils.isEmpty(value)){
-                    value = "0";
+                    value = "";
                     editText.setText(value);
                 }
-                view.setBackgroundColor(Color.parseColor("#EFEFEF"));
-                ((EditText)view).setTextColor(Color.parseColor("#ff2a4997"));
-                callBack.setValue(value);
+                if(!callBack.setValue(value)){
+                    editText.setText("");
+                }
+                editText.setBackgroundColor(Color.parseColor("#EFEFEF"));
+                editText.setTextColor(Color.parseColor("#ff2a4997"));
+
             }
         }
     }
 
     interface EditViewChangeCallBack{
 
-        public void setValue(String value);
+        public boolean setValue(String value);
     }
 
 
