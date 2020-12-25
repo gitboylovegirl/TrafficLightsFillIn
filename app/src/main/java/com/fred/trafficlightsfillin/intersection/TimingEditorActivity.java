@@ -48,6 +48,9 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseResponse;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
+import com.fred.trafficlightsfillin.base.CustomHorizontalScrollView;
+import com.fred.trafficlightsfillin.base.CustomLayoutManager;
+import com.fred.trafficlightsfillin.base.CustomScrollView;
 import com.fred.trafficlightsfillin.base.MyGlideEngine;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
@@ -135,15 +138,15 @@ public class TimingEditorActivity extends AppCompatActivity {
     @BindView(R.id.timetable_add)
     TextView timetableAdd;
     @BindView(R.id.scrollView)
-    NestedScrollView scrollView;
+    CustomScrollView scrollView;
     @BindView(R.id.layout_hide_tab)
     RecyclerView layoutHideTab;
     @BindView(R.id.layout_hide_scrollview)
-    HorizontalScrollView layoutHideScrollview;
+    CustomHorizontalScrollView layoutHideScrollview;
     @BindView(R.id.scrollView_one)
-    HorizontalScrollView scrollViewOne;
+    CustomHorizontalScrollView scrollViewOne;
     @BindView(R.id.scrollView_two)
-    HorizontalScrollView scrollViewTwo;
+    CustomHorizontalScrollView scrollViewTwo;
 
     private View popuwindowView;
     private PopupWindow popupWindow;
@@ -174,6 +177,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     boolean isWeekday = true;
     boolean isShow = false;
 
+    boolean isFocus=false;
     int keyHigh=831;
     int scrollviewHigh=0;
 
@@ -217,33 +221,33 @@ public class TimingEditorActivity extends AppCompatActivity {
                         100);
             }
         }
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new CustomLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);// 设置 recyclerview 布局方式为横向布局
         pictureList.setLayoutManager(layoutManager);
         pictureAdapter = new PictureAdapter();
         pictureList.setAdapter(pictureAdapter);
 
-        timeList.setLayoutManager(new LinearLayoutManager(this));
+        timeList.setLayoutManager(new CustomLayoutManager(this));
         timeTableAdapter = new TimeTableAdapter();
         timeList.setAdapter(timeTableAdapter);
 
         planCaseDataAdapter = new PlanCaseAdapter();
-        programme.setLayoutManager(new LinearLayoutManager(this));
+        programme.setLayoutManager(new CustomLayoutManager(this));
         programme.setAdapter(planCaseDataAdapter);
 
         hidePlanCaseDataAdapter = new PlanCaseAdapter();
-        layoutHideTab.setLayoutManager(new LinearLayoutManager(this));
+        layoutHideTab.setLayoutManager(new CustomLayoutManager(this));
         layoutHideTab.setAdapter(hidePlanCaseDataAdapter);
 
         timeCaseDataAdapter = new TimeCaseAdapter();
-        timetable.setLayoutManager(new LinearLayoutManager(this));
+        timetable.setLayoutManager(new CustomLayoutManager(this));
         timetable.setAdapter(timeCaseDataAdapter);
 
         //监听
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             scrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 //Log.e("fred", "%%%%     " + scrollY);
-                if (scrollY > 1180) {//滑动距离大于v_report_divider的底坐标
+                if (scrollY > 1190) {//滑动距离大于v_report_divider的底坐标
                     layoutHideScrollview.setVisibility(View.VISIBLE);
                 } else {
                     layoutHideScrollview.setVisibility(View.GONE);
@@ -254,15 +258,14 @@ public class TimingEditorActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             scrollViewOne.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                layoutHideScrollview.scrollTo(scrollX, scrollY);
-                scrollViewTwo.scrollTo(scrollX, scrollY);
+                 scrollViewTwo.scrollTo(scrollX, scrollY);
+                 layoutHideScrollview.scrollTo(scrollX, scrollY);
             });
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             layoutHideScrollview.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 scrollViewOne.scrollTo(scrollX, scrollY);
-                scrollViewTwo.scrollTo(scrollX, scrollY);
             });
         }
 
@@ -270,6 +273,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             scrollViewTwo.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 layoutHideScrollview.scrollTo(scrollX, scrollY);
                 scrollViewOne.scrollTo(scrollX, scrollY);
+                //scrollViewTwo.requestFocus();
             });
         }
         //工作日/不区分工作日
@@ -435,14 +439,20 @@ public class TimingEditorActivity extends AppCompatActivity {
             @Override
             public void keyBoardShow(int height) {
                 keyHigh=height;
+                isFocus=true;
                 if (isShow) {
                     showPopupCommnet(height);
                     inputComment.requestFocus();
                 }
+
+                currentEditView.setBackgroundResource(R.color.select_bg_color);
+                currentEditView.setTextColor(Color.parseColor("#F70909"));
+                currentEditView.setText("");
             }
 
             @Override
             public void keyBoardHide(int height) {
+                isFocus=false;
                 if (popupWindow != null) {
                     popupWindow.dismiss();
                 }
@@ -853,6 +863,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable PeriodCaseListBean periodCaseListBean, int index) {
+            holder.setIsRecyclable(false);//不使用复用 防止数据多时 复用时  多个item中的EditText填写的数据一样
             TextView startTime = holder.obtainView(R.id.start_time);
             EditText no = holder.obtainView(R.id.number);
             ImageView timetable_delete = holder.obtainView(R.id.timetable_delete);
@@ -1026,6 +1037,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable PlanCaseListBean planCaseListBean, int index) {
+            holder.setIsRecyclable(false);//不使用复用 防止数据多时 复用时  多个item中的EditText填写的数据一样
             LinearLayout typeOne = holder.obtainView(R.id.type_one);
             LinearLayout typeTwo = holder.obtainView(R.id.type_two);
             LinearLayout typeThree = holder.obtainView(R.id.type_three);
@@ -1326,6 +1338,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable TimeCaseListBean timeCaseListBean, int index) {
+            holder.setIsRecyclable(false);//不使用复用 防止数据多时 复用时  多个item中的EditText填写的数据一样
             LinearLayout typeOne = holder.obtainView(R.id.type_one);
             LinearLayout typeTwo = holder.obtainView(R.id.type_two);
             LinearLayout typeThree = holder.obtainView(R.id.type_three);
@@ -1768,12 +1781,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         @Override
         public void onFocusChange(View view, boolean b) {
             EditText editText = ((EditText) view);
-            if (b) {
-                view.setBackgroundResource(R.color.select_bg_color);
-                editText.setTextColor(Color.parseColor("#F70909"));
-                editText.setText("");
-                currentEditView=editText;
-            }else{
+            if(!b){
                 String value = editText.getText().toString().trim();
                 if(TextUtils.isEmpty(value)){
                     value = "0";
@@ -1782,6 +1790,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                 view.setBackgroundColor(Color.parseColor("#EFEFEF"));
                 ((EditText)view).setTextColor(Color.parseColor("#ff2a4997"));
                 callBack.setValue(value);
+            }else {
+                currentEditView=editText;
             }
         }
     }

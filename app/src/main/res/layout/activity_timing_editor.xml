@@ -28,7 +28,7 @@
 
     </TextView>
 
-    <androidx.core.widget.NestedScrollView
+    <com.fred.trafficlightsfillin.base.CustomScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -36,6 +36,8 @@
         android:layout_marginTop="100dp">
 
         <LinearLayout
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -284,7 +286,7 @@
                     android:background="@drawable/bg_color_white"
                     android:orientation="horizontal">
 
-                    <HorizontalScrollView
+                    <com.fred.trafficlightsfillin.base.CustomHorizontalScrollView
                         android:scrollbars="none"
                         android:id="@+id/scrollView_one"
                         android:layout_width="match_parent"
@@ -448,7 +450,7 @@
                             </androidx.recyclerview.widget.RecyclerView>
                         </LinearLayout>
 
-                    </HorizontalScrollView>
+                    </com.fred.trafficlightsfillin.base.CustomHorizontalScrollView>
 
                 </LinearLayout>
 
@@ -495,7 +497,7 @@
                             android:textSize="14sp" />
                     </LinearLayout>
 
-                    <HorizontalScrollView
+                    <com.fred.trafficlightsfillin.base.CustomHorizontalScrollView
                         android:scrollbars="none"
                         android:id="@+id/scrollView_two"
                         android:layout_width="match_parent"
@@ -662,7 +664,7 @@
                             </androidx.recyclerview.widget.RecyclerView>
 
                         </LinearLayout>
-                    </HorizontalScrollView>
+                    </com.fred.trafficlightsfillin.base.CustomHorizontalScrollView>
 
                 </LinearLayout>
 
@@ -820,9 +822,9 @@
         </LinearLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
+    </com.fred.trafficlightsfillin.base.CustomScrollView>
 
-    <HorizontalScrollView
+    <com.fred.trafficlightsfillin.base.CustomHorizontalScrollView
         android:scrollbars="none"
         android:overScrollMode="never"
         android:id="@+id/layout_hide_scrollview"
@@ -846,6 +848,6 @@
             </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
 
-    </HorizontalScrollView>
+    </com.fred.trafficlightsfillin.base.CustomHorizontalScrollView>
 
 </RelativeLayout>
