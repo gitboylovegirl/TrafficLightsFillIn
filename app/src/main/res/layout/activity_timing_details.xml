@@ -210,7 +210,7 @@
                 android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/weekday"
+                    android:id="@+id/weekday_title"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_color_blue_gray_stroke_main"
@@ -221,7 +221,7 @@
                 </TextView>
 
                 <TextView
-                    android:id="@+id/weekend"
+                    android:id="@+id/noweekday_title"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_color_blue_gray_stroke"
@@ -692,17 +692,19 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="65dp"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="时间"
                         android:textColor="#ff0e0e0e"
                         android:textSize="14sp" />
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="65dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="129dp"
-                        android:text="方案"
+                        android:layout_marginLeft="115dp"
+                        android:gravity="center"
+                        android:text="方案号"
                         android:textColor="#ff0e0e0e"
                         android:textSize="14sp" />
                 </LinearLayout>

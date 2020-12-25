@@ -122,7 +122,6 @@ public class RecordListActivity extends AppCompatActivity {
                 .postAsync(new ICallback<NewRecordResponse>() {
                     @Override
                     public void onSuccess(NewRecordResponse response) {
-                        Log.e("fred  新数据：", response.toString());
                         if (page == 1) {
                             list.clear();
                             list = response.data.list;

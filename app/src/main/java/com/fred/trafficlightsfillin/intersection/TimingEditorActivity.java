@@ -12,12 +12,15 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -38,6 +41,9 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseResponse;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
+import com.fred.trafficlightsfillin.base.CustomHorizontalScrollView;
+import com.fred.trafficlightsfillin.base.CustomLayoutManager;
+import com.fred.trafficlightsfillin.base.CustomScrollView;
 import com.fred.trafficlightsfillin.base.MyGlideEngine;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
@@ -130,15 +136,15 @@ public class TimingEditorActivity extends AppCompatActivity {
     @BindView(R.id.timetable_add)
     TextView timetableAdd;
     @BindView(R.id.scrollView)
-    NestedScrollView scrollView;
+    CustomScrollView scrollView;
     @BindView(R.id.layout_hide_tab)
     RecyclerView layoutHideTab;
     @BindView(R.id.layout_hide_scrollview)
-    HorizontalScrollView layoutHideScrollview;
+    CustomHorizontalScrollView layoutHideScrollview;
     @BindView(R.id.scrollView_one)
-    HorizontalScrollView scrollViewOne;
+    CustomHorizontalScrollView scrollViewOne;
     @BindView(R.id.scrollView_two)
-    HorizontalScrollView scrollViewTwo;
+    CustomHorizontalScrollView scrollViewTwo;
 
     private List<PeriodCaseListBean> weekdaysPeriodCaseDataList = new ArrayList<>();//工作日时间表
     private List<PeriodCaseListBean> noWeekDaysPeriodCaseDataList = new ArrayList<>();//周末时间表
@@ -193,6 +199,38 @@ public class TimingEditorActivity extends AppCompatActivity {
         initTrafficlighPeishi();
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View view = getCurrentFocus();
+            if (isHideInput(view, ev)) {
+                hideSoftInput(view.getWindowToken());
+                view.clearFocus();
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private boolean isHideInput(View v, MotionEvent ev) {
+        if (v != null && (v instanceof EditText)) {
+            int[] l = {0, 0};
+            v.getLocationInWindow(l);
+            int left = l[0], top = l[1], bottom = top + v.getHeight(), right = left + v.getWidth();
+            if (ev.getX() > left && ev.getX() < right && ev.getY() > top && ev.getY() < bottom) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void hideSoftInput(IBinder token) {
+        if (token != null) {
+            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            manager.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
     /**
      * 加载基础布局
      */
@@ -206,33 +244,33 @@ public class TimingEditorActivity extends AppCompatActivity {
                         100);
             }
         }
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new CustomLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);// 设置 recyclerview 布局方式为横向布局
         pictureList.setLayoutManager(layoutManager);
         pictureAdapter = new PictureAdapter();
         pictureList.setAdapter(pictureAdapter);
 
-        timeList.setLayoutManager(new LinearLayoutManager(this));
+        timeList.setLayoutManager(new CustomLayoutManager(this));
         timeTableAdapter = new TimeTableAdapter();
         timeList.setAdapter(timeTableAdapter);
 
         planCaseDataAdapter = new PlanCaseAdapter();
-        programme.setLayoutManager(new LinearLayoutManager(this));
+        programme.setLayoutManager(new CustomLayoutManager(this));
         programme.setAdapter(planCaseDataAdapter);
 
         hidePlanCaseDataAdapter = new PlanCaseAdapter();
-        layoutHideTab.setLayoutManager(new LinearLayoutManager(this));
+        layoutHideTab.setLayoutManager(new CustomLayoutManager(this));
         layoutHideTab.setAdapter(hidePlanCaseDataAdapter);
 
         timeCaseDataAdapter = new TimeCaseAdapter();
-        timetable.setLayoutManager(new LinearLayoutManager(this));
+        timetable.setLayoutManager(new CustomLayoutManager(this));
         timetable.setAdapter(timeCaseDataAdapter);
 
         //监听
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             scrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 //Log.e("fred", "%%%%     " + scrollY);
-                if (scrollY > 1180) {//滑动距离大于v_report_divider的底坐标
+                if (scrollY > 1190) {//滑动距离大于v_report_divider的底坐标
                     layoutHideScrollview.setVisibility(View.VISIBLE);
                 } else {
                     layoutHideScrollview.setVisibility(View.GONE);
@@ -243,15 +281,14 @@ public class TimingEditorActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             scrollViewOne.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                layoutHideScrollview.scrollTo(scrollX, scrollY);
-                scrollViewTwo.scrollTo(scrollX, scrollY);
+                 scrollViewTwo.scrollTo(scrollX, scrollY);
+                 layoutHideScrollview.scrollTo(scrollX, scrollY);
             });
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             layoutHideScrollview.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 scrollViewOne.scrollTo(scrollX, scrollY);
-                scrollViewTwo.scrollTo(scrollX, scrollY);
             });
         }
 
@@ -259,11 +296,13 @@ public class TimingEditorActivity extends AppCompatActivity {
             scrollViewTwo.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 layoutHideScrollview.scrollTo(scrollX, scrollY);
                 scrollViewOne.scrollTo(scrollX, scrollY);
+                //scrollViewTwo.requestFocus();
             });
         }
         //工作日/不区分工作日
         weekdayTitle.setOnClickListener(view -> {
             isWeekday = true;
+            hasCaseNoMap = new HashMap<>();
             weekdayTitle.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             noweekdayTitle.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, weekdaysPeriodCaseDataList);
@@ -273,6 +312,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         //周日
         noweekdayTitle.setOnClickListener(view -> {
             isWeekday = false;
+            hasCaseNoMap = new HashMap<>();
             noweekdayTitle.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke_main));
             weekdayTitle.setBackground(getResources().getDrawable(R.drawable.bg_color_blue_gray_stroke));
             timeTableAdapter.bindData(true, noWeekDaysPeriodCaseDataList);
@@ -289,64 +329,55 @@ public class TimingEditorActivity extends AppCompatActivity {
             submitBean.setRemark(better.getText().toString());
             submitBean.setTaskId(Integer.parseInt(id));
 
-            List<PeriodCaseListBean> periodCaseList = new ArrayList<>();
-            if(weekdaysPeriodCaseDataList != null && weekdaysPeriodCaseDataList.size() > 0)
-                periodCaseList.addAll(weekdaysPeriodCaseDataList);
-            if(noWeekDaysPeriodCaseDataList != null && noWeekDaysPeriodCaseDataList.size() > 0)
-                periodCaseList.addAll(noWeekDaysPeriodCaseDataList);
-            submitBean.setPeriodCaseList(periodCaseList);
-            Log.e("fred","SUBMIT:"+JsonUtil.toJsonStr(hasCaseNoMap));
-            for (PeriodCaseListBean periodCaseListBean : periodCaseList
-                 ) {
-                String start = periodCaseListBean.getStart();
-                String no = periodCaseListBean.getTimeCaseNo();
-                if(start == null || "".equals(start.trim()) || no == null || "".equals(no.trim())){
-                    ToastUtil.showShort(TimingEditorActivity.this,"请检查时间表输入项！");
-                    return;
-                }
-                if(hasCaseNoMap.get(no.trim()) == null){
-                    ToastUtil.showShort(TimingEditorActivity.this,"时间表使用的方案号不存在！");
-                    return;
-                }
-            }
-
 
             List<PlanCaseListBean> planCaseList = new ArrayList<>();
-            if(weekdaysPlanCaseDataList != null && weekdaysPlanCaseDataList.size() > 0)
+            if(weekdaysPlanCaseDataList != null && weekdaysPlanCaseDataList.size() > 0){
                 planCaseList.addAll(weekdaysPlanCaseDataList);
-            if(noWeekdaysPlanCaseDataList != null && noWeekdaysPlanCaseDataList.size() > 0)
+            }
+            if(noWeekdaysPlanCaseDataList != null && noWeekdaysPlanCaseDataList.size() > 0){
                 planCaseList.addAll(noWeekdaysPlanCaseDataList);
+            }
             submitBean.setPlanCaseList(planCaseList);
 
             List<TimeCaseListBean> timeCaseList = new ArrayList<>();
-            if(weekdaysTimeCaseDataList != null && weekdaysTimeCaseDataList.size() > 0)
+            List<String> weekDaysCaseNoList = new ArrayList<>();
+            if(weekdaysTimeCaseDataList != null && weekdaysTimeCaseDataList.size() > 0){
+                if(!checkTimeCaseNoList(weekdaysTimeCaseDataList, weekDaysCaseNoList, hasNoWeekDay ? "工作日" : "")){
+                    return;
+                }
                 timeCaseList.addAll(weekdaysTimeCaseDataList);
-            if(noWeekdaysTimeCaseDataList != null && noWeekdaysTimeCaseDataList.size() > 0)
-                timeCaseList.addAll(noWeekdaysTimeCaseDataList);
-            submitBean.setTimeCaseList(timeCaseList);
-            for (TimeCaseListBean timeCaseListBean : timeCaseList
-            ) {
-                String no = timeCaseListBean.getNo();
-                if(no == null || "".equals(no.trim())){
-                    ToastUtil.showShort(TimingEditorActivity.this,"配时方案号不能为空！");
-                    return;
-                }
-                try{
-                    Integer n = Integer.parseInt(no.trim());
-                    if(n < 1){
-                        ToastUtil.showShort(TimingEditorActivity.this,"配时方案号必须大于0！");
-                        return;
-                    }
-                }catch (Exception e){
-                    ToastUtil.showShort(TimingEditorActivity.this,"配时方案号输入格式有误！");
-                    return;
-                }
             }
+            List<String> noWeekDaysCaseNoList = new ArrayList<>();
+            if(noWeekdaysTimeCaseDataList != null && noWeekdaysTimeCaseDataList.size() > 0){
+                if(!checkTimeCaseNoList(noWeekdaysTimeCaseDataList, noWeekDaysCaseNoList, "周六日")){
+                    return;
+                }
+                timeCaseList.addAll(noWeekdaysTimeCaseDataList);
+            }
+            submitBean.setTimeCaseList(timeCaseList);
+
+
+            List<PeriodCaseListBean> periodCaseList = new ArrayList<>();
+            if(weekdaysPeriodCaseDataList != null && weekdaysPeriodCaseDataList.size() > 0){
+                if(!checkPeriodCaseNoList(weekdaysPeriodCaseDataList, weekDaysCaseNoList, hasNoWeekDay ? "工作日" : "")){
+                    return;
+                }
+                periodCaseList.addAll(weekdaysPeriodCaseDataList);
+            }
+            if(noWeekDaysPeriodCaseDataList != null && noWeekDaysPeriodCaseDataList.size() > 0){
+                if(!checkPeriodCaseNoList(noWeekDaysPeriodCaseDataList, noWeekDaysCaseNoList, "周六日")){
+                    return;
+                }
+                periodCaseList.addAll(noWeekDaysPeriodCaseDataList);
+            }
+            submitBean.setPeriodCaseList(periodCaseList);
+
+
             Gson gson = new Gson();
             DialogUtils.showCurrencyDialog(this, "是否确认上传？", new DialogUtils.OnButtonClickListener() {
                 @Override
                 public void onPositiveButtonClick() {
-                    //submitTaskResult(gson.toJson(submitBean));
+                    submitTaskResult(gson.toJson(submitBean));
                 }
 
                 @Override
@@ -456,11 +487,61 @@ public class TimingEditorActivity extends AppCompatActivity {
 
     }
 
+
+    private boolean checkTimeCaseNoList(List<TimeCaseListBean> timeCaseListBeanList, List<String> timeCaseNoList, String head){
+        for (TimeCaseListBean timeCaseListBean : timeCaseListBeanList
+        ) {
+            String no = timeCaseListBean.getNo();
+            if(no == null || "".equals(no.trim())){
+                ToastUtil.showShort(TimingEditorActivity.this,head+"配时方案号不能为空！");
+                return false;
+            }
+            try{
+                Integer n = Integer.parseInt(no.trim());
+                if(n < 1){
+                    ToastUtil.showShort(TimingEditorActivity.this,head+"配时方案号必须大于0！");
+                    return false;
+                }
+            }catch (Exception e){
+                ToastUtil.showShort(TimingEditorActivity.this,head+"配时方案号输入格式有误！");
+                return false;
+            }
+            if(timeCaseNoList.contains(no.trim())){
+                ToastUtil.showShort(TimingEditorActivity.this,head+"配时方案号重复输入！");
+                return false;
+            }
+            timeCaseNoList.add(no);
+        }
+        return true;
+    }
+
+    private boolean checkPeriodCaseNoList(List<PeriodCaseListBean> periodCaseListBeanList, List<String> timeCaseNoList, String head){
+        List<String> periodCaseNoList = new ArrayList<>();
+        for (PeriodCaseListBean periodCaseListBean : periodCaseListBeanList
+        ) {
+            String start = periodCaseListBean.getStart();
+            String no = periodCaseListBean.getTimeCaseNo();
+            if(start == null || "".equals(start.trim()) || no == null || "".equals(no.trim())){
+                ToastUtil.showShort(TimingEditorActivity.this,head + "请检查时间表输入项！");
+                return false;
+            }
+            if(!timeCaseNoList.contains(no.trim())){
+                ToastUtil.showShort(TimingEditorActivity.this,head + "时间表使用的方案号不存在！");
+                return false;
+            }
+            if(periodCaseNoList.contains(no.trim())){
+                ToastUtil.showShort(TimingEditorActivity.this,head + "时间表方案号重复输入！");
+                return false;
+            }
+            periodCaseNoList.add(no.trim());
+        }
+        return true;
+    }
+
     /**
      * 上传任务结果
      */
     private void submitTaskResult(String json) {
-        Log.e("json", json.toString());
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_RESULT))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
@@ -551,7 +632,6 @@ public class TimingEditorActivity extends AppCompatActivity {
                 .getAsyncTwo(new ICallback<TaskDetailsChannel>() {
                     @Override
                     public void onSuccess(TaskDetailsChannel response) {
-                        //Log.e("fred  新数据：", response.toString());
                         if (response.data != null) {
                             TaskDetailsChannel.TaskDetails taskDetails = response.data;
 //                            if ("0".equals(taskDetails.state)) {
@@ -872,6 +952,7 @@ public class TimingEditorActivity extends AppCompatActivity {
 
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable PeriodCaseListBean periodCaseListBean, int index) {
+            holder.setIsRecyclable(false);//不使用复用 防止数据多时 复用时  多个item中的EditText填写的数据一样
             TextView startTime = holder.obtainView(R.id.start_time);
             EditText no = holder.obtainView(R.id.number);
             ImageView timetable_delete = holder.obtainView(R.id.timetable_delete);
@@ -946,6 +1027,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable PlanCaseListBean planCaseListBean, int index) {
+            holder.setIsRecyclable(false);//不使用复用 防止数据多时 复用时  多个item中的EditText填写的数据一样
             LinearLayout typeOne = holder.obtainView(R.id.type_one);
             LinearLayout typeTwo = holder.obtainView(R.id.type_two);
             LinearLayout typeThree = holder.obtainView(R.id.type_three);
@@ -1296,6 +1378,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         @SuppressLint("ClickableViewAccessibility")
         @Override
         public void onBindHolder(BaseViewHolder holder, @Nullable TimeCaseListBean timeCaseListBean, int index) {
+            holder.setIsRecyclable(false);//不使用复用 防止数据多时 复用时  多个item中的EditText填写的数据一样
             LinearLayout typeOne = holder.obtainView(R.id.type_one);
             LinearLayout typeTwo = holder.obtainView(R.id.type_two);
             LinearLayout typeThree = holder.obtainView(R.id.type_three);
@@ -1536,9 +1619,15 @@ public class TimingEditorActivity extends AppCompatActivity {
             //删除
             tvDelete.setOnClickListener(v -> {
                 if (isWeekday) {
+                    TimeCaseListBean delTimeCaseListBean = weekdaysTimeCaseDataList.get(index);
+                    if(delTimeCaseListBean.getNo() != null && !"".equals(delTimeCaseListBean.getNo().trim()))
+                        hasCaseNoMap.remove(delTimeCaseListBean.getNo().trim());
                     weekdaysTimeCaseDataList.remove(index);
                     timeCaseDataAdapter.bindData(true, weekdaysTimeCaseDataList);
                 } else {
+                    TimeCaseListBean delTimeCaseListBean = noWeekdaysTimeCaseDataList.get(index);
+                    if(delTimeCaseListBean.getNo() != null && !"".equals(delTimeCaseListBean.getNo().trim()))
+                        hasCaseNoMap.remove(delTimeCaseListBean.getNo().trim());
                     noWeekdaysTimeCaseDataList.remove(index);
                     timeCaseDataAdapter.bindData(true, noWeekdaysTimeCaseDataList);
                 }
@@ -1572,9 +1661,18 @@ public class TimingEditorActivity extends AppCompatActivity {
         @Override
         public void onChoiceItem(String str, int index) {
 
-            PlanCaseListBean weekDayPlanCaseListBean = weekdaysPlanCaseDataList.get(0);
-            PlanCaseListBean noWeekDaysPlanCaseListBean = noWeekdaysPlanCaseDataList.get(0);
-            PlanCaseListBean hideWeekDaysPlanCaseListBean = hideWeekdaysPlanCaseList.get(0);
+            PlanCaseListBean weekDayPlanCaseListBean = null;
+            PlanCaseListBean noWeekDaysPlanCaseListBean = null;
+            PlanCaseListBean hideWeekDaysPlanCaseListBean = null;
+            if(weekdaysPlanCaseDataList != null && weekdaysPlanCaseDataList.size() > 0){
+                weekDayPlanCaseListBean = weekdaysPlanCaseDataList.get(0);
+            }
+            if(noWeekdaysPlanCaseDataList != null && noWeekdaysPlanCaseDataList.size() > 0){
+                noWeekDaysPlanCaseListBean = noWeekdaysPlanCaseDataList.get(0);
+            }
+            if(hideWeekdaysPlanCaseList != null && hideWeekdaysPlanCaseList.size() > 0){
+                hideWeekDaysPlanCaseListBean = hideWeekdaysPlanCaseList.get(0);
+            }
 
             if(weekDayPlanCaseListBean == null)
                 return;
@@ -1835,7 +1933,7 @@ public class TimingEditorActivity extends AppCompatActivity {
             }else{
                 String value = editText.getText().toString().trim();
                 if(TextUtils.isEmpty(value)){
-                    value = "";
+                    value = "0";
                     editText.setText(value);
                 }
                 if(!callBack.setValue(value)){

@@ -49,7 +49,7 @@ public class JsonLog {
         requestLog.responses = lines;
 
         for (String line : lines) {
-            Log.e(tag, "║ " + line);
+            Log.i(tag, "║ " + line);
         }
         printLine(tag, false);
     }
@@ -60,14 +60,14 @@ public class JsonLog {
 
     public static void printLine(String tag, boolean isTop) {
         if (isTop) {
-            Log.e(tag, "╔═══════════════════════════════════════════════════════════════════════════════════════");
+            Log.i(tag, "╔═══════════════════════════════════════════════════════════════════════════════════════");
         } else {
-            Log.e(tag, "╚═══════════════════════════════════════════════════════════════════════════════════════");
+            Log.i(tag, "╚═══════════════════════════════════════════════════════════════════════════════════════");
         }
     }
 
     public static void printDivider(String tag) {
-        Log.e(tag, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        Log.i(tag, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
     }
 
@@ -81,25 +81,25 @@ public class JsonLog {
      */
     public static Response logForResponse(String tag, Response response, long costTime, RequestLog requestLog) {
         try {
-            Log.e(tag, "===============Response'log=======begin============================");
+            Log.i(tag, "===============Response'log=======begin============================");
             Response.Builder builder = response.newBuilder();
             Response clone = builder.build();
-            Log.e(tag, "url : " + clone.request().url());
-            Log.e(tag, "code : " + clone.code());
+            Log.i(tag, "url : " + clone.request().url());
+            Log.i(tag, "code : " + clone.code());
             if (requestLog != null) {
                 requestLog.code = clone.code() + "";
             }
-            Log.e(tag, "protocol : " + clone.protocol());
-            Log.e(tag, "request 耗时 : " + costTime + "ms");
+            Log.i(tag, "protocol : " + clone.protocol());
+            Log.i(tag, "request 耗时 : " + costTime + "ms");
             if (!TextUtils.isEmpty(clone.message())) {
-                Log.e(tag, "message : " + clone.message());
+                Log.i(tag, "message : " + clone.message());
             }
 
             ResponseBody body = clone.body();
             if (body != null) {
                 MediaType mediaType = body.contentType();
                 if (mediaType != null) {
-                    Log.e(tag, "responseBody's contentType : " + mediaType.toString() + " type: " + mediaType.subtype());
+                    Log.i(tag, "responseBody's contentType : " + mediaType.toString() + " type: " + mediaType.subtype());
 
                     if (isText(mediaType)) {
                         String resp = body.string();
@@ -107,18 +107,18 @@ public class JsonLog {
                         if (isJson(mediaType)) {
                             printJson(tag, resp, "", requestLog);
                         } else {
-                            Log.e(tag, "responseBody's content : " + resp);
+                            Log.i(tag, "responseBody's content : " + resp);
                         }
 
                         body = ResponseBody.create(mediaType, resp);
                         return response.newBuilder().body(body).build();
                     } else {
-                        Log.e(tag, "responseBody's content : " + " maybe [file part] , too large too print , ignored!");
+                        Log.i(tag, "responseBody's content : " + " maybe [file part] , too large too print , ignored!");
                     }
                 }
             }
 
-            Log.e(tag, "===============Response'log=======end============================");
+            Log.i(tag, "===============Response'log=======end============================");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,30 +138,30 @@ public class JsonLog {
             String url = request.url().toString();
             Headers headers = request.headers();
 
-            Log.e(tag, "===============Request'log======begin=============================");
-            Log.e(tag, "method : " + request.method());
-            Log.e(tag, "url : " + url);
+            Log.i(tag, "===============Request'log======begin=============================");
+            Log.i(tag, "method : " + request.method());
+            Log.i(tag, "url : " + url);
             requestLogBean.url = url;
             if (headers != null && headers.size() > 0) {
-                Log.e(tag, "headers : " + headers.toString());
+                Log.i(tag, "headers : " + headers.toString());
                 requestLogBean.headers = headers.toString();
             }
             RequestBody requestBody = request.body();
             if (requestBody != null) {
                 MediaType mediaType = requestBody.contentType();
                 if (mediaType != null) {
-                    Log.e(tag, "requestBody's contentType : " + mediaType.toString() + " type: " + mediaType.subtype());
+                    Log.i(tag, "requestBody's contentType : " + mediaType.toString() + " type: " + mediaType.subtype());
 
                     if (isText(mediaType)) {
                         String requestBodyContent = bodyToString(request);
                         requestLogBean.params = requestBodyContent;
-                        Log.e(tag, "requestBody's content : " + requestBodyContent);
+                        Log.i(tag, "requestBody's content : " + requestBodyContent);
                     } else {
-                        Log.e(tag, "requestBody's content : " + " maybe [file part] , too large too print , ignored!");
+                        Log.i(tag, "requestBody's content : " + " maybe [file part] , too large too print , ignored!");
                     }
                 }
             }
-            Log.e(tag, "===============Request'log=======end============================");
+            Log.i(tag, "===============Request'log=======end============================");
         } catch (Exception e) {
             e.printStackTrace();
         }

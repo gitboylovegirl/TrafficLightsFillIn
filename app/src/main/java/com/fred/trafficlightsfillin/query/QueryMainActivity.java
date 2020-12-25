@@ -128,7 +128,6 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
                             roadData.add(roadChannels.get(i));
                         }
                     }
-                    Log.e("fred",roadPlaces.size()+"  路口数据");
                     if (roadPlaces!=null&&roadPlaces.size()>0){
                         if(popupWindow!=null&&popupWindow.isShowing()){
                             popupWindow.dismiss();

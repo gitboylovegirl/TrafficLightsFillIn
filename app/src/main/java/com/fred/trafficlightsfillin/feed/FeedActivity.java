@@ -177,7 +177,6 @@ public class FeedActivity extends AppCompatActivity {
                             roadData.add(roadChannels.get(i));
                         }
                     }
-                    Log.e("fred",roadPlaces.size()+"  路口数据");
                     if (roadPlaces!=null&&roadPlaces.size()>0){
                         if(popupWindow!=null&&popupWindow.isShowing()){
                             popupWindow.dismiss();

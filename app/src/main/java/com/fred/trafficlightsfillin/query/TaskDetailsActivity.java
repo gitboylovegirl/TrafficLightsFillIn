@@ -102,7 +102,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
                 .getAsyncTwo(new ICallback<TaskDetailsChannel>() {
                     @Override
                     public void onSuccess(TaskDetailsChannel response) {
-                        Log.e("fred  新数据：", response.toString());
                         if(response.data!=null){
                             TaskDetailsChannel.TaskDetails taskDetails = response.data;
                             roadName.setText(taskDetails.roadPlace);
@@ -202,7 +201,6 @@ public class TaskDetailsActivity extends AppCompatActivity {
             ImageView picture = holder.obtainView(R.id.iv_picture);
 
             String pictureUrl =RequestApi.BASE_OFFICIAL_URL+RequestApi.DOWN_IMG + "/" + imageBean.path;
-            Log.e("pictureUrl",pictureUrl);
 
             GlideUrl glideUrl = new GlideUrl(pictureUrl, new LazyHeaders.Builder()
                     .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())

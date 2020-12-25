@@ -245,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onSuccess(LocationResponse response) {
                         Log.e("Location", "Location: "+response.code);
                         if (response.code == 401001) {
-                            freshToken();
                             SharedPreferenceUtils.getInstance().setToken("");
                         } else if (response.code == 0) {
                             if (response.getData() != null && response.getData() > 0) {
@@ -300,36 +299,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    /**
-     * 刷新token
-     */
-    private void freshToken() {
-        if(TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getToken())){
-            return;
-        }
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN))
-                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .build()
-                .getAsync(new ICallback<TokenResponse>() {
-                    @Override
-                    public void onSuccess(TokenResponse response) {
-                        if(response.code == 401001){
-                            Intent intent = new Intent();
-                            intent.setClass(MainActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                        }else{
-                            Log.e("fred  刷新：", response.toString());
-                            SharedPreferenceUtils.getInstance().setToken(response.getData());
-                        }
-                    }
-
-                    @Override
-                    public void onFail(int errorCode, String errorMsg) {
-
-                    }
-                });
-    }
 
     private void initView() {
         feed.setOnClickListener(this::onClick);

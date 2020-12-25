@@ -246,7 +246,6 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
                 .getAsyncTwo(new ICallback<TaskDetailsChannel>() {
                     @Override
                     public void onSuccess(TaskDetailsChannel response) {
-                        Log.e("fred  新数据：", response.toString());
                         if (response.data != null) {
                             taskDetails = response.data;
                             number.setText("编号："+taskDetails.trafficLightNo);
