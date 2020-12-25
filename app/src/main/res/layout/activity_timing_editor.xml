@@ -696,6 +696,7 @@
 
                     <TextView
                         android:layout_width="65dp"
+                        android:layout_marginLeft="20dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="时间"
@@ -705,7 +706,7 @@
                     <TextView
                         android:layout_width="65dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="115dp"
+                        android:layout_marginLeft="90dp"
                         android:gravity="center"
                         android:text="方案号"
                         android:textColor="#ff0e0e0e"
@@ -767,7 +768,7 @@
                     android:textColor="#ff0e0e0e"
                     android:textSize="15sp" />
 
-                <EditText
+                <TextView
                     android:id="@+id/better"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -781,7 +782,7 @@
                     android:paddingVertical="30dp"
                     android:text="">
 
-                </EditText>
+                </TextView>
 
                 <RelativeLayout
                     android:layout_width="match_parent"

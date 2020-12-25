@@ -130,7 +130,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     @BindView(R.id.type_one)
     LinearLayout typeOne;
     @BindView(R.id.better)
-    EditText better;
+    TextView better;
     @BindView(R.id.time_list_add)
     TextView timeListAdd;
     @BindView(R.id.timetable_add)
@@ -326,7 +326,6 @@ public class TimingEditorActivity extends AppCompatActivity {
         submit.setOnClickListener(v -> {
             SubmitBean submitBean = new SubmitBean();
             submitBean.setDate(Long.parseLong(TimeUtils.time11(endTime.getText().toString())));
-            submitBean.setRemark(better.getText().toString());
             submitBean.setTaskId(Integer.parseInt(id));
 
 
@@ -392,24 +391,6 @@ public class TimingEditorActivity extends AppCompatActivity {
             });
         });
 
-        better.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString().length() > 1) {
-                    taskStatus.setText("调整后");
-                }
-            }
-        });
-
         //时间表新增
         timeListAdd.setOnClickListener(v -> {
             Gson gson = new Gson();
@@ -426,6 +407,9 @@ public class TimingEditorActivity extends AppCompatActivity {
                     newBean = gson.fromJson(gson.toJson(newBean), PeriodCaseListBean.class);
                 }
                 newBean.setTimeCaseNo("");
+                if(null == newBean.getStart() || "".equals(newBean.getStart().trim())){
+                    newBean.setStart("00:00:00");
+                }
                 addPeriodCaseList.add(newBean);
                 timeTableAdapter.bindData(false, addPeriodCaseList);
                 weekdaysPeriodCaseDataList.addAll(addPeriodCaseList);
@@ -436,6 +420,9 @@ public class TimingEditorActivity extends AppCompatActivity {
                     newBean.setWorkday("0");//周六日
                 }else{
                     newBean = gson.fromJson(gson.toJson(newBean), PeriodCaseListBean.class);
+                }
+                if(null == newBean.getStart() || "".equals(newBean.getStart().trim())){
+                    newBean.setStart("00:00:00");
                 }
                 newBean.setTimeCaseNo("");
                 addPeriodCaseList.add(newBean);
@@ -516,7 +503,6 @@ public class TimingEditorActivity extends AppCompatActivity {
     }
 
     private boolean checkPeriodCaseNoList(List<PeriodCaseListBean> periodCaseListBeanList, List<String> timeCaseNoList, String head){
-        List<String> periodCaseNoList = new ArrayList<>();
         for (PeriodCaseListBean periodCaseListBean : periodCaseListBeanList
         ) {
             String start = periodCaseListBean.getStart();
@@ -529,11 +515,6 @@ public class TimingEditorActivity extends AppCompatActivity {
                 ToastUtil.showShort(TimingEditorActivity.this,head + "时间表使用的方案号不存在！");
                 return false;
             }
-            if(periodCaseNoList.contains(no.trim())){
-                ToastUtil.showShort(TimingEditorActivity.this,head + "时间表方案号重复输入！");
-                return false;
-            }
-            periodCaseNoList.add(no.trim());
         }
         return true;
     }
@@ -634,24 +615,11 @@ public class TimingEditorActivity extends AppCompatActivity {
                     public void onSuccess(TaskDetailsChannel response) {
                         if (response.data != null) {
                             TaskDetailsChannel.TaskDetails taskDetails = response.data;
-//                            if ("0".equals(taskDetails.state)) {
-//                                state.setText("后台取消");
-//                            } else if ("1".equals(taskDetails.state)) {
-//                                state.setText("未接单");
-//                            } else if ("2".equals(taskDetails.state)) {
-//                                state.setText("未完成");
-//                            } else if ("3".equals(taskDetails.state)) {
-//                                state.setText("配时表未更新");
-//                            } else if ("4".equals(taskDetails.state)) {
-//                                state.setText("完成已上传");
-//                            }
-
                             if (TextUtils.isEmpty(taskDetails.cause)) {
                                 better.setText("无");
                             } else {
                                 better.setText(taskDetails.cause);
                             }
-                            //endTime.setText(TimeUtils.time10(taskDetails.updateTime));
                         }
                     }
 
@@ -1924,6 +1892,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         public void onFocusChange(View view, boolean b) {
             EditText editText = ((EditText) view);
             if (b) {
+                taskStatus.setText("调整中");
                 editText.setBackgroundResource(R.color.select_bg_color);
                 editText.setTextColor(Color.parseColor("#F70909"));
                 String value = editText.getText().toString().trim();
@@ -1941,7 +1910,7 @@ public class TimingEditorActivity extends AppCompatActivity {
                 }
                 editText.setBackgroundColor(Color.parseColor("#EFEFEF"));
                 editText.setTextColor(Color.parseColor("#ff2a4997"));
-
+                taskStatus.setText("调整后");
             }
         }
     }

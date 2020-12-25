@@ -258,7 +258,7 @@
                         android:id="@+id/task_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="调整前"
+                        android:text="调整后"
                         android:textColor="@color/black"
                         android:textSize="28sp"
                         android:textStyle="bold">
@@ -693,6 +693,7 @@
 
                     <TextView
                         android:layout_width="65dp"
+                        android:layout_marginLeft="20dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="时间"
@@ -702,7 +703,7 @@
                     <TextView
                         android:layout_width="65dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="115dp"
+                        android:layout_marginLeft="90dp"
                         android:gravity="center"
                         android:text="方案号"
                         android:textColor="#ff0e0e0e"
