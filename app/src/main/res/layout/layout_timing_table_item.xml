@@ -318,6 +318,7 @@
 
             <EditText
                 android:id="@+id/time_case_no"
+                android:selectAllOnFocus="true"
                 android:layout_width="37dp"
                 android:layout_height="28dp"
                 android:gravity="center"
@@ -334,6 +335,7 @@
         </LinearLayout>
         <EditText
             android:id="@+id/programme_one"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -349,6 +351,7 @@
 
         <EditText
             android:id="@+id/programme_two"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -364,6 +367,7 @@
 
         <EditText
             android:id="@+id/programme_three"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -379,6 +383,7 @@
 
         <EditText
             android:id="@+id/programme_four"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -394,6 +399,7 @@
 
         <EditText
             android:id="@+id/programme_five"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -409,6 +415,7 @@
 
         <EditText
             android:id="@+id/programme_six"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -424,6 +431,7 @@
 
         <EditText
             android:id="@+id/programme_seven"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -439,6 +447,7 @@
 
         <EditText
             android:id="@+id/programme_eight"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -454,6 +463,7 @@
 
         <EditText
             android:id="@+id/programme_nine"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"
@@ -469,6 +479,7 @@
 
         <EditText
             android:id="@+id/programme_ten"
+            android:selectAllOnFocus="true"
             android:layout_width="37dp"
             android:layout_height="28dp"
             android:background="@drawable/selector_tv_bg"

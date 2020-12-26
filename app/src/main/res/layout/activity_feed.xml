@@ -81,18 +81,18 @@
                                 android:hint="请输入路口名称"
                                 android:layout_width="130dp"
                                 android:layout_height="wrap_content"
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:gravity="center"
                                 />
 
                             <ImageView
                                 android:scaleType="fitXY"
-                                android:layout_marginRight="5dp"
+                                android:layout_marginRight="2dp"
+                                android:layout_marginTop="7dp"
                                 android:src="@drawable/bg_more_choose"
                                 android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
                                 android:layout_width="12dp"
-                                android:layout_height="8dp">
+                                android:layout_height="12dp">
                             </ImageView>
                         </RelativeLayout>
                     </LinearLayout>

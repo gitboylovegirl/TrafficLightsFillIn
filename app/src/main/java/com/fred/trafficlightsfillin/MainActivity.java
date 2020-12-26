@@ -2,7 +2,10 @@ package com.fred.trafficlightsfillin;
 
 import android.Manifest;
 import android.app.AppOpsManager;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,12 +46,15 @@ import com.fred.trafficlightsfillin.utils.CalendarReminderUtils;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.LocationUtils;
 import com.fred.trafficlightsfillin.utils.NotificationUtil;
+import com.fred.trafficlightsfillin.utils.RoadDataUtil;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
+import com.fred.trafficlightsfillin.utils.StageDataUtil;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.zhihu.matisse.Matisse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -118,6 +124,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         getNewVersion();
         requestPermissions();
+
+        /**
+         * 加载基础数据
+         *
+         */
+        StageDataUtil.init();
+        RoadDataUtil.init();
     }
     private void setJiguangAlias(){
         String phone = SharedPreferenceUtils.getInstance().getPhone();
@@ -207,10 +220,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     double lat = aMapLocation.getLatitude();
                     double lng = aMapLocation.getLongitude();
                     if (lat > 0 && lng > 0) {
-                        locationInfo(String.valueOf(lat), String.valueOf(lat));
+                        locationInfo(String.valueOf(lat), String.valueOf(lng));
                     }
                 } else {//失败
-                    locationInfo("22", "43");
                     Log.i("fred", "Distance: 定位失败 :" + aMapLocation.getErrorCode() + ", errInfo:" + aMapLocation.getErrorInfo());
                 }
             }
@@ -234,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void locationInfo(String lat, String lon) {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.LOCATIO))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("flag", SharedPreferenceUtils.getInstance().getFlag())
                 .addParam("lat", lat)
                 .addParam("lon", lon)
@@ -242,25 +254,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .postAsync(new ICallback<LocationResponse>() {
                     @Override
                     public void onSuccess(LocationResponse response) {
-                        Log.e("Location", "Location: "+response.code);
                         if (response.code == 401001) {
                             SharedPreferenceUtils.getInstance().setToken("");
                         } else if (response.code == 0) {
-                            if (response.getData() != null && response.getData() > 0) {
-                                if (SharedPreferenceUtils.getInstance().getSeTime() > 0) {
-                                    long lastTime = SharedPreferenceUtils.getInstance().getCurrentTime();
-                                    long currentTimeMillis = System.currentTimeMillis();
-                                    long seTime = SharedPreferenceUtils.getInstance().getSeTime();
 
-                                    Log.e("fred","  time  "+currentTimeMillis+"   "+  lastTime+"   "+seTime);
-                                    if (currentTimeMillis > lastTime&&SharedPreferenceUtils.getInstance().getRemindState()) {
-                                        long time = currentTimeMillis + (seTime * 60 * 60 * 1000);
-                                        CalendarReminderUtils.addCalendarEvent(MainActivity.this, "配时中心提醒", "您有未完成的任务，请及时登陆完成", time, 1);
-                                        SharedPreferenceUtils.getInstance().setCurrentTime(time);
-                                    }
-
-                                }
+                            if (response.getData() == null || response.getData() <= 0) {//没有新任务不需要添加提醒
+                                return;
                             }
+
+                            boolean remindstate = SharedPreferenceUtils.getInstance().getRemindState();
+                            if(!remindstate){//已关闭提醒
+                                return;
+                            }
+
+                            long lastTime = SharedPreferenceUtils.getInstance().getLastRemindTime();
+                            long currentTimeMillis = System.currentTimeMillis();
+
+                            if(lastTime > currentTimeMillis){//如果最后提醒时间大于当前时间说明新任务日历提醒还没触发，不用添加新的
+                                return;
+                            }
+
+                            long seTime = SharedPreferenceUtils.getInstance().getSeTime();
+                            //计算下次提醒时间
+                            long time = currentTimeMillis + (seTime * 60 * 60 * 1000);
+                            //设置提醒
+                            CalendarReminderUtils.addCalendarEvent(MainActivity.this, "配时中心提醒", "您有未完成的任务，请及时登陆完成", time, 1);
+                            //记录最后提醒时间
+                            SharedPreferenceUtils.getInstance().setLastRemindTime(time);
                         }
                     }
 
@@ -277,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void getNewVersion() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.NEW_VERSION))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<AppUpdateResponse>() {
                     @Override
@@ -286,6 +306,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             int nowVersion = SharedPreferenceUtils.getInstance().getNewestVersion();
                             if(response.getData() != null && nowVersion < response.getData()){
                                 //需要更新版本
+
                             }
                         }
                     }
@@ -358,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 List<String> timeSet = new ArrayList<>();
                 for (int i = 1; i < 25; i++) {
-                    timeSet.add(i + "小时候后");
+                    timeSet.add(i + "小时");
                 }
                 DialogUtils.showChoiceTitltDialog(MainActivity.this, timeSet, new DialogUtils.OnButtonClickListener() {
                     @Override
@@ -455,5 +476,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             isExit=false;
         }
     };
+
+
 
 }

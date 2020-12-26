@@ -110,7 +110,7 @@ public class RecordListActivity extends AppCompatActivity {
     private void initData() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("engineerId", SharedPreferenceUtils.getInstance().getId())
                 .addParam("pageNum", String.valueOf(page))
                 .addParam("pageSize", "50")

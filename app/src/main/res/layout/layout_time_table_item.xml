@@ -39,6 +39,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="82dp"
             android:gravity="center"
+            android:selectAllOnFocus="true"
+            android:background="#EFEFEF"
             android:textColor="@color/black"
             android:textSize="14sp">
 

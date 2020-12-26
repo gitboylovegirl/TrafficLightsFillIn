@@ -66,6 +66,8 @@ public class TimingDetailsActivity extends AppCompatActivity {
     RecyclerView timetable;
     @BindView(R.id.time_list)
     RecyclerView timeList;
+    @BindView(R.id.cad_img_lable)
+    TextView cadImgLable;
     @BindView(R.id.picture_list)
     RecyclerView pictureList;
 
@@ -230,7 +232,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
     private void initTrafficlighInfo() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_DETAILS) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<TrafficlighResonse>() {
                     @Override
@@ -263,12 +265,18 @@ public class TimingDetailsActivity extends AppCompatActivity {
     private void initPictrue() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_IMAGES) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<ImageResponse>() {
                     @Override
                     public void onSuccess(ImageResponse response) {
                         if (response.code == 0) {
+
+                            if(response.data == null || response.data.size() == 0){
+                                return;
+                            }
+                            cadImgLable.setVisibility(View.VISIBLE);
+
                             imageBeans = response.data;
                             pictureAdapter.bindData(true, response.data);
                         }
@@ -311,7 +319,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
     private void initTrafficlighPeishi() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/" + trafficLightId))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<TimingDetailsResponse>() {
                     @Override

@@ -775,9 +775,9 @@
                     android:layout_marginLeft="33dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="25dp"
-                    android:background="#2A4997"
+                    android:background="#F6F6F6"
                     android:gravity="center"
-                    android:textColor="@color/white"
+                    android:textColor="#2A4997"
                     android:paddingHorizontal="15dp"
                     android:paddingVertical="30dp"
                     android:text="">

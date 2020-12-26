@@ -71,9 +71,10 @@ public class StageDataUtil {
 
     public static void init(){
         stageNo2BitMap = new HashMap<>();
+        hash2StageNo = new HashMap<>();
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.STAGE_LIST))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageSize", "100")
                 .addParam("pageNum", "1")
                 .build()
@@ -100,7 +101,7 @@ public class StageDataUtil {
                                     stageNo2BitMap.put(stageChanel.no, BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length));
                                     hash2StageNo.put(stageChanel.hash, stageChanel.no);
                                 }catch (Exception e){
-                                    Log.e("fred", "Stage data error!");
+                                    Log.e("fred", "Stage data error!"+e.getMessage());
                                 }
                             }
                         }

@@ -206,11 +206,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/weekday_title"
+                    android:visibility="gone"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_color_blue_gray_stroke_main"
@@ -223,6 +223,7 @@
                 <TextView
                     android:id="@+id/noweekday_title"
                     android:layout_width="80dp"
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_color_blue_gray_stroke"
                     android:gravity="center"
@@ -728,6 +729,8 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/cad_img_lable"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="33dp"

@@ -554,7 +554,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         RequestBody body = FormBody.create(MediaType.parse("application/json; charset=utf-8"), json.toString());
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_RESULT))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .setBody(body)
                 .build()
                 .postBodyAsync(new ICallback<TaskResultResponse>() {
@@ -578,7 +578,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     private void initTrafficlighInfo() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_DETAILS) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<TrafficlighResonse>() {
                     @Override
@@ -608,7 +608,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     private void initPictrue() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_IMAGES) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<ImageResponse>() {
                     @Override
@@ -636,7 +636,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     private void initTaskInfo() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS) + "/" + id)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsyncTwo(new ICallback<TaskDetailsChannel>() {
                     @Override
@@ -782,7 +782,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     private void uploadPicture(List<String> data) {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.UP_IMG) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addUploadFiles(data)
                 .build()
                 .uploadFiles(new ICallback<BaseResponse>() {
@@ -808,7 +808,7 @@ public class TimingEditorActivity extends AppCompatActivity {
         }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.DEL_IMG) + "/" + imgID)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .deleteAsync(new ICallback<BaseResponse>() {
                     @Override
@@ -856,7 +856,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     private void initTrafficlighPeishi() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_PEISHI + "/" + trafficLightId))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<TimingDetailsResponse>() {
                     @Override
@@ -1936,6 +1936,8 @@ public class TimingEditorActivity extends AppCompatActivity {
                 String value = editText.getText().toString().trim();
                 if("0".equals(value)){
                     editText.setText("");
+                }else{
+                    editText.selectAll();
                 }
             }else{
                 String value = editText.getText().toString().trim();

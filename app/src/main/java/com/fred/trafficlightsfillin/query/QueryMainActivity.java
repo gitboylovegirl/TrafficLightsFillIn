@@ -39,6 +39,7 @@ import com.fred.trafficlightsfillin.record.bean.NewRecordResponse;
 import com.fred.trafficlightsfillin.record.bean.TrafficligthResponse;
 import com.fred.trafficlightsfillin.record.bean.TrafficligthVo;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
+import com.fred.trafficlightsfillin.utils.RoadDataUtil;
 import com.fred.trafficlightsfillin.utils.SearchAdapter;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
@@ -70,7 +71,6 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
 
     List<NewRecordChannel> list = new ArrayList<>();
     List<TrafficligthVo> trafficlightList = new ArrayList<>();
-    List<RoadResponse.RoadChannel> roadChannels = new ArrayList<>();
     List<TeamListResponse.TeamListChannel> teamListChannels = new ArrayList<>();
     List<TeamListResponse.TeamListChannel> taskListChannels = new ArrayList<>();
 
@@ -84,6 +84,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     TextView roadType;
     @BindView(R.id.empty_view)
     TextView emptyView;
+    List<RoadResponse.RoadChannel> roadChannels;
 
     private LinearLayout empty;
     private EditText search;
@@ -97,10 +98,10 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         ButterKnife.bind(this);
 
         initView();
-        getRoadData();
         getTeamList();
         getTaskList();
         getRoadTypeList();
+        roadChannels = RoadDataUtil.getDatatList();
 
         roadPlaceadapter=new RoadPlaceadapter();
 
@@ -118,38 +119,36 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void afterTextChanged(Editable s) {
-                List<String> roadPlaces = new ArrayList<>();
+                if(popupWindow!=null&&popupWindow.isShowing()){
+                    popupWindow.dismiss();
+                }
+                if(TextUtils.isEmpty(s.toString().trim())){
+                    return;
+                }
+
+                if(roadChannels == null || roadChannels.size() == 0){
+                    return;
+                }
                 List<RoadResponse.RoadChannel> roadData= new ArrayList<>();
-                if(!TextUtils.isEmpty(s.toString().trim())){
-                    roadPlaces.clear();
-                    for (int i = 0; i < roadChannels.size(); i++) {
-                        if(roadChannels.get(i).getRoadPlace().contains(s.toString().trim())&&roadChannels.get(i).getRoadPlace()!=null){
-                            roadPlaces.add(roadChannels.get(i).getRoadPlace());
-                            roadData.add(roadChannels.get(i));
-                        }
-                    }
-                    if (roadPlaces!=null&&roadPlaces.size()>0){
-                        if(popupWindow!=null&&popupWindow.isShowing()){
-                            popupWindow.dismiss();
-                        }
-                        showPopupWindow(search,roadData);
-                        roadPlaceadapter.bindData(true,roadPlaces);
-                        search.setFocusable(true);
-                    }else {
-                        if(popupWindow!=null&&popupWindow.isShowing()){
-                            popupWindow.dismiss();
-                        }
-                    }
-                }else {
-                    if(popupWindow!=null&&popupWindow.isShowing()){
-                        popupWindow.dismiss();
+                for (int i = 0; i < roadChannels.size(); i++) {
+                    if(roadChannels.get(i).getRoadPlace().contains(s.toString().trim())&&roadChannels.get(i).getRoadPlace()!=null){
+                        roadData.add(roadChannels.get(i));
                     }
                 }
+                roadPlaceadapter.bindData(true, roadData);
+                roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+                    search.setText(roadData.get(index).getRoadPlace());
+                    search.setSelection(roadData.get(index).getRoadPlace().length());
+                    roadType.setText(roadData.get(index).getRoadPlaceType());
+                    popupWindow.dismiss();
+                });
+                showPopupWindow(search);
+                search.setFocusable(true);
             }
         });
     }
 
-    private void showPopupWindow(View view,List<RoadResponse.RoadChannel> data) {
+    private void showPopupWindow(View view) {
         // 一个自定义的布局，作为显示的内容
         View contentView = LayoutInflater.from(this).inflate(
                 R.layout.layout_popupwindow, null);
@@ -159,12 +158,6 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         content.setLayoutManager(new LinearLayoutManager(QueryMainActivity.this));
         content.setAdapter(roadPlaceadapter);
 
-        roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
-            search.setText(data.get(index).getRoadPlace());
-            search.setSelection(data.get(index).getRoadPlace().length());
-            roadType.setText(data.get(index).getRoadPlaceType());
-            popupWindow.dismiss();
-        });
 
         popupWindow = new PopupWindow(contentView,  LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
 
@@ -180,7 +173,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         popupWindow.showAsDropDown(view);
     }
 
-    class RoadPlaceadapter extends BaseRecyclerAdapter<String>{
+    class RoadPlaceadapter extends BaseRecyclerAdapter<RoadResponse.RoadChannel>{
 
         @Override
         public int bindView(int viewType) {
@@ -188,10 +181,9 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         }
 
         @Override
-        public void onBindHolder(BaseViewHolder holder, @Nullable String s, int index) {
+        public void onBindHolder(BaseViewHolder holder, @Nullable RoadResponse.RoadChannel roadChannel, int index) {
             TextView tv_place=holder.obtainView(R.id.tv_place);
-
-            tv_place.setText(s);
+            tv_place.setText(roadChannel.getRoadPlace());
         }
     }
 
@@ -267,7 +259,6 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
 //                });
                 break;
             case R.id.road_place:
-                getRoadData();
                 List<String> roadPlaces = new ArrayList<>();
                 for (int i = 0; i < roadChannels.size(); i++) {
                     roadPlaces.add(roadChannels.get(i).getRoadPlace());
@@ -364,37 +355,12 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     }
 
     /**
-     * 获取路口数据
-     */
-    private void getRoadData() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ROAD_PLACE) + "/all")
-                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .build()
-                .getAsync(new ICallback<RoadResponse>() {
-                    @Override
-                    public void onSuccess(RoadResponse response) {
-                        if (response.data != null) {
-                            roadChannels.clear();
-                            roadChannels.addAll(response.data);
-                            //roadPlace.setText(roadChannels.get(0).getRoadPlace());
-                        }
-                    }
-
-                    @Override
-                    public void onFail(int errorCode, String errorMsg) {
-
-                    }
-                });
-    }
-
-    /**
      * 获取班组列表
      */
     private void getTeamList() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TEAM_LIST))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", "1")
                 .addParam("pageSize", "50")
                 .build()
@@ -421,7 +387,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     private void getTaskList() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_SOURCE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", "1")
                 .addParam("pageSize", "50")
                 .build()
@@ -448,7 +414,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
     private void getRoadTypeList() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ROAD_TYPE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<RoadTypeResponse>() {
                     @Override
@@ -477,7 +443,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         }*/
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", String.valueOf(page))
                 .addParam("pageSize", "20")
                 .addParam("roadPlace",search.getText().toString().trim())
@@ -523,7 +489,7 @@ public class QueryMainActivity extends AppCompatActivity implements View.OnClick
         }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGHT_PAGE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("pageNum", String.valueOf(page))
                 .addParam("pageSize", "50")
                 .addParam("roadPlace", search.getText().toString().trim())

@@ -139,7 +139,7 @@ public class ChangePasswordActivity extends BaseActivity {
         if (newPwd.equals(newPwdTwo)){
             ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.CHANGE_PASSWORD))
                     .addHeader("authorization",SharedPreferenceUtils.getInstance().getToken())
-                    .addHeader("refresh_token",SharedPreferenceUtils.getInstance().getrefreshToken())
+                    .addHeader("refresh-token",SharedPreferenceUtils.getInstance().getrefreshToken())
                     .addParam("newPwd",newPwd)
                     .addParam("oldPwd",oldPwd)
                     .build()

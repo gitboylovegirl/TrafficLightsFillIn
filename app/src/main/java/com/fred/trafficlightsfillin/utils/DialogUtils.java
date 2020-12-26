@@ -25,6 +25,7 @@ import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.intersection.bean.StageResponse;
 import com.itheima.wheelpicker.WheelPicker;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -192,6 +193,7 @@ public class DialogUtils {
             @Override
             public void onClick(View v) {
                 SharedPreferenceUtils.getInstance().setRemindState(false);
+                ToastUtil.showShort(context, "已关闭提醒！");
                dialog.dismiss();
             }
         });
@@ -199,11 +201,12 @@ public class DialogUtils {
         picker.setOnItemSelectedListener((wheelPicker, o, i) -> {
             if (listener != null) {
                 listener.onChoiceItem(data.get(i), i);
-                SharedPreferenceUtils.getInstance().setRemindState(true);
             }
         });
 
         confirm.setOnClickListener(v -> {
+            SharedPreferenceUtils.getInstance().setRemindState(true);
+            ToastUtil.showShort(context, "提醒设置成功！");
             dialog.dismiss();
         });
         picker.setOnClickListener(v -> {
@@ -288,6 +291,9 @@ public class DialogUtils {
      * @param listener
      */
     public static void showPictureDialog(Activity context, List<ImageResponse.ImageBean> imageBeans, int currentPosition,int type, OnButtonClickListener listener) {
+        List<ImageResponse.ImageBean> dataList = new ArrayList<>();
+        dataList.addAll(imageBeans);
+
         AlertDialog dialog = new AlertDialog.Builder(context).create();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.setCancelable(true);
@@ -301,9 +307,9 @@ public class DialogUtils {
         ImageView close_window = window.findViewById(R.id.close_window);
         PagerAdapter adapter=null;
         if(type==2){
-            imageBeans.remove(imageBeans.size()-1);
+            dataList.remove(dataList.size()-1);
         }
-        adapter = new PagerAdapter(context,type, imageBeans, pos -> {
+        adapter = new PagerAdapter(context,type, dataList, pos -> {
             if (listener!=null){
                 listener.onChoiceItem("",pos);
             }

@@ -12,6 +12,7 @@ import com.fred.trafficlightsfillin.login.LoginActivity;
 import com.fred.trafficlightsfillin.login.TokenResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.utils.RoadDataUtil;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StageDataUtil;
 import com.fred.trafficlightsfillin.utils.StatusBarUtils;
@@ -34,15 +35,10 @@ public class WelcomeActivity extends Activity {
         timer=new Timer();
         TimerTask task=new TimerTask(){
             public void run(){
-                Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
-                startActivity(intent);
-                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-                WelcomeActivity.this.finish();
+                freshToken();
             }
         };
         timer.schedule(task, 2000);
-        StageDataUtil.init();
-        freshToken();
     }
 
     @Override
@@ -58,23 +54,40 @@ public class WelcomeActivity extends Activity {
      * 刷新token
      */
     private void freshToken() {
+        Log.e("fred", "Token:"+ SharedPreferenceUtils.getInstance().getToken());
+        Log.e("fred", "RefreshToken:"+ SharedPreferenceUtils.getInstance().getrefreshToken());
         if(TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getToken())){
+            Intent intent = new Intent();
+            intent.setClass(WelcomeActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+        if(TextUtils.isEmpty(SharedPreferenceUtils.getInstance().getrefreshToken())){
+            Intent intent = new Intent();
+            intent.setClass(WelcomeActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
             return;
         }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.REFRESH_TOKEN))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<TokenResponse>() {
                     @Override
                     public void onSuccess(TokenResponse response) {
-                        if(response.code == 401001){
+                        if(response.code == 0){
+                            SharedPreferenceUtils.getInstance().setToken(response.getData());
+                            Intent intent = new Intent();
+                            intent.setClass(WelcomeActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }else{
                             Intent intent = new Intent();
                             intent.setClass(WelcomeActivity.this, LoginActivity.class);
                             startActivity(intent);
-                        }else{
-                            SharedPreferenceUtils.getInstance().setToken(response.getData());
                         }
+                        finish();
                     }
 
                     @Override

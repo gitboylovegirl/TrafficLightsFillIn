@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -27,7 +26,6 @@ import com.fred.trafficlightsfillin.base.BaseActivity;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
-import com.fred.trafficlightsfillin.query.QueryMainActivity;
 import com.fred.trafficlightsfillin.query.bean.TeamListResponse;
 import com.fred.trafficlightsfillin.utils.AccountManager;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
@@ -89,10 +87,10 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void dealLogicBeforeInitView() {
-        if(SharedPreferenceUtils.getInstance().getToken()!=null&&SharedPreferenceUtils.getInstance().getToken()!=""){
+        /*if(SharedPreferenceUtils.getInstance().getToken()!=null&&SharedPreferenceUtils.getInstance().getToken()!=""){
             openActivity(MainActivity.class);
             finish();
-        }
+        }*/
     }
 
     @Override
@@ -119,7 +117,6 @@ public class LoginActivity extends BaseActivity {
         switch (view.getId()){
             case R.id.login:
                 goToLogin(userName.getText().toString().trim(),userTeam.getText().toString().trim(),userPhone.getText().toString().trim(),userPassword.getText().toString().trim());
-                //openActivity(MainActivity.class);
                 break;
             case R.id.cancel:
                 //退出系统

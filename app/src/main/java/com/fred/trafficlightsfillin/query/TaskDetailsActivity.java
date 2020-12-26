@@ -3,6 +3,7 @@ package com.fred.trafficlightsfillin.query;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,6 +54,8 @@ public class TaskDetailsActivity extends AppCompatActivity {
     TextView taskFrom;
     @BindView(R.id.desc)
     TextView desc;
+    @BindView(R.id.cad_img_lable)
+    TextView cadImgLable;
     @BindView(R.id.picture)
     RecyclerView picture;
 
@@ -119,7 +122,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
         id=getIntent().getStringExtra("id");
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS)+"/"+id)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsyncTwo(new ICallback<TaskDetailsChannel>() {
                     @Override
@@ -193,12 +196,16 @@ public class TaskDetailsActivity extends AppCompatActivity {
         String  trafficLightId = getIntent().getStringExtra("trafficLightId");
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_IMAGES) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<ImageResponse>() {
                     @Override
                     public void onSuccess(ImageResponse response) {
                         if (response.code == 0) {
+                            if(response.data == null || response.data.size() == 0){
+                                return;
+                            }
+                            cadImgLable.setVisibility(View.VISIBLE);
                             imageBeans = response.data;
                             pictureAdapter.bindData(true,response.data);
                         }

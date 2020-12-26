@@ -241,7 +241,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
         taskId = getIntent().getStringExtra("taskId");
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS) + "/" + taskId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsyncTwo(new ICallback<TaskDetailsChannel>() {
                     @Override
@@ -274,7 +274,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     private void submit() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_STATE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("taskId", taskId)
                 .addParam("state", "2")
                 .build()
@@ -300,7 +300,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     private void changeState() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_STATE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("taskId", taskId)
                 .addParam("state", "3")
                 .build()
@@ -327,7 +327,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     private void initTrafficlighInfo() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_DETAILS) + "/" + taskDetails.getTrafficLightId())
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<TrafficlighResonse>() {
                     @Override
@@ -421,7 +421,7 @@ public class RecordNewDetailsActivity extends AppCompatActivity {
     /*private void initEngigeerInfo() {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ENGINEER_INFO) + "/" + taskDetails.getEngineerId())
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<EngigeerResponse>() {
                     @Override

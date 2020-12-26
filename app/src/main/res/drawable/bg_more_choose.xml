@@ -4,8 +4,8 @@
         <!-- 倒三角 -->
         <rotate
             android:fromDegrees="45"
-            android:pivotX="135%"
-            android:pivotY="5%"
+            android:pivotX="120%"
+            android:pivotY="20%"
             android:toDegrees="45">
             <shape android:shape="rectangle">
                 <solid android:color="@color/black" />
@@ -13,6 +13,6 @@
         </rotate>
 
         <size  android:width="12dp"
-               android:height="8dp" />
+               android:height="4dp" />
     </item>
 </layer-list>

@@ -144,7 +144,7 @@ public class TaskUpdateActivity extends AppCompatActivity {
         id = getIntent().getStringExtra("id");
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_DETAILS) + "/" + id)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsyncTwo(new ICallback<TaskDetailsChannel>() {
                     @Override
@@ -210,7 +210,7 @@ public class TaskUpdateActivity extends AppCompatActivity {
         }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_STATE))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("taskId", id)
                 .addParam("state", "3")
                 .addParam("cause",inputBetter.getText().toString().trim())
@@ -234,7 +234,7 @@ public class TaskUpdateActivity extends AppCompatActivity {
         String trafficLightId = getIntent().getStringExtra("trafficLightId");
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TRAFFICLIGH_IMAGES) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .getAsync(new ICallback<ImageResponse>() {
                     @Override
@@ -383,7 +383,7 @@ public class TaskUpdateActivity extends AppCompatActivity {
     private void uploadPicture(List<String> data) {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.UP_IMG) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addUploadFiles(data)
                 .build()
                 .uploadFiles(new ICallback<UpPictureResponse>() {
@@ -411,7 +411,7 @@ public class TaskUpdateActivity extends AppCompatActivity {
         }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.DEL_IMG) + "/" + imgID)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .build()
                 .deleteAsync(new ICallback<BaseResponse>() {
                     @Override

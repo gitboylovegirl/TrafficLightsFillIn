@@ -108,17 +108,12 @@ public class CalendarReminderUtils {
         }
 
         //添加日历事件
-        Calendar mCalendar = Calendar.getInstance();
-        mCalendar.setTimeInMillis(reminderTime);//设置开始时间
-        long start = mCalendar.getTime().getTime();
-        mCalendar.setTimeInMillis(start + 60 * 1000);//设置终止时间
-        long end = mCalendar.getTime().getTime();
         ContentValues event = new ContentValues();
         event.put("title", title);
         event.put("description", description);
         event.put("calendar_id", calId); //插入账户的id
-        event.put(CalendarContract.Events.DTSTART, start);
-        event.put(CalendarContract.Events.DTEND, end);
+        event.put(CalendarContract.Events.DTSTART, reminderTime);//设置开始时间
+        event.put(CalendarContract.Events.DTEND, reminderTime + 60 * 1000); //设置终止时间
         event.put(CalendarContract.Events.HAS_ALARM, 1);//设置有闹钟提醒
         event.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Beijing");//这个是时区，必须有
         Uri newEvent = context.getContentResolver().insert(Uri.parse(CALENDER_EVENT_URL), event); //添加事件

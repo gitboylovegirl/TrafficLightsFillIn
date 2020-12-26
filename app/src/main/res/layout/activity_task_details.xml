@@ -358,11 +358,11 @@
                     android:layout_marginTop="15dp"
                     android:paddingVertical="30dp"
                     android:paddingHorizontal="25dp"
-                    android:background="#2A4997"
+                    android:background="#F6F6F6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:textColor="#ffffffff"
+                    android:textColor="#2A4997"
                     android:textSize="13sp"
                     />
 
@@ -378,6 +378,8 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:id="@+id/cad_img_lable"
+                    android:visibility="gone"
                     android:layout_marginTop="5dp"
                     android:textColor="@color/black"
                     android:textStyle="bold"

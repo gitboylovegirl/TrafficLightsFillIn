@@ -516,13 +516,13 @@ public class SharedPreferenceUtils {
         sharedPreferences.edit().putString("phone", str).apply();
     }
 
-    public long getCurrentTime(){return sharedPreferences.getLong("time", 0);}
+    public long getLastRemindTime(){return sharedPreferences.getLong("LastRemindTime", 0);}
 
-    public void setCurrentTime(long time) {
-        sharedPreferences.edit().putLong("time", time).apply();
+    public void setLastRemindTime(long time) {
+        sharedPreferences.edit().putLong("LastRemindTimeLastRemindTime", time).apply();
     }
 
-    public long getSeTime(){return sharedPreferences.getLong("setTime", 0);}
+    public long getSeTime(){return sharedPreferences.getLong("setTime", 1);}//提醒时间默认1小时
 
     public void setSetTime(long time) {
         sharedPreferences.edit().putLong("setTime", time).apply();

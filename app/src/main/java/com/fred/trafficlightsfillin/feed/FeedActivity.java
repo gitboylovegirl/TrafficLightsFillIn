@@ -48,6 +48,7 @@ import com.fred.trafficlightsfillin.query.TaskUpdateActivity;
 import com.fred.trafficlightsfillin.query.bean.RoadResponse;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.GetImagePath;
+import com.fred.trafficlightsfillin.utils.RoadDataUtil;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
@@ -87,7 +88,7 @@ public class FeedActivity extends AppCompatActivity {
     PictureAdapter pictureAdapter;
     private Long trafficLightId = 0L;
     List<ImageResponse.ImageBean> imageBeans = new ArrayList<>();
-    List<RoadResponse.RoadChannel> roadChannels = new ArrayList<>();
+    List<RoadResponse.RoadChannel> roadChannels;
 
     private static final int REQUEST_CODE_CHOOSE = 99;
 
@@ -103,8 +104,8 @@ public class FeedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_feed);
         ButterKnife.bind(this);
 
-        getRoadData();
         initView();
+        roadChannels = RoadDataUtil.getDatatList();
     }
 
     private void initView() {
@@ -162,33 +163,35 @@ public class FeedActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                List<String> roadPlaces = new ArrayList<>();
+
+                if(popupWindow!=null&&popupWindow.isShowing()){
+                    popupWindow.dismiss();
+                }
+                if(TextUtils.isEmpty(s.toString().trim())){
+                    return;
+                }
+
+                if(roadChannels == null || roadChannels.size() == 0){
+                    return;
+                }
                 List<RoadResponse.RoadChannel> roadData= new ArrayList<>();
-                if(!TextUtils.isEmpty(s.toString().trim())){
-                    roadPlaces.clear();
-                    for (int i = 0; i < roadChannels.size(); i++) {
-                        if(roadChannels.get(i).getRoadPlace().contains(s.toString().trim())&&roadChannels.get(i).getRoadPlace()!=null){
-                            roadPlaces.add(roadChannels.get(i).getRoadPlace());
-                            roadData.add(roadChannels.get(i));
-                        }
-                    }
-                    if (roadPlaces!=null&&roadPlaces.size()>0){
-                        if(popupWindow!=null&&popupWindow.isShowing()){
-                            popupWindow.dismiss();
-                        }
-                        showPopupWindow(roadName,roadData);
-                        roadPlaceadapter.bindData(true,roadPlaces);
-                        roadName.setFocusable(true);
-                    }else {
-                        if(popupWindow!=null&&popupWindow.isShowing()){
-                            popupWindow.dismiss();
-                        }
-                    }
-                }else {
-                    if(popupWindow!=null&&popupWindow.isShowing()){
-                        popupWindow.dismiss();
+                for (int i = 0; i < roadChannels.size(); i++) {
+                    if(roadChannels.get(i).getRoadPlace().contains(s.toString().trim())&&roadChannels.get(i).getRoadPlace()!=null){
+                        roadData.add(roadChannels.get(i));
                     }
                 }
+
+                roadPlaceadapter.bindData(true, roadData);
+
+                roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+                    roadName.setText(roadData.get(index).getRoadPlace());
+                    type.setText(roadData.get(index).getModelNo());
+                    signalType.setText(roadData.get(index).getModelType());
+                    area.setText(roadData.get(index).getArea());
+                    trafficLightId = roadData.get(index).getId();
+                    popupWindow.dismiss();
+                });
+
             }
         });
     }
@@ -204,15 +207,6 @@ public class FeedActivity extends AppCompatActivity {
         content.setLayoutManager(new LinearLayoutManager(FeedActivity.this));
         content.setAdapter(roadPlaceadapter);
 
-        roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
-            roadName.setText(data.get(index).getRoadPlace());
-            type.setText(roadChannels.get(index).getModelNo());
-            signalType.setText(roadChannels.get(index).getModelType());
-            area.setText(roadChannels.get(index).getArea());
-            trafficLightId = data.get(index).getId();
-            popupWindow.dismiss();
-        });
-
         popupWindow = new PopupWindow(contentView,  LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true);
 
         popupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
@@ -227,7 +221,7 @@ public class FeedActivity extends AppCompatActivity {
         popupWindow.showAsDropDown(view);
     }
 
-    class RoadPlaceadapter extends BaseRecyclerAdapter<String>{
+    class RoadPlaceadapter extends BaseRecyclerAdapter<RoadResponse.RoadChannel>{
 
         @Override
         public int bindView(int viewType) {
@@ -235,10 +229,10 @@ public class FeedActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindHolder(BaseViewHolder holder, @Nullable String s, int index) {
+        public void onBindHolder(BaseViewHolder holder, @Nullable RoadResponse.RoadChannel s, int index) {
             TextView tv_place=holder.obtainView(R.id.tv_place);
 
-            tv_place.setText(s);
+            tv_place.setText(s.getRoadPlace());
         }
     }
 
@@ -253,7 +247,7 @@ public class FeedActivity extends AppCompatActivity {
         }
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.FEED_ADD))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addParam("desc",content)
                 .addParam("trafficLightId", trafficLightId+"")
                 .build()
@@ -268,35 +262,6 @@ public class FeedActivity extends AppCompatActivity {
 
                     @Override
                     public void onFail(int errorCode, String errorMsg) {
-                    }
-                });
-    }
-
-    /**
-     * 获取路口数据
-     */
-    private void getRoadData() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.ROAD_PLACE) + "/all")
-                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .build()
-                .getAsync(new ICallback<RoadResponse>() {
-                    @Override
-                    public void onSuccess(RoadResponse response) {
-                        if (response.data != null) {
-                            roadChannels.clear();
-                            roadChannels.addAll(response.data);
-//                            roadName.setText(roadChannels.get(0).getRoadPlace());
-//                            type.setText(roadChannels.get(0).getModelNo());
-//                            signalType.setText(roadChannels.get(0).getModelType());
-//                            area.setText(roadChannels.get(0).getArea());
-
-                        }
-                    }
-
-                    @Override
-                    public void onFail(int errorCode, String errorMsg) {
-
                     }
                 });
     }
@@ -420,7 +385,7 @@ public class FeedActivity extends AppCompatActivity {
     private void uploadPicture(List<String> data) {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.UP_IMG) + "/" + trafficLightId)
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh_token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
                 .addUploadFiles(data)
                 .build()
                 .uploadFiles(new ICallback<BaseResponse>() {
