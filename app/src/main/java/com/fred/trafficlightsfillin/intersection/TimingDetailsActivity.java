@@ -31,6 +31,7 @@ import com.fred.trafficlightsfillin.intersection.bean.TimingDetailsResponse;
 import com.fred.trafficlightsfillin.intersection.bean.TrafficlighResonse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StageDataUtil;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
@@ -87,7 +88,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
     HorizontalScrollView layoutHideScrollview;
     @BindView(R.id.scrollView_one)
     HorizontalScrollView scrollViewOne;
-
+    List<ImageResponse.ImageBean> imageBeans=new ArrayList<>();
 
     private List<PeriodCaseListBean> weekdaysPeriodCaseDataList = new ArrayList<>();//工作日时间表
     private List<PeriodCaseListBean> noWeekDaysPeriodCaseDataList = new ArrayList<>();//周末时间表
@@ -134,6 +135,25 @@ public class TimingDetailsActivity extends AppCompatActivity {
         pictureList.setLayoutManager(layoutManager);
         pictureAdapter = new TimingDetailsActivity.PictureAdapter();
         pictureList.setAdapter(pictureAdapter);
+
+        pictureAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            DialogUtils.showPictureDialog(TimingDetailsActivity.this,imageBeans , index,1, new DialogUtils.OnButtonClickListener() {
+
+                @Override
+                public void onPositiveButtonClick() {
+
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+                }
+            });
+        });
 
         timeList.setLayoutManager(new CustomLayoutManager(this));
         timeTableAdapter = new TimingDetailsActivity.TimeTableAdapter();
@@ -249,6 +269,7 @@ public class TimingDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(ImageResponse response) {
                         if (response.code == 0) {
+                            imageBeans = response.data;
                             pictureAdapter.bindData(true, response.data);
                         }
                     }

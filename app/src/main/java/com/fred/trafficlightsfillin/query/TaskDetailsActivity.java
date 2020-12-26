@@ -23,8 +23,12 @@ import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
+import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,7 +76,7 @@ public class TaskDetailsActivity extends AppCompatActivity {
     @BindView(R.id.better)
     TextView better;
     PictureAdapter pictureAdapter;
-
+    List<ImageResponse.ImageBean> imageBeans=new ArrayList<>();
     String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,24 @@ public class TaskDetailsActivity extends AppCompatActivity {
         pictureAdapter = new PictureAdapter();
         picture.setAdapter(pictureAdapter);
 
+        pictureAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            DialogUtils.showPictureDialog(TaskDetailsActivity.this,imageBeans , index,1, new DialogUtils.OnButtonClickListener() {
+
+                @Override
+                public void onPositiveButtonClick() {
+
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+                }
+            });
+        });
     }
     private void initData() {
         id=getIntent().getStringExtra("id");
@@ -177,7 +199,8 @@ public class TaskDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(ImageResponse response) {
                         if (response.code == 0) {
-                            pictureAdapter.bindData(true, response.data);
+                            imageBeans = response.data;
+                            pictureAdapter.bindData(true,response.data);
                         }
                     }
 

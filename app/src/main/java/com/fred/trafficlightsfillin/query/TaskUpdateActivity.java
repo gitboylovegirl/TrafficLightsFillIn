@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import com.fred.trafficlightsfillin.base.BaseResponse;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.MyGlideEngine;
 import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.intersection.TimingEditorActivity;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
@@ -41,11 +43,15 @@ import com.fred.trafficlightsfillin.record.RecordNewDetailsActivity;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.GetImagePath;
+import com.fred.trafficlightsfillin.utils.PictureUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +115,29 @@ public class TaskUpdateActivity extends AppCompatActivity {
         initData();
         imageBeans.add(imageBeans.size(), new ImageResponse.ImageBean());
         pictureAdapter.bindData(true, imageBeans);
+
+        pictureAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            DialogUtils.showPictureDialog(TaskUpdateActivity.this,imageBeans , index,2, new DialogUtils.OnButtonClickListener() {
+
+                @Override
+                public void onPositiveButtonClick() {
+
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+                    delPicture(imageBeans.get(pos).id);
+                    imageBeans.remove(pos);
+                    pictureAdapter.bindData(true, imageBeans);
+                    pictureAdapter.notifyDataSetChanged();
+                }
+            });
+        });
     }
 
     private void initData() {
@@ -332,9 +361,19 @@ public class TaskUpdateActivity extends AppCompatActivity {
             pictureAdapter.notifyDataSetChanged();
 
             for (int i = 0; i < fileData.size(); i++) {
-                List<String> updateData=new ArrayList<>();
-                updateData.add(fileData.get(i));
-                uploadPicture(fileData);
+                String newPath="";
+                FileInputStream fis = null;
+                try {
+                    fis = new FileInputStream(getFilePathFromUri(TaskUpdateActivity.this, mSelected.get(i)));
+                    Bitmap bitmap = BitmapFactory.decodeStream(fis);
+                    File file = PictureUtils.saveImage(bitmap);
+                    newPath = file.getPath();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                List<String> updateData = new ArrayList<>();
+                updateData.add(newPath);
+                uploadPicture(updateData);
             }
         }
 

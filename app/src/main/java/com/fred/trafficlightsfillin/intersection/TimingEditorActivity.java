@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -60,6 +61,7 @@ import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.GetImagePath;
 import com.fred.trafficlightsfillin.utils.JsonUtil;
+import com.fred.trafficlightsfillin.utils.PictureUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.StageDataUtil;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
@@ -72,6 +74,9 @@ import com.zhihu.matisse.MimeType;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -249,6 +254,29 @@ public class TimingEditorActivity extends AppCompatActivity {
         pictureList.setLayoutManager(layoutManager);
         pictureAdapter = new PictureAdapter();
         pictureList.setAdapter(pictureAdapter);
+
+        pictureAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            DialogUtils.showPictureDialog(TimingEditorActivity.this, imageBeans, index,2, new DialogUtils.OnButtonClickListener() {
+
+                @Override
+                public void onPositiveButtonClick() {
+
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+                    delPicture(imageBeans.get(pos).id);
+                    imageBeans.remove(pos);
+                    pictureAdapter.bindData(true, imageBeans);
+                    pictureAdapter.notifyDataSetChanged();
+                }
+            });
+        });
 
         timeList.setLayoutManager(new CustomLayoutManager(this));
         timeTableAdapter = new TimeTableAdapter();
@@ -725,17 +753,27 @@ public class TimingEditorActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             List<Uri> mSelected = Matisse.obtainResult(data);
-            List<String> fileData = new ArrayList<>();
             for (int i = 0; i < mSelected.size(); i++) {
                 Log.i("图片", mSelected.get(i).getPath());
-                fileData.add(getFilePathFromUri(TimingEditorActivity.this, mSelected.get(i)));
+                String newPath="";
+                FileInputStream fis = null;
+                try {
+                    fis = new FileInputStream(getFilePathFromUri(TimingEditorActivity.this, mSelected.get(i)));
+                    Bitmap bitmap = BitmapFactory.decodeStream(fis);
+                    File file = PictureUtils.saveImage(bitmap);
+                    newPath = file.getPath();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                List<String> fileData = new ArrayList<>();
+                fileData.add(newPath);
                 ImageResponse.ImageBean imageBean = new ImageResponse.ImageBean();
                 imageBean.setUri(mSelected.get(i));
                 imageBeans.add(0, imageBean);
+                uploadPicture(fileData);
             }
             pictureAdapter.bindData(true, imageBeans);
             pictureAdapter.notifyDataSetChanged();
-            uploadPicture(fileData);
         }
 
     }

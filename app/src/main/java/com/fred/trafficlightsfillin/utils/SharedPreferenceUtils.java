@@ -528,6 +528,11 @@ public class SharedPreferenceUtils {
         sharedPreferences.edit().putLong("setTime", time).apply();
     }
 
+    public boolean getRemindState(){return sharedPreferences.getBoolean("RemindState", false);}
+
+    public void setRemindState(boolean time) {
+        sharedPreferences.edit().putBoolean("RemindState", time).apply();
+    }
     public boolean getIsTime(){return sharedPreferences.getBoolean("isTime", false);}
 
     public void setIsTime(boolean time) {

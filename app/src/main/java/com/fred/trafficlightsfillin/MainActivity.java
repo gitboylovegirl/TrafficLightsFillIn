@@ -217,13 +217,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         mLocationClient.setLocationOption(mLocationOption);
 
-
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             runOnUiThread(() -> {
                 mLocationClient.startLocation();
             });
-        }, 0, 30, TimeUnit.SECONDS);
+        }, 0, 60, TimeUnit.SECONDS);
     }
 
     /**
@@ -248,14 +247,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             SharedPreferenceUtils.getInstance().setToken("");
                         } else if (response.code == 0) {
                             if (response.getData() != null && response.getData() > 0) {
-                                Log.e("fred"," 设置 "+SharedPreferenceUtils.getInstance().getSeTime());
                                 if (SharedPreferenceUtils.getInstance().getSeTime() > 0) {
                                     long lastTime = SharedPreferenceUtils.getInstance().getCurrentTime();
                                     long currentTimeMillis = System.currentTimeMillis();
                                     long seTime = SharedPreferenceUtils.getInstance().getSeTime();
 
                                     Log.e("fred","  time  "+currentTimeMillis+"   "+  lastTime+"   "+seTime);
-                                    if (currentTimeMillis > lastTime) {
+                                    if (currentTimeMillis > lastTime&&SharedPreferenceUtils.getInstance().getRemindState()) {
                                         long time = currentTimeMillis + (seTime * 60 * 60 * 1000);
                                         CalendarReminderUtils.addCalendarEvent(MainActivity.this, "配时中心提醒", "您有未完成的任务，请及时登陆完成", time, 1);
                                         SharedPreferenceUtils.getInstance().setCurrentTime(time);

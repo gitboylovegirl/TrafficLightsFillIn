@@ -116,6 +116,27 @@ public class FeedActivity extends AppCompatActivity {
         imageBeans.add(0, new ImageResponse.ImageBean());
         pictureAdapter.bindData(true,imageBeans);
 
+        pictureAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            DialogUtils.showPictureDialog(FeedActivity.this, imageBeans, index,2, new DialogUtils.OnButtonClickListener() {
+
+                @Override
+                public void onPositiveButtonClick() {
+
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+                    imageBeans.remove(pos);
+                    pictureAdapter.bindData(true, imageBeans);
+                    pictureAdapter.notifyDataSetChanged();
+                }
+            });
+        });
         feedSet.setText("反馈车组："+SharedPreferenceUtils.getInstance().getTeamName());
         feedPerson.setText("反馈人："+SharedPreferenceUtils.getInstance().getName());
         phone.setText("电话："+SharedPreferenceUtils.getInstance().getPhone());
@@ -127,32 +148,6 @@ public class FeedActivity extends AppCompatActivity {
         submit.setOnClickListener(v -> {
             feedSubmit();
         });
-//        roadName.setOnClickListener(v -> {
-//            List<String> roadPlaces = new ArrayList<>();
-//            for (int i = 0; i < roadChannels.size(); i++) {
-//                roadPlaces.add(roadChannels.get(i).getRoadPlace());
-//            }
-//            DialogUtils.showChoiceDialog(FeedActivity.this, roadPlaces, new DialogUtils.OnButtonClickListener() {
-//                @Override
-//                public void onPositiveButtonClick() {
-//
-//                }
-//
-//                @Override
-//                public void onNegativeButtonClick() {
-//
-//                }
-//
-//                @Override
-//                public void onChoiceItem(String str, int pos) {
-//                    roadName.setText(str);
-//                    type.setText(roadChannels.get(pos).getModelNo());
-//                    signalType.setText(roadChannels.get(pos).getModelType());
-//                    area.setText(roadChannels.get(pos).getArea());
-//                    currentPosition = pos;
-//                }
-//            });
-//        });
 
         roadName.addTextChangedListener(new TextWatcher() {
             @Override

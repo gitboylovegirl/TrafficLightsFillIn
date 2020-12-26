@@ -17,12 +17,18 @@ import com.fred.trafficlightsfillin.R;
 import com.fred.trafficlightsfillin.base.BaseRecyclerAdapter;
 import com.fred.trafficlightsfillin.base.BaseViewHolder;
 import com.fred.trafficlightsfillin.base.RequestApi;
+import com.fred.trafficlightsfillin.intersection.TimingEditorActivity;
 import com.fred.trafficlightsfillin.intersection.bean.ImageResponse;
 import com.fred.trafficlightsfillin.network.http.ProRequest;
 import com.fred.trafficlightsfillin.network.http.response.ICallback;
+import com.fred.trafficlightsfillin.query.TaskDetailsActivity;
 import com.fred.trafficlightsfillin.record.bean.TaskDetailsChannel;
+import com.fred.trafficlightsfillin.utils.DialogUtils;
 import com.fred.trafficlightsfillin.utils.SharedPreferenceUtils;
 import com.fred.trafficlightsfillin.utils.TimeUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,7 +66,7 @@ public class RecordTaskDetailsActivity extends AppCompatActivity {
     @BindView(R.id.better)
     TextView better;
     PictureAdapter pictureAdapter;
-
+    List<ImageResponse.ImageBean> imageBeans=new ArrayList<>();
     String id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +86,43 @@ public class RecordTaskDetailsActivity extends AppCompatActivity {
         pictureAdapter = new PictureAdapter();
         picture.setAdapter(pictureAdapter);
 
+        pictureAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            DialogUtils.showPictureDialog(RecordTaskDetailsActivity.this,imageBeans , index,1, new DialogUtils.OnButtonClickListener() {
+
+                @Override
+                public void onPositiveButtonClick() {
+
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+                }
+            });
+        });
+        pictureAdapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
+            DialogUtils.showPictureDialog(RecordTaskDetailsActivity.this, imageBeans, index,1, new DialogUtils.OnButtonClickListener() {
+
+                @Override
+                public void onPositiveButtonClick() {
+
+                }
+
+                @Override
+                public void onNegativeButtonClick() {
+
+                }
+
+                @Override
+                public void onChoiceItem(String str, int pos) {
+
+                }
+            });
+        });
     }
     private void initData() {
         id=getIntent().getStringExtra("id");
@@ -159,6 +202,7 @@ public class RecordTaskDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(ImageResponse response) {
                         if (response.code == 0) {
+                            imageBeans = response.data;
                             pictureAdapter.bindData(true, response.data);
                         }
                     }
