@@ -23,11 +23,14 @@ import java.util.TimerTask;
 public class WelcomeActivity extends Activity {
 
     Timer timer;
+    private String action;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         StatusBarUtils.setTransparent(this);
+        Intent intent = getIntent();
+        action = intent.getStringExtra("action");
         getHomeActivity();
     }
 
@@ -80,6 +83,7 @@ public class WelcomeActivity extends Activity {
                         if(response.code == 0){
                             SharedPreferenceUtils.getInstance().setToken(response.getData());
                             Intent intent = new Intent();
+                            intent.putExtra("action", action);
                             intent.setClass(WelcomeActivity.this, MainActivity.class);
                             startActivity(intent);
                         }else{

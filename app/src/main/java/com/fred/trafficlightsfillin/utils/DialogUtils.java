@@ -205,8 +205,9 @@ public class DialogUtils {
         });
 
         confirm.setOnClickListener(v -> {
+            long i = SharedPreferenceUtils.getInstance().getSeTime();
             SharedPreferenceUtils.getInstance().setRemindState(true);
-            ToastUtil.showShort(context, "提醒设置成功！");
+            ToastUtil.showShort(context, "设置成功！"+i+"小时后,注意日历提醒！");
             dialog.dismiss();
         });
         picker.setOnClickListener(v -> {

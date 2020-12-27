@@ -333,8 +333,7 @@
                 <TextView
                     android:id="@+id/desc"
                     android:layout_marginTop="15dp"
-                    android:paddingVertical="30dp"
-                    android:paddingHorizontal="25dp"
+                    android:padding="10dp"
                     android:background="#F6F6F6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -356,8 +355,7 @@
                 <TextView
                     android:id="@+id/better"
                     android:layout_marginTop="15dp"
-                    android:paddingVertical="30dp"
-                    android:paddingHorizontal="25dp"
+                    android:padding="10dp"
                     android:background="#F6F6F6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

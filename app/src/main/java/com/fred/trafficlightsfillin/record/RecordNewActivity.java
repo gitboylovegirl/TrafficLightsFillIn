@@ -110,7 +110,6 @@ public class RecordNewActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(NewRecordResponse response) {
                         if(response.code==401001){
-                            SharedPreferenceUtils.getInstance().setToken("");
                             return;
                         }
                         if (page == 1) {
@@ -120,39 +119,6 @@ public class RecordNewActivity extends AppCompatActivity {
                             list.addAll(response.data.list);
                         }
                         recordAdapter.bindData(true,list);
-                        smartRefresh.finishLoadMore();
-                        smartRefresh.finishRefresh();
-                    }
-
-                    @Override
-                    public void onFail(int errorCode, String errorMsg) {
-                    }
-                });
-    }
-
-    /**
-     * 请求数据
-     */
-    private void initData() {
-        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.TASK_PAGE))
-                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
-                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
-                .addParam("engineerId", SharedPreferenceUtils.getInstance().getId())
-                .addParam("pageNum", String.valueOf(page))
-                .addParam("pageSize", "20")
-                .addParam("teamId", SharedPreferenceUtils.getInstance().getTeamId())
-                .addParam("teamName", SharedPreferenceUtils.getInstance().getTeamName())
-                .addParam("state","2")
-                .build()
-                .postAsync(new ICallback<NewRecordResponse>() {
-                    @Override
-                    public void onSuccess(NewRecordResponse response) {
-                        if(response.code==401001){
-                            SharedPreferenceUtils.getInstance().setToken("");
-                            return;
-                        }
-                        list.addAll(response.data.list);
-                        recordAdapter.bindData(true, list);
                         smartRefresh.finishLoadMore();
                         smartRefresh.finishRefresh();
                     }
@@ -184,16 +150,17 @@ public class RecordNewActivity extends AppCompatActivity {
                 task_status.setText("后台取消");
             }else if("1".equals(newRecordChannel.state)){
                 task_status.setText("未接单");
-                task_status.setTextColor(Color.parseColor("#E3BEAC"));
+                task_status.setTextColor(Color.parseColor("#FF8631"));
             }else if("2".equals(newRecordChannel.state)){
                 task_status.setText("未完成");
-                task_status.setTextColor(Color.parseColor("#6D7790"));
+                task_status.setTextColor(Color.parseColor("#66CC66"));
             }else if("3".equals(newRecordChannel.state)){
                 task_status.setText("配时表未更新");
+                task_status.setTextColor(Color.parseColor("#FF8631"));
             }else if("4".equals(newRecordChannel.state)){
+                task_status.setTextColor(Color.parseColor("#FF8631"));
                 task_status.setText("完成已上传");
             }
-            task_status.setTextColor(Color.parseColor("#FF8631"));
         }
     }
 }

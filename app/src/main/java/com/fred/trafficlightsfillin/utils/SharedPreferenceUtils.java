@@ -516,7 +516,7 @@ public class SharedPreferenceUtils {
         sharedPreferences.edit().putString("phone", str).apply();
     }
 
-    public long getLastRemindTime(){return sharedPreferences.getLong("LastRemindTime", 0);}
+    public long getLastRemindTime(){return sharedPreferences.getLong("LastRemindTimeLastRemindTime", 0);}
 
     public void setLastRemindTime(long time) {
         sharedPreferences.edit().putLong("LastRemindTimeLastRemindTime", time).apply();

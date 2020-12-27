@@ -776,11 +776,9 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="25dp"
                     android:background="#F6F6F6"
-                    android:gravity="center"
+                    android:gravity="left"
                     android:textColor="#2A4997"
-                    android:paddingHorizontal="15dp"
-                    android:paddingVertical="30dp"
-                    android:text="">
+                    android:padding="10dp">
 
                 </TextView>
 

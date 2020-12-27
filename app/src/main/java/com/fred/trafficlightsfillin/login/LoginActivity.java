@@ -126,6 +126,10 @@ public class LoginActivity extends BaseActivity {
                 openActivity(FeedPasswordActivity.class);
                 break;
             case R.id.user_team:
+                if(teamList == null || teamList.size() == 0){
+                    ToastUtil.showShort(LoginActivity.this, "班组还未加载，请稍后再试！");
+                    return;
+                }
                 String teamName = userTeam.getText() == null ? "" : userTeam.getText().toString().trim();
                 if(teamList.size() > 0 && "".equals(teamName)){
                     userTeam.setText(teamList.get(0));

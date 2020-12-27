@@ -867,6 +867,9 @@ public class TimingEditorActivity extends AppCompatActivity {
                         TimingDetailsResponse.DataBean data = response.getData();
                         List<PeriodCaseListBean> periodCaseList = data.getPeriodCaseList();
                         List<PlanCaseListBean> planCaseList = data.getPlanCaseList();
+                        if(planCaseList == null || planCaseList.size() == 0){
+                            return;
+                        }
                         Collections.sort(planCaseList, new Comparator<PlanCaseListBean>() {
                             @Override
                             public int compare(PlanCaseListBean o1, PlanCaseListBean o2) {

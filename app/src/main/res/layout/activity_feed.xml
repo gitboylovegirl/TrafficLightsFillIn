@@ -69,26 +69,25 @@
                         <RelativeLayout
                             android:background="@drawable/bg_color_f4f4f4_5dp"
                             android:paddingRight="2dp"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="15dp"
                             android:layout_width="130dp"
                             android:layout_height="wrap_content">
                             <EditText
                                 android:background="@null"
                                 android:layout_marginRight="6dp"
                                 android:paddingVertical="6dp"
-                                android:padding="1dp"
                                 android:id="@+id/road_name"
                                 android:hint="请输入路口名称"
                                 android:layout_width="130dp"
-                                android:layout_height="wrap_content"
-                                android:textSize="14sp"
+                                android:layout_height="29dp"
+                                android:textSize="11sp"
                                 android:gravity="center"
                                 />
 
                             <ImageView
                                 android:scaleType="fitXY"
                                 android:layout_marginRight="2dp"
-                                android:layout_marginTop="7dp"
+                                android:layout_marginTop="10dp"
                                 android:src="@drawable/bg_more_choose"
                                 android:layout_alignParentRight="true"
                                 android:layout_width="12dp"
@@ -106,7 +105,7 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="35dp"
                             android:layout_marginTop="20dp"
                             android:text="所属区域"
                             android:textColor="@color/black"
@@ -144,7 +143,7 @@
                     <TextView
                         android:id="@+id/type"
                         android:layout_width="130dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="29dp"
                         android:layout_alignParentRight="true"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
@@ -173,7 +172,7 @@
                     <TextView
                         android:id="@+id/signal_type"
                         android:layout_width="130dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="29dp"
                         android:layout_alignParentRight="true"
                         android:background="@drawable/bg_color_f4f4f4_5dp"
                         android:gravity="center"
@@ -224,9 +223,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:background="#2A4997"
-                    android:gravity="center"
+                    android:gravity="left"
                     android:paddingHorizontal="15dp"
-                    android:paddingVertical="30dp"
+                    android:paddingVertical="20dp"
                     android:textColor="@color/white">
 
                 </EditText>
@@ -301,8 +300,8 @@
                         android:layout_width="210dp"
                         android:layout_height="45dp"
                         android:layout_marginLeft="25dp"
-                        android:background="#F4F4F4"
-                        android:gravity="center"
+                        android:paddingLeft="10dp"
+                        android:gravity="center_vertical"
                         android:hint="时间"
                         android:textColor="#ff2a4997"
                         android:textSize="11sp">

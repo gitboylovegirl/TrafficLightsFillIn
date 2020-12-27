@@ -104,8 +104,8 @@ public class FeedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_feed);
         ButterKnife.bind(this);
 
-        initView();
         roadChannels = RoadDataUtil.getDatatList();
+        initView();
     }
 
     private void initView() {
@@ -191,13 +191,15 @@ public class FeedActivity extends AppCompatActivity {
                     trafficLightId = roadData.get(index).getId();
                     popupWindow.dismiss();
                 });
+                showPopupWindow(roadName);
+                roadName.setFocusable(true);
 
             }
         });
     }
 
 
-    private void showPopupWindow(View view,List<RoadResponse.RoadChannel> data) {
+    private void showPopupWindow(View view) {
         // 一个自定义的布局，作为显示的内容
         View contentView = LayoutInflater.from(this).inflate(
                 R.layout.layout_popupwindow, null);

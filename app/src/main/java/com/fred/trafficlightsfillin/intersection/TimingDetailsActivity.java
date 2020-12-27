@@ -328,8 +328,11 @@ public class TimingDetailsActivity extends AppCompatActivity {
                             return;
                         }
                         TimingDetailsResponse.DataBean data = response.getData();
-                        List<PeriodCaseListBean> periodCaseList = data.getPeriodCaseList();
                         List<PlanCaseListBean> planCaseList = data.getPlanCaseList();
+                        if(planCaseList == null || planCaseList.size() == 0){
+                            return;
+                        }
+                        List<PeriodCaseListBean> periodCaseList = data.getPeriodCaseList();
                         Collections.sort(planCaseList, new Comparator<PlanCaseListBean>() {
                             @Override
                             public int compare(PlanCaseListBean o1, PlanCaseListBean o2) {

@@ -2,16 +2,12 @@ package com.fred.trafficlightsfillin;
 
 import android.Manifest;
 import android.app.AppOpsManager;
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,6 +27,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.feed.FeedActivity;
+import com.fred.trafficlightsfillin.jiguang.JGReceiver;
 import com.fred.trafficlightsfillin.login.AppUpdateResponse;
 import com.fred.trafficlightsfillin.login.ChangePasswordActivity;
 import com.fred.trafficlightsfillin.login.LocationResponse;
@@ -54,10 +51,7 @@ import com.fred.trafficlightsfillin.utils.ToastUtil;
 import com.zhihu.matisse.Matisse;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -118,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //设置极光标签和别名
         setJiguangAlias();
 
+
         //Log.e("ferd  sha:  ",sHA1(this));
         initLocation();
 
@@ -131,6 +126,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          */
         StageDataUtil.init();
         RoadDataUtil.init();
+
+        Intent intent = getIntent();
+        String action = intent.getStringExtra("action");
+        if(JGReceiver.FROMNOTICE.equals(action)){
+            intent.setClass(MainActivity.this, RecordNewActivity.class);
+            startActivity(intent);
+        }
     }
     private void setJiguangAlias(){
         String phone = SharedPreferenceUtils.getInstance().getPhone();
@@ -214,18 +216,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mLocationOption.setInterval(2000);
         mLocationOption.setOnceLocation(true);
         mLocationClient.setLocationListener(aMapLocation -> {
+            double lat = 0.0;
+            double lng = 0.0;
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {//成功
-                    //保存在本地
-                    double lat = aMapLocation.getLatitude();
-                    double lng = aMapLocation.getLongitude();
-                    if (lat > 0 && lng > 0) {
-                        locationInfo(String.valueOf(lat), String.valueOf(lng));
-                    }
+                    lat = aMapLocation.getLatitude();
+                    lng = aMapLocation.getLongitude();
                 } else {//失败
                     Log.i("fred", "Distance: 定位失败 :" + aMapLocation.getErrorCode() + ", errInfo:" + aMapLocation.getErrorInfo());
                 }
             }
+            locationInfo(String.valueOf(lat), String.valueOf(lng));
         });
         mLocationClient.setLocationOption(mLocationOption);
 
