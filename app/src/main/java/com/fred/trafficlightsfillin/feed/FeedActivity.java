@@ -105,10 +105,10 @@ public class FeedActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         initView();
-        roadChannels = RoadDataUtil.getDatatList();
     }
 
     private void initView() {
+        roadChannels = RoadDataUtil.getDatatList();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);// 设置 recyclerview 布局方式为横向布局
         pictureList.setLayoutManager(layoutManager);
@@ -183,6 +183,7 @@ public class FeedActivity extends AppCompatActivity {
 
                 roadPlaceadapter.bindData(true, roadData);
 
+                showPopupWindow(roadName,roadData);
                 roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
                     roadName.setText(roadData.get(index).getRoadPlace());
                     type.setText(roadData.get(index).getModelNo());

@@ -76,7 +76,6 @@
                                 android:background="@null"
                                 android:layout_marginRight="6dp"
                                 android:paddingVertical="6dp"
-                                android:padding="1dp"
                                 android:id="@+id/road_name"
                                 android:hint="请输入路口名称"
                                 android:layout_width="130dp"
@@ -88,7 +87,7 @@
                             <ImageView
                                 android:scaleType="fitXY"
                                 android:layout_marginRight="2dp"
-                                android:layout_marginTop="7dp"
+                                android:layout_marginTop="10dp"
                                 android:src="@drawable/bg_more_choose"
                                 android:layout_alignParentRight="true"
                                 android:layout_width="12dp"

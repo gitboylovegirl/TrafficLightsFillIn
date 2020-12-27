@@ -5,6 +5,8 @@ import android.app.AppOpsManager;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -29,6 +31,7 @@ import androidx.core.content.ContextCompat;
 
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
+import com.fred.trafficlightsfillin.base.AppVerRespnse;
 import com.fred.trafficlightsfillin.base.RequestApi;
 import com.fred.trafficlightsfillin.feed.FeedActivity;
 import com.fred.trafficlightsfillin.login.AppUpdateResponse;
@@ -44,6 +47,7 @@ import com.fred.trafficlightsfillin.record.RecordNewActivity;
 import com.fred.trafficlightsfillin.record.UpdateListActivity;
 import com.fred.trafficlightsfillin.utils.CalendarReminderUtils;
 import com.fred.trafficlightsfillin.utils.DialogUtils;
+import com.fred.trafficlightsfillin.utils.DownloadUtils;
 import com.fred.trafficlightsfillin.utils.LocationUtils;
 import com.fred.trafficlightsfillin.utils.NotificationUtil;
 import com.fred.trafficlightsfillin.utils.RoadDataUtil;
@@ -71,6 +75,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 10;
     private static final int REQUEST_CODE_CHOOSE = 99;
+    private static final String TAG ="MAIN" ;
     @BindView(R.id.status)
     TextView status;
     @BindView(R.id.new_record_top)
@@ -122,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initLocation();
 
         initView();
-        getNewVersion();
+        getNewVersion(1);
         requestPermissions();
 
         /**
@@ -293,8 +298,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 获取最新版本号
+     * @param type 1 当前已是最新版本不需要提示  2 当前已是最新版本需要提示
      */
-    private void getNewVersion() {
+    private void getNewVersion(int type) {
         ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.NEW_VERSION))
                 .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
                 .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
@@ -303,10 +309,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onSuccess(AppUpdateResponse response) {
                         if (response.code == 0) {
-                            int nowVersion = SharedPreferenceUtils.getInstance().getNewestVersion();
+                            int nowVersion =getVersionCode();
                             if(response.getData() != null && nowVersion < response.getData()){
                                 //需要更新版本
+                                DialogUtils.showCurrencyDialog(MainActivity.this, "检测到新版本，是否升级？", new DialogUtils.OnButtonClickListener() {
+                                    @Override
+                                    public void onPositiveButtonClick() {
+                                        //获取配时信息
+                                        getAppVersion(String.valueOf(response.getData()));
+                                    }
 
+                                    @Override
+                                    public void onNegativeButtonClick() {
+
+                                    }
+
+                                    @Override
+                                    public void onChoiceItem(String str, int pos) {
+
+                                    }
+                                });
+                            }else {
+                                if(type==2){
+                                    ToastUtil.showMsg(MainActivity.this, "当前已是最新版本");
+                                }
                             }
                         }
                     }
@@ -314,6 +340,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onFail(int errorCode, String errorMsg) {
 
+                    }
+                });
+    }
+
+    /**
+     * 根据版本号查询版本信息
+     */
+    private void getAppVersion(String ver) {
+        ProRequest.get().setUrl(RequestApi.getUrl(RequestApi.APP_VER)+"/"+ver)
+                .addHeader("authorization", SharedPreferenceUtils.getInstance().getToken())
+                .addHeader("refresh-token", SharedPreferenceUtils.getInstance().getrefreshToken())
+                .build()
+                .getAsync(new ICallback<AppVerRespnse>() {
+                    @Override
+                    public void onSuccess(AppVerRespnse response) {
+                        if (response.code == 0) {
+                            String downUrl=RequestApi.getUrl(RequestApi.APP_DOWN)+"/"+response.data.getUrl();
+                            ToastUtil.showMsg(MainActivity.this,"后台下载中！");
+                            //测试url  https://d.douyucdn.cn/wsd-pkg-div/2020/06/29/0beadef548a24ce2e3a4904413c18587_feiyou01_6.2.1_20200629164350.apk
+                            DownloadUtils.downLoadApk(MainActivity.this,downUrl, pos -> {
+                                //拿到下载进度自定义后续操作  pos
+                                Log.e("fred 下载进度",downUrl+pos);
+                            });
+                            //通知栏下载方式
+                            //new DownloadUtils(MainActivity.this,"https://d.douyucdn.cn/wsd-pkg-div/2020/06/29/0beadef548a24ce2e3a4904413c18587_feiyou01_6.2.1_20200629164350.apk","配时中心");
+                        }
+                    }
+
+                    @Override
+                    public void onFail(int errorCode, String errorMsg) {
+                        Log.e("fred 下载错误",errorMsg);
                     }
                 });
     }
@@ -399,7 +456,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
                 break;
             case R.id.update://更新
-                ToastUtil.showMsg(MainActivity.this, "当前已是最新版本");
+                getNewVersion(2);
                 break;
             case R.id.new_record://新任务
             case R.id.new_record_top:
@@ -435,18 +492,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            List<Uri> mSelected = Matisse.obtainResult(data);
-            //String s = getPAth(mSelected.get(0));
-            //Log.i("Path", s);
-        }
-
-    }
-
     private static boolean isExit = false;
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event){
@@ -477,6 +522,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-
-
+    private int getVersionCode(){
+        PackageManager pm = getPackageManager();
+        int versionCode=1;
+        try {
+            PackageInfo pi = pm.getPackageInfo(getPackageName(), PackageManager.GET_ACTIVITIES);
+            versionCode = pi.versionCode;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                Log.d(TAG,"longVersionCode:"+pi.getLongVersionCode());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodError e){
+            e.printStackTrace();
+        }
+        return versionCode;
+    }
 }

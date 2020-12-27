@@ -80,6 +80,16 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="8565766bdf041166c41ed3ada3e16ef5" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.fred.trafficlightsfillin.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>
