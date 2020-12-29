@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <requestFocus/>
 
         <TextView
             android:layout_width="37dp"
@@ -160,7 +159,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <requestFocus />
 
         <TextView
             android:layout_marginLeft="30dp"
@@ -283,7 +281,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <requestFocus />
+
 
 
         <LinearLayout
@@ -295,7 +293,7 @@
             android:focusableInTouchMode="true"
             android:focusable="true"
             android:layout_height="wrap_content">
-            <requestFocus />
+
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/tv_delete"

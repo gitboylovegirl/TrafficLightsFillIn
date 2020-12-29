@@ -82,6 +82,16 @@ public class RequestApi {
      * 获取最新版本号 get
      */
     public static final String NEW_VERSION = "/service/app/ver/newest";
+
+    /**
+     * 根据版本号查询版本信息  get
+     */
+    public static final String APP_VER = "/service/app/ver";
+
+    /**
+     * 下载apk  /{filename}  get
+     */
+    public static final String APP_DOWN="/service/app/down";
     /**
      * 获取任务列表 post
      */

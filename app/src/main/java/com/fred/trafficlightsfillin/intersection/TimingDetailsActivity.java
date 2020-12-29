@@ -214,6 +214,11 @@ public class TimingDetailsActivity extends AppCompatActivity {
             timeTableAdapter.bindData(true, weekdaysPeriodCaseDataList);
             planCaseDataAdapter.bindData(true, weekdaysPlanCaseDataList);
             timeCaseDataAdapter.bindData(true, weekdaysTimeCaseDataList);
+            hideWeekdaysPlanCaseList.clear();
+            if(weekdaysPlanCaseDataList.size() > 0){
+                hideWeekdaysPlanCaseList.add(weekdaysPlanCaseDataList.get(0));
+                hidePlanCaseDataAdapter.bindData(true, hideWeekdaysPlanCaseList);
+            }
         });
         //周日
         noweekdayTitle.setOnClickListener(view -> {
@@ -223,6 +228,11 @@ public class TimingDetailsActivity extends AppCompatActivity {
             timeTableAdapter.bindData(true, noWeekDaysPeriodCaseDataList);
             planCaseDataAdapter.bindData(true, noWeekdaysPlanCaseDataList);
             timeCaseDataAdapter.bindData(true, noWeekdaysTimeCaseDataList);
+            hideWeekdaysPlanCaseList.clear();
+            if(noWeekdaysPlanCaseDataList.size() > 0){
+                hideWeekdaysPlanCaseList.add(noWeekdaysPlanCaseDataList.get(0));
+                hidePlanCaseDataAdapter.bindData(true, hideWeekdaysPlanCaseList);
+            }
         });
     }
 

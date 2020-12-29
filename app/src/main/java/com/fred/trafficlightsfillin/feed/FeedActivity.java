@@ -182,7 +182,6 @@ public class FeedActivity extends AppCompatActivity {
                 }
 
                 roadPlaceadapter.bindData(true, roadData);
-
                 roadPlaceadapter.setOnItemClickListener((adapter, holder, itemView, index) -> {
                     roadName.setText(roadData.get(index).getRoadPlace());
                     type.setText(roadData.get(index).getModelNo());

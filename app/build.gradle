@@ -13,7 +13,7 @@ android {
         applicationId "com.fred.trafficlightsfillin"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 1
+        versionCode 6
         versionName "1.0"
         multiDexEnabled true
 
@@ -91,4 +91,5 @@ dependencies {
     implementation 'cn.jiguang.sdk:jcore:2.5.5'  // 此处以JCore 2.5.5 版本为例。
     implementation 'com.android.support:multidex:1.0.3'
 
+    implementation 'com.github.maning0303:MNUpdateAPK:V2.0.3'
 }
