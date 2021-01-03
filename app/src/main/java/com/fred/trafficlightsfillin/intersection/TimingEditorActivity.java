@@ -141,7 +141,7 @@ public class TimingEditorActivity extends AppCompatActivity {
     @BindView(R.id.timetable_add)
     TextView timetableAdd;
     @BindView(R.id.scrollView)
-    CustomScrollView scrollView;
+    NestedScrollView scrollView;
     @BindView(R.id.layout_hide_tab)
     RecyclerView layoutHideTab;
     @BindView(R.id.layout_hide_scrollview)
