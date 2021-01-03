@@ -340,6 +340,8 @@ public class TimingDetailsActivity extends AppCompatActivity {
                         TimingDetailsResponse.DataBean data = response.getData();
                         List<PlanCaseListBean> planCaseList = data.getPlanCaseList();
                         if(planCaseList == null || planCaseList.size() == 0){
+                            weekdayTitle.setVisibility(View.VISIBLE);
+                            noweekdayTitle.setVisibility(View.VISIBLE);
                             return;
                         }
                         List<PeriodCaseListBean> periodCaseList = data.getPeriodCaseList();

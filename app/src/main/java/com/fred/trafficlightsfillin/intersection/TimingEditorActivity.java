@@ -878,6 +878,10 @@ public class TimingEditorActivity extends AppCompatActivity {
                         List<PeriodCaseListBean> periodCaseList = data.getPeriodCaseList();
                         List<PlanCaseListBean> planCaseList = data.getPlanCaseList();
                         if(planCaseList == null || planCaseList.size() == 0){
+                            weekdayTitle.setVisibility(View.VISIBLE);
+                            noweekdayTitle.setVisibility(View.VISIBLE);
+                            timeListAdd.setVisibility(View.GONE);
+                            timetableAdd.setVisibility(View.GONE);
                             return;
                         }
                         Collections.sort(planCaseList, new Comparator<PlanCaseListBean>() {
